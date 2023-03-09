@@ -1,0 +1,292 @@
+﻿@inject SharedLocalizer L
+@using Segurplan.Web.Utils
+<div class="sidebar">
+    <div class="logo">
+        <div class="trianguloBlanco"></div>
+        <div class="trianguloAzul"></div>
+        <!-- <a href="" class="simple-text logo-normal"> @L["SideBar.Elecnor"] <br> <span>Segurplan</span></a> -->
+        <a href="/" class="logo-normal logo-segurplan">
+            <span>Segurplan</span>
+        </a>
+    </div>
+    <div class="sidebar-wrapper">
+        <button id="minimizeSidebar" class="btn btn-just-icon btn-white btn-fab btn-round"> <i class="fas fa-angle-left text_align-center visible-on-sidebar-regular"></i> <i class="fas fa-angle-right visible-on-sidebar-mini"></i> </button>
+        <ul class="nav">
+            @{
+                if (RightsController.ImAAdmin())
+                {
+                    <li class="nav-item " >
+                        <a class="nav-link" data-toggle="collapse" id="adminCaret" href="#pagesAdmin"  aria-expanded="true">
+                            @*Dashboard button*@
+                            <i class="fas fa-cogs"></i>
+                            <p>
+                                @L["SideBar.Administracion"]
+                                <span class="caret"></span>
+                            </p>
+
+                        </a>
+                        <div class="collapse show" id="pagesAdmin">
+                            <ul class="nav">
+                                <li class="nav-item "  id="activeRouteActivitys">
+                                    <a class="nav-link"  asp-page="/Models/Administration/ChaptersAndActivities/List/ActivityList" >
+                                        @*admin activities button*@
+                                        <i class="fas fa-users-cog"></i>
+                                        <span class="sidebar-normal"> @L["SideBar.ListadoCapitulos"] </span>
+                                        @*<i class=" fas fa-tools"></i>
+                <span class="sidebar-normal"> @L["Administration.Activitys.Title"] </span>*@
+                                    </a>
+                                </li>
+
+                                <li class="nav-item " id="activeRouteUsers">
+                                    <a class="nav-link"  href="/UserList" >
+                                        @*admin users button*@
+                                        <i class=" fas fa-user"></i>
+                                        <span class="sidebar-normal"> @L["SideBar.AdministracionUsuarios"] </span>
+                                    </a>
+                                </li>
+
+                                <li class="nav-item " id="activeRouteMeasures">
+                                    <a class="nav-link" href="/PreventiveMeasureList" >
+                                        @*admin measure list button*@
+                                        <i class="fas fa-hard-hat"></i>
+                                        <span class="sidebar-normal"> @L["SideBar.MeasureList"] </span>
+                                    </a>
+                                </li>
+                                <li class="nav-item " id="activeRouteRisks">
+                                    <a class="nav-link" href="/RiskList" >
+                                        @*admin seriousness list button*@
+                                        <i class="fas fa-user-injured"></i>
+                                        <span class="sidebar-normal"> @L["SideBar.Risks"] </span>
+                                    </a>
+                                </li>
+                                <li class="nav-item " id="activeRouteSeriousness">
+                                    <a class="nav-link" href="/SeriousnessList" >
+                                        @*admin seriousness list button*@
+                                        <i class="fas fa-first-aid"></i>
+                                        <span class="sidebar-normal"> @L["SideBar.SeriousnessList"] </span>
+                                    </a>
+                                </li>
+                                <li class="nav-item " id="activeRouteTemplates">
+                                    <a class="nav-link" href="/TemplateList" >
+                                        @*admin measure list button*@
+                                        <i class="fas fa-clipboard-list"></i>
+                                        <span class="sidebar-normal"> @L["SideBar.Templates"] </span>
+                                    </a>
+                                </li>
+                                <li class="nav-item " id="RisksAndPreventiveMeasures">
+                                    <a class="nav-link" href="/RisksAndPreventiveMeasures" >
+                                        @*Preventive measures button*@
+                                        <i class="fas fa-table"></i>
+                                        <span class="sidebar-normal"> @L["SideBar.PreventiveMeasures"] </span>
+                                    </a>
+                                </li>
+                                <li class="nav-item ">
+                                    <a class="nav-link" href="/TasksList" id="activeRouteTasks">
+                                        <i class="fas fa-list"></i>
+                                        <span class="sidebar-normal"> @L["SideBar.ArticleTask"] </span>
+                                    </a>
+                                </li>
+                                <li class="nav-item ">
+                                    <a class="nav-link" href="/ArticleFamilyList" id="activeRouteArticleFamily">
+                                        <i class="fas fa-project-diagram"></i>
+                                        <span class="sidebar-normal"> @L["SideBar.ArticleFamily"] </span>
+                                    </a>
+                                </li>
+                                <li class="nav-item ">
+                                    <a class="nav-link" href="/ArticlesList" id="activeRouteArticles">
+                                        <i class="fas fa-toolbox"></i>
+                                        <span class="sidebar-normal"> @L["SideBar.Articles"] </span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </li>
+                }
+            }
+            <li class="nav-item" >
+                <a class="nav-link" data-toggle="collapse" id="plansCaret" href="#pagesExamples" aria-expanded="true" >
+                    <i class="fas fa-tools"></i>
+                    <p>
+                        @L["SideBar.Planes"]
+                        <span class="caret"></span>
+                    </p>
+                </a>
+                <div class="collapse show" id="pagesExamples">
+                    <ul class="nav">
+                        <li class="nav-item " id="activeRouteMyPlans">
+                            <a class="nav-link" href="/MyPlans" >
+                                @*MisPlanes button*@
+                                <i class=" fas fa-folder"></i>
+                                <span class="sidebar-normal"> @L["SideBar.MisPlanes"] </span>
+                            </a>
+                        </li>
+                        <li class="nav-item " id="activeRouteAllPlans">
+                            <a class="nav-link" href="/AllPlans" >
+                                @*Todos los planes button*@
+                                <i class="fas fa-file-alt"></i>
+                                <span class="sidebar-normal"> @L["SideBar.AllPlanes"] </span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </li>
+
+            <li class="nav-item" >
+                <a class="nav-link" data-toggle="collapse" id="riskCaret" href="#RisksEvaluations" aria-expanded="true" >
+                    @*EvaluacionRiesgos button*@
+                    <i class="fas fa-headphones"></i>
+                    <p>
+                        @L["SideBar.EvaluacionRiesgos"]
+                        <span class="caret"></span>
+                    </p>
+                </a>
+                <div class="collapse show" id="RisksEvaluations">
+                    <ul class="nav">
+                        <li class="nav-item " id="RiskAssessmentsAndMaps">
+                            <a class="nav-link" href="/RiskAssessmentsAndMaps" >
+                                @*RiskAssessmentsAndMaps button*@
+                                <i class="fas fa-tasks"></i>
+                                <span class="sidebar-normal"> @L["SideBar.RiskAssessmentsAndMaps"] </span>
+                            </a>
+                        </li>
+
+                    </ul>
+                </div>
+            </li>
+
+            <li class="nav-item" style="display:none;">
+                <a class="nav-link" href="#">
+                    @*Listados button*@
+                    <i class="fas fa-th-list"></i>
+                    <p> @L["SideBar.Listados"] </p>
+                </a>
+            </li>
+
+        </ul>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    var thisPageUrl = window.location.pathname.replace(/\//g, '');
+
+    activateSideBar(thisPageUrl);
+
+    function activateSideBar(Url) {
+        const activeColour = '#003e8b';
+        const secondColour = '#00a8b4'
+
+        switch (Url) {
+            case 'PlanManagement':
+            case 'MyPlans':
+                document.getElementById('plansCaret').style.backgroundColor = activeColour;
+                document.getElementById('activeRouteMyPlans').style.backgroundColor = secondColour;
+                break;
+
+            case 'AllPlans':
+                document.getElementById('plansCaret').style.backgroundColor = activeColour;
+                document.getElementById('activeRouteAllPlans').style.backgroundColor = secondColour;
+                break;
+
+            case 'PreventiveMeasureList':
+            case 'MeasureManagement':
+                if (document.getElementById("pagesAdmin").classList.contains("show")) {
+                    document.getElementById("adminCaret").click();
+                }
+                document.getElementById('adminCaret').style.backgroundColor = activeColour;
+                document.getElementById('activeRouteMeasures').style.backgroundColor = secondColour;
+                break;
+
+            case 'UserList':
+            case 'UserManagement':
+                if (document.getElementById("pagesAdmin").classList.contains("show")) {
+                    document.getElementById("adminCaret").click();
+                }
+                document.getElementById('adminCaret').style.backgroundColor = activeColour;                
+                document.getElementById('activeRouteUsers').style.backgroundColor = secondColour;
+                break;
+
+            case "ModelsAdministrationChaptersAndActivitiesActivityDetails":
+            case "ModelsAdministrationChaptersAndActivitiesChapterDetails":
+            case "ModelsAdministrationChaptersAndActivitiesSubChapterDetails":
+            case "ActivityList":
+            case "ActivityManagement":
+                if (document.getElementById("pagesAdmin").classList.contains("show")) {
+                    document.getElementById("adminCaret").click();
+                }
+                document.getElementById('adminCaret').style.backgroundColor = activeColour;
+                document.getElementById('activeRouteActivitys').style.backgroundColor = secondColour;
+                break;
+            default:
+            case "RisksAndPreventiveMeasures":
+            case "RisksAndPreventiveMeasuresDetails":
+                if (document.getElementById("pagesAdmin").classList.contains("show")) {
+                    document.getElementById("adminCaret").click();
+                }
+                document.getElementById('adminCaret').style.backgroundColor = activeColour;
+                document.getElementById('RisksAndPreventiveMeasures').style.backgroundColor = secondColour;
+                break;
+
+            case "RiskAssessmentsAndMaps":
+                document.getElementById('riskCaret').style.backgroundColor = activeColour;
+                document.getElementById('RiskAssessmentsAndMaps').style.backgroundColor = secondColour;
+                break;
+
+            case 'SeriousnessList':
+            case 'SeriousnessManagement':
+                if (document.getElementById("pagesAdmin").classList.contains("show")) {
+                    document.getElementById("adminCaret").click();
+                }
+                document.getElementById('adminCaret').style.backgroundColor = activeColour;
+                document.getElementById('activeRouteSeriousness').style.backgroundColor = secondColour;
+                break;
+            case 'RiskList':
+            case 'RiskManagement':
+                if (document.getElementById("pagesAdmin").classList.contains("show")) {
+                    document.getElementById("adminCaret").click();
+                }
+                document.getElementById('adminCaret').style.backgroundColor = activeColour;
+                document.getElementById('activeRouteRisks').style.backgroundColor = secondColour;
+                break;
+            case 'TemplateList':
+            case 'TemplateManagement':
+                if (document.getElementById("pagesAdmin").classList.contains("show")) {
+                    document.getElementById("adminCaret").click();
+                }
+                document.getElementById('adminCaret').style.backgroundColor = activeColour;
+                document.getElementById('activeRouteTemplates').style.backgroundColor = secondColour;
+                break;
+
+            case 'TasksList':
+            case 'TaskManagement':
+                if (document.getElementById("pagesAdmin").classList.contains("show")) {
+                    document.getElementById("adminCaret").click();
+                }
+                document.getElementById('adminCaret').style.backgroundColor = activeColour;
+                document.getElementById('activeRouteTasks').style.backgroundColor = secondColour;
+                break;
+            case 'ArticleFamilyList':
+            case 'ArticleFamilyManagement':
+                if (document.getElementById("pagesAdmin").classList.contains("show")) {
+                    document.getElementById("adminCaret").click();
+                }
+                document.getElementById('adminCaret').style.backgroundColor = activeColour;
+                document.getElementById('activeRouteArticleFamily').style.backgroundColor = secondColour;
+                break;
+            case 'ArticlesList':
+            case 'ArticleManagement':
+                if (document.getElementById("pagesAdmin").classList.contains("show")) {
+                    document.getElementById("adminCaret").click();
+                }
+                document.getElementById('adminCaret').style.backgroundColor = activeColour;
+                document.getElementById('activeRouteArticles').style.backgroundColor = secondColour;
+                break;
+
+
+        }
+
+    }
+
+
+
+</script>

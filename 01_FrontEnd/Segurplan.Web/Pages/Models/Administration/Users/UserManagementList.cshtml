@@ -1,0 +1,397 @@
+﻿@page "/UserList"
+@model Segurplan.Web.Pages.Models.Administration.Users.UserManagementList
+@using Segurplan.Core.Actions.Administration
+@inject SharedLocalizer L
+@{
+    ViewData["Title"] = @L["Administration.Users.List.Title"];
+}
+
+
+@{
+
+    var indexPage = Model.TableState.IndexPage;
+    var tableRows = Model.TableState.PageRows;
+    var orderMode = Model.TableState.OrderMode;
+    var orderBy = Model.TableState.OrderBy;
+    var startRecord = tableRows > 0 ? ((indexPage * tableRows) + 1) : 0;
+    var endRecord = ((indexPage * tableRows) + Model.TableState.PageRows).ToString();
+    var remainingRows = Model.TotalRows - (Model.TableState.PageRows * Model.TableState.IndexPage);
+
+}
+
+@*Buscador*@
+
+<div class="content listado no-tabs">
+    <div class="container-fluid p-0">
+        <!-- Buscador -->
+        <div class="row buscadorRelativoContent ml-2" id="filterZone">
+
+            <form id="search" method="get">
+                @Html.AntiForgeryToken()
+                <div id="tableState">
+                    <input type="hidden" id="indexPage" name="indexPage" value="@indexPage">
+                    <input type="hidden" id="tableRows" name="tableRows" value="@tableRows">
+                    <input type="hidden" id="orderMode" name="orderMode" value="@orderMode">
+                    <input type="hidden" id="orderBy" name="orderBy" value="@orderBy">
+
+                </div>
+                <div class="row">
+                    <div class="col-11">
+                        <div class="row">
+                            <div class="form-group bmd-form-group col-12">
+                                <div class="input-group">
+                                    <label for="Nombre" class="bmd-label-floating">@L["AdminUsers.Filters.Name"]</label>
+                                    <input type="text" class="form-control" id="Name" name="name" value="@Model.TableFilter.Name" maxlength="250">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group bmd-form-group col-4 pt-2">
+                                <div class="input-group">
+                                    <label for="Usuario" class="bmd-label-floating">@L["AdminUsers.Filters.UserName"]</label>
+                                    <input type="text" class="form-control" id="UserName" name="userName" value="@Model.TableFilter.UserName" maxlength="250">
+                                </div>
+                            </div>
+                            <div class="form-group bmd-form-group col-8 pt-2">
+                                <div class="input-group">
+                                    <label for="Perfil" class="bmd-label-floating">@L["AdminUsers.Filters.UserRole"]</label>
+                                    <input type="text" class="form-control" id="UserRol" name="userRol" value="@Model.TableFilter.UserRol" maxlength="250">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class=""></div>
+                    <div class="col-1 acciones_buscador">
+                        <button class="btn btn-just-icon btn-white">
+                            <i class="material-icons cerrarBuscador" id="searchClose">close</i>
+                            <div class="ripple-container"></div>
+                        </button>
+                        <button type="submit" class="btn btn-white buscar">
+                            @L["Planes.Filtros.Search"]
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+
+        <div class="row tags">
+            <div class="col-12 px-0">
+                <ul>
+                    @{
+                        if (Model.TableFilter.InUse == true)
+                        {
+                            foreach (var property in Model.TableFilter.GetType().GetProperties())
+                            {
+                                if (!property.Name.ToString().Equals("InUse"))
+                                {
+                                    if (property.GetValue(Model.TableFilter) != null)
+                                    {
+                                        <li>
+                                            @if (property.Name.ToString().Equals("UserRol"))
+                                            {
+                                                @L[$"AdminUsers.Filters.UserRole"] <span>@property.GetValue(Model.TableFilter)</span>
+                                            }
+                                            else
+                                            {
+                                                @L[$"AdminUsers.Filters.{property.Name}"] <span>@property.GetValue(Model.TableFilter)</span>
+                                            }
+                                            <button type="button" onclick="deleteFilter('@property.Name');" class="btn btn-just-icon btn-white">
+                                                <i class="material-icons">close</i>
+                                            </button>
+                                        </li>
+                                    }
+                                }
+                            }
+                        }
+                    }
+                </ul>
+            </div>
+        </div>
+        @if (Model.ErrorMsg)
+        {
+            <div class="alert alert-warning alert-dismissible fade show alert-with-icon" role="alert">
+                <span class="material-icons" data-notify="icon">error_outline</span>
+                @L["UserDetails.NotInAdError",""]
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        }
+        <div class="content planes" id="tableContainer">
+
+
+
+            <div class="">
+
+                <table class="table table-bordered table-striped table-shortable table-hover tableFixHead" id="PlanTable">
+                    <thead>
+                        <tr>
+
+                            <th title="@L["AdminUsers.Filters.Name"]" onclick="header('name');" width="26%">
+                                @L["AdminUsers.Filters.Name"]
+                                <button id="btnname" class="order_default"> </button>
+
+                            </th>
+                            <th title="@L["AdminUsers.Filters.UserName"]" onclick="header('userName');" width="26%">
+                                @L["AdminUsers.Filters.UserName"]
+                                <button id="btnuserName" class="order_default"> </button>
+
+
+                            <th title="@L["AdminUsers.Filters.UserRole"]" onclick="header('userRol');" width="17%">
+                                @L["AdminUsers.Filters.UserRole"]
+                                <button id="btnuserRol" class="order_default"> </button>
+                            </th>
+
+                            <th title="@L["Administration.Users.IsSuscribed"]" width="10%">
+                                @L["Administration.Users.IsSuscribed"]
+                            </th>
+
+                            <th title="acciones" class="text-center" width="7%">@L["Planes.TablePlan.Acciones"] </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{
+                            if (Model.UserList != null)
+                            {
+                                string rowName = string.Empty;
+                                string dupliId = string.Empty;
+                                string dpDown = string.Empty;
+
+                                foreach (var usr in Model.UserList)
+                                {
+
+                                    string UsrRole = @usr.UserRoleName == null ? " -- " : usr.UserRoleName;
+                                    rowName = "row" + usr.Id;
+                                    dpDown = "dp" + usr.Id;
+                                    bool isUserRegistered = Model.SuscribedUserIds.Contains(usr.Id);
+
+                                    <tr id="@rowName">
+                                        <td title="@L["General.Table.Visualize"]" onclick="viewUser('@usr.Id');">@usr.CompleteName</td>
+                                        <td title="@L["General.Table.Visualize"]" onclick="viewUser('@usr.Id');">@usr.UserName</td>
+                                        <td title="@L["General.Table.Visualize"]" onclick="viewUser('@usr.Id');">@UsrRole</td>
+                                        <td title="@L["General.Table.Visualize"]" onclick="viewUser('@usr.Id');">@(isUserRegistered ? L["General.Radio.Si"] : L["General.Radio.No"])</td>
+
+                                        <td class="text-center">
+                                            <div class="btn-group">
+                                                <a class="nav-link" href="#" id="@dpDown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                    <i class="fas fa-ellipsis-v"></i>
+                                                    <p class="d-lg-none d-md-block"> Account </p>
+                                                </a>
+                                                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownUserRole">
+
+                                                    <a class="dropdown-item"
+                                                       asp-page="./userManagement"
+                                                       asp-route-currentOperation="@AdministrationActionType.Read"
+                                                       asp-route-userId="@usr.Id">@L["General.Table.Visualize"]</a>
+
+                                                    <a class="dropdown-item"
+                                                       asp-page="./userManagement"
+                                                       asp-route-currentOperation="@AdministrationActionType.Update"
+                                                       asp-route-userId="@usr.Id">@L["Planes.OpcionTable.Editar"]</a>
+
+                                                    <div class="dropdown-divider"></div>
+                                                    @if (isUserRegistered)
+                                                    {
+                                                        <a class="dropdown-item" href="#" onclick="unsubscribeUser('@usr.Id')">@L["UserManagement.DarDeBaja"]</a>
+                                                    }
+                                                    else
+                                                    {
+                                                        <a class="dropdown-item" href="#" onclick="registerUser('@usr.Id')">@L["UserManagement.DarDeAlta"]</a>
+                                                    }
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                        }
+                    </tbody>
+                </table>
+
+                <button class="nuevo btn btn-fab btn-round " onclick="location.href='@Url.Page("/Models/Administration/Users/UserManagement",new { CurrentOperation = AdministrationActionType.Create })'"> <i class="fas fa-plus"></i> </button>
+                <div class="footer-table ">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-2 ml-auto text-left">
+                                <div class="row">
+                                    <label class="col-8 col-form-label">@L["Planes.Table.Registros"]</label>
+                                    <div class="col-4">
+                                        <div class="dropdown bootstrap-select show-tick">
+                                            <select class="selectpicker" data-style="select-with-transition" id="rowsChanger" onchange="rowsChange();" data-size="4" tabindex="-98">
+                                                <option value="15">15</option>
+                                                <option value="25">25</option>
+                                                <option value="50">50</option>
+                                                <option value="100">100</option>
+                                            </select>
+
+                                            <button type="button" class="btn dropdown-toggle" data-toggle="dropdown" role="button" title="Registros">
+                                                <div class="filter-option">
+                                                    <div class="filter-option-inner">
+                                                        <div class="filter-option-inner-inner">@L["Planes.Table.Registros"]</div>
+                                                    </div>
+                                                </div>
+                                                <div class="ripple-container"></div>
+                                            </button>
+
+                                            <div class="dropdown-menu " role="combobox">
+                                                <div class="inner show" role="listbox" aria-expanded="false" tabindex="-1">
+                                                    <ul class="dropdown-menu inner show">
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-4 ">
+                                <div class="row">
+                                    <div class="col-4 paginacion text-right">
+                                        <span id="startRecord">@startRecord  - </span>
+                                        <span id="nResults">@endRecord</span>
+                                        de <span id="total">@Model.TotalRows</span>
+                                    </div>
+                                    <div class="col-8 text-right">
+
+                                        <button class="btn " type="button" onclick="navigate('back');"> <i class="fas fa-chevron-left"></i> </button>
+                                        <button class="btn " type="button" onclick="navigate('next');"> <i class="fas fa-chevron-right"></i> </button>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Modal UPDATE USER -->
+        <div class="modal notificacion fade" id="updateUserModal" tabindex="-1" role="dialog" aria-labelledby="delete record" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title error" id="exampleModalLabel">@L["Administration.Users.UpdateTitle"]</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar"> <span aria-hidden="true">&times;</span> </button>
+                    </div>
+                    <div class="modal-body">
+                        <p class="text-center" id="updateUserMsg">@L["Administration.Users.DeleteMsg"]</p>
+                        <form id="updateUser" method="post" asp-page-handler="UpdateUser">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" id="registerUserId" name="registerUserId" />
+                            <input type="hidden" id="unsubscribeUserId" name="unsubscribeUserId" />
+
+                            <div class="row mt-4">
+                                <div class="col-6"><button class="btn btn-default btn-lg col-12" data-dismiss="modal">@L["General.Radio.No"]<div class="ripple-container"></div></button></div>
+                                <div class="col-6"><button type="submit" id="btnDelete" onclick="this.classList.add('disabled');" class="btn btn-primary btn-lg col-12">@L["General.Radio.Si"]<div class="ripple - container"></div></button></div>
+                            </div>
+
+                        </form>
+
+                    </div>
+                </div>
+            </div>
+            <!-- /Modal UPDATE USER -->
+
+
+        </div>
+        <script>
+         var orderM = '@Model.TableState.OrderMode' === 'desc' ? 'order_desc' : 'order_asc';
+    document.getElementById('btn'+'@Model.TableState.OrderBy').classList.replace("order_default", orderM);
+
+
+
+    var registros = isNaN(@tableRows) ? 15 : parseInt('@tableRows');
+    switch (registros) {
+        case 15:
+            document.getElementById('rowsChanger').selectedIndex = "0";
+            break;
+        case 25:
+            document.getElementById('rowsChanger').selectedIndex = "1";
+            break;
+        case 50:
+            document.getElementById('rowsChanger').selectedIndex = "2";
+            break;
+        case 100:
+            document.getElementById('rowsChanger').selectedIndex = "3";
+            break;
+        default:
+            document.getElementById('rowsChanger').selectedIndex = "0";
+            break;
+    }
+            //expand menu
+            document.getElementById("adminCaret").setAttribute("aria-expanded","true");
+            document.getElementById("pagesAdmin").classList.add("show");
+
+        function navigate(way) {
+         var actualRows =elementGetInner('total');
+        if (way === 'next') {
+            //Check if this is last
+            if (@endRecord >= parseInt(actualRows)) { return;}
+            elementSet("indexPage",isNaN(@indexPage) ? 0 : parseInt(@indexPage) + 1);
+        } else {
+            if (@indexPage === 0) { return; }
+             elementSet("indexPage",isNaN(@indexPage) ? 0 : parseInt(@indexPage) - 1);
+        }
+         elementSet("tableRows", isNaN(@tableRows) ? 15 : parseInt(@tableRows));
+         elementSet("orderMode",'@orderMode');
+         elementSet("orderBy",'@orderBy');
+       document.getElementById("search").submit();
+    }
+
+    function rowsChange() {
+        var nRows = elementGet("rowsChanger");
+         elementSet("tableRows" , nRows);
+         elementSet("orderMode" ,'@orderMode');
+         elementSet("orderBy",'@orderBy');
+         elementSet("indexPage",0);
+        searchButton();
+    }
+
+    function header(thHeader) {
+
+        let oldOrderBy = '@orderBy';
+        let newOrderBy = thHeader;
+        let orderMode;
+
+        document.getElementById("orderBy").value = thHeader;
+
+        if (oldOrderBy === newOrderBy) {
+            orderMode = ("@Model.TableState.OrderMode" == "asc") ? "desc" : "asc";
+        } else {
+            orderMode = "asc";
+        }
+
+        document.getElementById("indexPage").value = 0;
+        document.getElementById("orderMode").value = orderMode;
+        document.getElementById("search").submit();
+        }
+
+
+    // function deleteUser(userId) {
+
+    //         elementSet('deleteUserId', userId);
+    //         $('#deleteUser').modal('show').fadeIn("slow");
+    //}
+
+            function registerUser(userId) {
+                elementSet('registerUserId', userId);
+                document.getElementById('updateUserMsg').innerHTML = '@L["UserManagement.DarDeAltaModal"]';
+                $('#updateUserModal').modal('show').fadeIn("slow");
+            }
+
+            function unsubscribeUser(userId) {
+                elementSet('unsubscribeUserId', userId);
+                document.getElementById('updateUserMsg').innerHTML = '@L["UserManagement.DarDeBajaModal"]';
+                $('#updateUserModal').modal('show').fadeIn("slow");
+            }
+
+
+
+function searchButton() {
+    elementSet("indexPage", 0);
+    document.getElementById("search").submit();
+            }
+ function viewUser(id) {
+     location.href = "/UserManagement?currentOperation=Read&UserId=" + id;
+            }
+
+        </script>

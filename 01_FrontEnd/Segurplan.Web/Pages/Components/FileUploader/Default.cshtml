@@ -1,0 +1,47 @@
+﻿@model Segurplan.Web.Pages.Components.FileUploader.FileUploaderModel
+
+@inject SharedLocalizer L
+@using System.Linq;
+
+<div class="js-upload-finished">
+    <ul class="filenames" id="@(Model.InputId)DZFileNames">
+        @if (Model.Files.Any())
+        {
+            foreach (var file in Model.Files)
+            {
+                <li class="name">
+
+                    <span class="badge badge-pill">@file.Name.Split(".").Last()</span>
+                    <a asp-page="@Model.Destination" asp-page-handler="DownloadFile" asp-route-fileId="@file.Id" asp-route-planId="@Model.PlanId" asp-route-defaultFile="@file.DefaultFile" class="filename">@file.Name</a>
+                    @*<span class="filesize">(@file.FileSize)</span>*@
+
+                    @if (Model.EditEnabled)
+                    {
+                        <button class="btn remove" type="button" onclick="removeExistingAnagramFile(@file.Id)">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    }
+
+                </li>
+            }
+        }
+    </ul>
+</div>
+@{
+    var estate = Model.EditEnabled ? "" : "disabled";
+
+    if (Model.EditEnabled || Model.Files.Any())
+    {
+        <div class="card documentacion" @estate>
+            <div class="card-body" onClick="document.getElementById('@Model.InputId').click()">
+                <div class="upload-drop-zone"
+                     id="@(Model.InputId)DZ"
+                     ondrop="onDropFile(event,'@Model.InputId')"
+                     ondragover="onDragOverFile(event)"
+                     ondragleave="onDragLeave()">
+                    <i class="fas fa-cloud-upload-alt"></i> @L["Files.Dropzone.Image"]
+                </div>
+            </div>
+        </div>
+    }
+}

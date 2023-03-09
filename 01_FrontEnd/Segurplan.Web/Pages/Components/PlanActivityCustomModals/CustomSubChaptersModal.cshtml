@@ -1,0 +1,252 @@
+﻿@model PlanActivityCustomModalsModel
+
+@inject SharedLocalizer L
+
+
+<div class="modal fade" id="addactividad" tabindex="-1" role="dialog" aria-labelledby="addactividad" aria-hidden="true">
+    <form asp-page-handler="@Model.PageHandler" id="addAcitivtyForm" method="post" onsubmit="document.getElementById('closeModalButton').click()"
+          data-ajax="true" data-ajax-method="POST" data-ajax-update="#activityModalDiv" data-ajax-mode="replace" data-ajax-success="OnCustomActivityAjaxSuccess">
+        <input type="hidden" asp-for="CustomChapter.Position" />@*Creo que sobra*@
+        <input type="hidden" asp-for="ChapterPosition" />
+        <input type="hidden" asp-for="CustomChapter.Title" />
+        <input type="hidden" asp-for="CustomChapter.IsCustomChapter" />
+        <input type="hidden" id="destinationInput" asp-for="Destination" value="@nameof(ActivityModalDestinationEnum.ActivitiesModal)" />
+        <input type="hidden" id="deletedSubChapterPosition" asp-for="DeletedSubChapterPosition" />
+
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Capítulo: @Model.CustomChapter.Title</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" id="closeModalButton">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+
+                    @*Version diseño*@
+                    @*<span class="bmd-form-group">
+            <div class="input-group marcoform">
+                <label for="Subcapitulo" class="sr-only">Capítulo / Subcapítulo </label>
+                <input type="text" id="Subcapitulo" value="" class="form-control" placeholder="Subcapítulo...">
+                <button type="submit" class="btn btn-primary ">
+
+                    Añadir
+                </button>
+            </div>
+        </span>*@
+                    <span class="bmd-form-group">
+                        <div class="input-group marcoform">
+
+                            <label for="Subcapitulo" class="sr-only">Capítulo / Subcapítulo </label>
+                            <input type="text" id="newSubChapterDescription" value="" class="form-control" placeholder="Subcapítulo...">
+                            <button type="button" onclick="AddNewSubChapterToModal()" class="btn btn-primary ">
+
+                                Añadir
+                            </button>
+
+                        </div>
+                    </span>
+                    <div class="alert alert-warning alert-with-icon">
+                        <span class="material-icons" data-notify="icon">error_outline</span>
+                        @L["CustomActivityModal.AlertMessage"]
+                    </div>
+                    <div class="container-scrollbar">
+                        <table class="table_modal">
+                            <tbody id="subChapterModalBody">
+                                @if (Model.CustomChapter?.SubChapter != null)
+                                {
+                                    int subChIndex = 0;
+
+                                    foreach (var subChapter in Model.CustomChapter?.SubChapter)
+                                    {
+                                        <tr>
+                                            <td>
+                                                <input class="@(subChapter.IsCustomSubChapter?"":"disabled")" asp-for="CustomChapter.SubChapter[subChIndex].Title" />
+                                                <input type="hidden" asp-for="CustomChapter.SubChapter[subChIndex].Position" />
+                                                <input type="hidden" asp-for="CustomChapter.SubChapter[subChIndex].IsCustomSubChapter" />
+                                                <input type="hidden" asp-for="CustomChapter.SubChapter[subChIndex].Id" />
+                                                <input type="hidden" asp-for="CustomChapter.SubChapter[subChIndex].PreviousPos" value="@Model.CustomChapter.SubChapter[subChIndex].Position" />
+                                                @if (subChapter.Activities == null || !subChapter.Activities.Any())
+                                                {
+                                                    <span class="icono-alerta">
+                                                        <span class="material-icons">error_outline</span>
+                                                    </span>
+                                                }
+                                            </td>
+
+                                            <td class="text-right">
+                                                <div class="dropdown">
+                                                    <button class="dropdown-toggle btn btn-just-icon btn-link btn-round btn-sm pl-2" type="button" id="dropdownMenuButtonmodal_@subChIndex" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                        <span class="fas fa-ellipsis-v"></span>
+                                                    </button>
+                                                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButtonmodal_@subChIndex" x-placement="bottom-start">
+                                                        <button class="dropdown-item" name="SubchapterPosition" value="@Model.CustomChapter.SubChapter[subChIndex].Position">Editar</button>
+                                                        @if (subChapter.IsCustomSubChapter)
+                                                        {
+                                                            <a class="dropdown-item" href="#" onclick="DeleteSubChapterFromModal(this)">@L["CustomActivityModal.Remove"]</a>
+                                                        }
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+
+                                        subChIndex++;
+                                    }
+
+                                }
+                                else
+                                {
+                                    <tr>
+                                        <td id="noResultsModalTr">
+
+                                            "Sin subcapítulos"
+
+                                        </td>
+                                    </tr>
+                                }
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <ul class="list-inline">
+                        @if (Model.CustomChapter.IsCustomChapter)
+                        {
+                            <li class="list-inline-item">
+                                <button class="btn btn-danger" name="IsDeleteChapter" value="true" onclick="OnDeleteCustomActivityModalBegin()">Eliminar Capítulo</button>
+                            </li>
+                        }
+                        <li class="list-inline-item">
+                            <button class="btn btn-default" name="Destination" value="@nameof(ActivityModalDestinationEnum.ChapterModal)">Volver a Capítulo</button>
+                        </li>
+                        <li class="list-inline-item">
+                            <button class="btn btn-primary @(Model.EverySubChapterHasActivities?"":"disabled")" name="IsSave" id="modalSaveButton" value="true" onclick="OnSaveCustomActivityModalBegin('@nameof(ActivityModalDestinationEnum.SaveSubChapterModal)')">@L["General.Boton.Guardar"]</button>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+        </div>
+    </form>
+</div>
+
+<script>
+
+    function DeleteSubChapterFromModal(anchorElement) {
+    var saveButton = document.getElementById('modalSaveButton');
+
+    var deletedSubChaptersPositionInput = document.getElementById('deletedSubChapterPosition');
+    var trToRemove = anchorElement.closest('tr');
+
+    var deletedTrInputs = trToRemove.getElementsByTagName('input');
+
+    for (var i = 0; i < deletedTrInputs.length; i++) {
+        if (deletedTrInputs[i].name.includes('PreviousPos')) {
+            if (deletedSubChaptersPositionInput.value === '' || deletedSubChaptersPositionInput.value === null)
+                deletedSubChaptersPositionInput.value = deletedTrInputs[i].value;
+            else
+                deletedSubChaptersPositionInput.value += ',' + deletedTrInputs[i].value;
+        }
+    }
+
+    trToRemove.remove();
+
+    var modalBody = document.getElementById('subChapterModalBody');
+
+    var trElements = modalBody.getElementsByTagName('tr');
+
+    if (trElements.length > 0) {
+        var otherSubChapterHasActivities = true;
+
+        for (var i = 0; i < trElements.length; i++) {
+            trElements[i].querySelector("button[name='SubchapterPosition']").value = i + 1;
+
+            let inputs = trElements[i].getElementsByTagName('input');
+
+            for (var j = 0; j < inputs.length; j++) {
+                var inputName1 = inputs[j].name.split('[');
+                var inputName2 = inputName1[1].split(']');
+
+                inputs[j].name = inputName1[0] + '[' + i + ']' + inputName2[1];
+
+                if (inputs[j].name.includes('Position')) {
+                    inputs[j].value = i + 1;
+                }
+            }
+
+            if (trElements[i].querySelector("span[class='icono-alerta']")!==null && otherSubChapterHasActivities === true) {
+                otherSubChapterHasActivities = false;
+            }
+        }
+
+        if (otherSubChapterHasActivities === true) {
+            saveButton.classList.remove('disabled');
+        } else {
+            saveButton.classList.add('disabled');
+        }
+
+    } else {
+        saveButton.classList.add('disabled');
+    }
+}
+
+    function AddNewSubChapterToModal() {
+        var saveButton = document.getElementById('modalSaveButton');
+
+        var descriptionInput = document.getElementById('newSubChapterDescription');
+        if (descriptionInput.value == '' || descriptionInput.value == null)
+            return false;
+        var description = descriptionInput.value;
+        var modalBody = document.getElementById('subChapterModalBody');
+
+        var norResultsTr = document.getElementById('noResultsModalTr');
+        if (norResultsTr != null) {
+            norResultsTr.closest('tr').remove();
+        }
+        var rowCount = modalBody.getElementsByTagName('tr').length;
+
+        descriptionInput.value = '';
+
+        modalBody.innerHTML += GetSubChapterModalTemplate(description, rowCount);
+
+        saveButton.classList.add('disabled');
+    }
+
+
+    function GetSubChapterModalTemplate(subChapterTitle, rowIndex) {
+
+        var dropdownNumber = rowIndex + 1;
+        var dropdownName = 'customDropdownMenuButtonModal';
+
+        while (document.getElementById(dropdownName + dropdownNumber) != null) {
+            dropdownNumber++;
+        }
+
+        dropdownName = dropdownName + dropdownNumber;
+
+        return `<tr>
+    <td>
+        <input type="text" data-val="true" data-val-required="El campo no puede esta vacio" name="CustomChapter.SubChapter[${rowIndex}].Title" value="${subChapterTitle}">
+        <input type="hidden" name="CustomChapter.SubChapter[${rowIndex}].Position" value="${rowIndex + 1}">
+        <input type="hidden" name="CustomChapter.SubChapter[${rowIndex}].IsCustomSubChapter" value="true">
+        <input type="hidden" name="CustomChapter.SubChapter[${rowIndex}].Id" value="">
+        <span class="icono-alerta">
+            <span class="material-icons">error_outline</span>
+        </span>
+    </td>
+    <td class="text-right">
+        <div class="dropdown">
+            <button class="dropdown-toggle btn btn-just-icon btn-link btn-round btn-sm pl-2" type="button" id="${dropdownName}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <span class="fas fa-ellipsis-v"></span>
+            </button>
+            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="${dropdownName}" x-placement="bottom-start">
+                <button class="dropdown-item" name="SubchapterPosition" value="${rowIndex + 1}">Editar</button>
+                <a class="dropdown-item" href="#" onclick="DeleteSubChapterFromModal(this)">@L["CustomActivityModal.Remove"]</a>
+            </div>
+        </div>
+    </td>
+  </tr>`;
+    }
+    // <a class="dropdown-item" href="#">Editar</a> Boton editar previo
+</script>

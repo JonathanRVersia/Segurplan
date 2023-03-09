@@ -1,0 +1,22 @@
+﻿@page
+@model Segurplan.Web.Pages.Models.Administration.ChaptersAndActivities.ChapterDetails.IndexModel
+@inject SharedLocalizer L
+
+@{
+    if (Model.ChapterVersion.Id != 0)
+    {
+        ViewData["Title"] = L["ChapterDetails.View.Title", Model.ChapterVersion.IdChapterNavigation.Number];
+    }
+    else
+    {
+        ViewData["Title"] = L["ChapterDetails.New"];
+    }
+}
+
+@await Component.InvokeAsync(typeof(Pages.Components.ChapterDetails.ChapterDetailsViewComponent))
+
+@*Modal alert when Chapter/SubChapter/Activity cannot be removed*@
+@if (Model.DeleteCheck != null)
+{
+    @await Component.InvokeAsync(typeof(Pages.Components.ChapterActivitiesDeleteCheckModal.ChapterActivitiesDeleteCheckModalViewComponent), Model.DeleteCheck);
+}

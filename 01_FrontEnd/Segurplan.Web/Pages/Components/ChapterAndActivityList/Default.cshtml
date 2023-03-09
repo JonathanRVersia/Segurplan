@@ -1,0 +1,501 @@
+﻿
+@model ChapterAndActivityListViewModel
+@inject SharedLocalizer L
+
+
+<form asp-page="/Models/Administration/Activitys/ActivityList" method="post">
+    @Html.AntiForgeryToken()
+
+    <div class="content listado no-tabs">
+        <div class="container-fluid p-0">
+            <!-- Buscador -->
+
+            <div class="row buscadorRelativoContent ml-2" id="filterZone">
+
+                <div class="row">
+                    <div class="col-11">
+                        <div class="row">
+                            <div class="form-group bmd-form-group col-4">
+                                <div class="input-group">
+                                    <label asp-for="Search.ChapterNumber" class="bmd-label-floating"></label>
+                                    <input asp-for="Search.ChapterNumber" type="number" class="form-control searcherInputs">
+                                </div>
+                            </div>
+                            <div class="form-group bmd-form-group col-4">
+                                <div class="input-group">
+                                    <label asp-for="Search.Title" class="bmd-label-floating"></label>
+                                    <input asp-for="Search.Title" class="form-control searcherInputs">
+                                </div>
+                            </div>
+                            <div class="form-group bmd-form-group col-4">
+                                <div class="input-group">
+                                    <label asp-for="Search.CreatedBy" class="bmd-label-floating"></label>
+                                    <input asp-for="Search.CreatedBy" class="form-control searcherInputs">
+                                </div>
+                            </div>
+                            <div class="form-group bmd-form-group col-4">
+                                <div class="input-group">
+                                    <label asp-for="Search.ReviewedBy" class="bmd-label-floating"></label>
+                                    <input asp-for="Search.ReviewedBy" class="form-control searcherInputs">
+                                </div>
+                            </div>
+                            <div class="form-group bmd-form-group col-4">
+                                <div class="input-group">
+                                    <label asp-for="Search.ApprovedBy" class="bmd-label-floating"></label>
+                                    <input asp-for="Search.ApprovedBy" class="form-control searcherInputs">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class=""></div>
+                    <div class="col-1 acciones_buscador">
+
+                        <button class="btn btn-just-icon btn-white">
+                            <i class="material-icons cerrarBuscador" id="searchClose" style="display:block">close</i>
+                            <div class="ripple-container"></div>
+                        </button>
+
+                        <button type="submit" class="btn btn-white buscar" id="SearchButton">
+                            @L["Planes.Filtros.Search"]
+                        </button>
+
+                    </div>
+                </div>
+            </div>
+            <div class="row tags">
+                <div class="col-12 px-0">
+                    <ul>
+                        @{
+                            if (Model.Search?.ChapterNumber != null)
+                            {
+
+                                <li>
+                                    @L["ChaptersList.Search.ChapterId"]
+                                    <span>@Model.Search.ChapterNumber</span>
+                                    <button onclick="deleteSearchTab('Search.ChapterNumber')" class="btn btn-just-icon btn-white deleteSearch">
+                                        <i class="material-icons">close</i>
+                                    </button>
+                                </li>
+                            }
+                            if (!string.IsNullOrWhiteSpace(Model.Search?.Title))
+                            {
+                                <li>
+                                    @L["ChaptersList.Search.Title"]
+                                    <span>@Model.Search.Title</span>
+                                    <button onclick="deleteSearchTab('Search.Title')" class="btn btn-just-icon btn-white deleteSearch">
+                                        <i class="material-icons">close</i>
+                                    </button>
+                                </li>
+                            }
+                            if (!string.IsNullOrWhiteSpace(Model.Search?.CreatedBy))
+                            {
+                                <li>
+                                    @L["ChaptersList.Search.CreatedBy"]
+                                    <span>@Model.Search.CreatedBy</span>
+                                    <button onclick="deleteSearchTab('Search.CreatedBy')" class="btn btn-just-icon btn-white deleteSearch">
+                                        <i class="material-icons">close</i>
+                                    </button>
+                                </li>
+                            }
+                            if (!string.IsNullOrWhiteSpace(Model.Search?.ReviewedBy))
+                            {
+                                <li>
+                                    @L["ChaptersList.Search.ReviewedBy"]
+                                    <span>@Model.Search.ReviewedBy</span>
+                                    <button onclick="deleteSearchTab('Search.ReviewedBy')" class="btn btn-just-icon btn-white deleteSearch">
+                                        <i class="material-icons">close</i>
+                                    </button>
+                                </li>
+                            }
+                            if (!string.IsNullOrWhiteSpace(Model.Search?.ApprovedBy))
+                            {
+                                <li>
+                                    @L["ChaptersList.Search.ApprovedBy"]
+                                    <span>@Model.Search.ApprovedBy</span>
+                                    <button onclick="deleteSearchTab('Search.ApprovedBy')" class="btn btn-just-icon btn-white deleteSearch">
+                                        <i class="material-icons">close</i>
+                                    </button>
+                                </li>
+                            }
+                        }
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="content planes" id="tableContainer">
+
+            <table class="table table-bordered table-striped table-shortable table-hover" id="ChapterListTable">
+                <thead>
+                    <tr>
+                    <tr>
+                        @*class="@(Model.SortOrder == "Solicitud_asc" ? "order_asc" : Model.SortOrder == "Solicitud_desc" ? "order_desc" : "order_default")*@
+                        <th title="Chapter" width="5%">
+                            @L["ChaptersList.Header.Chapter"]
+                            @*<button name="sortOrder" class="@(Model.OrderBy?.SortOrder==nameof(SortOrderEnum.ByChapterIdDesc)?"order_asc":"order_desc")" value="@(Model.OrderBy?.SortOrder==nameof(SortOrderEnum.ByChapterIdDesc)?nameof(SortOrderEnum.ByChapterIdAsc):nameof(SortOrderEnum.ByChapterIdDesc))"></button>*@
+                            <button name="sortOrder" class="@(Model.OrderBy?.SortOrder==nameof(SortOrderEnum.ByChapterNumberDesc)?"order_asc":Model.OrderBy?.SortOrder==nameof(SortOrderEnum.ByChapterNumberAsc)? "order_desc":"order_default" )" value="@(Model.OrderBy?.SortOrder==nameof(SortOrderEnum.ByChapterNumberDesc)?nameof(SortOrderEnum.ByChapterNumberAsc):nameof(SortOrderEnum.ByChapterNumberDesc))"></button>
+                        </th>
+                        <th title="Title" width="30%">
+                            @L["ChaptersList.Header.Title"]
+                            <button name="sortOrder" class="@(Model.OrderBy?.SortOrder==nameof(SortOrderEnum.ByTituloDesc)?"order_asc":Model.OrderBy?.SortOrder==nameof(SortOrderEnum.ByTituloAsc)?"order_desc":"order_default" )" value="@(Model.OrderBy?.SortOrder==nameof(SortOrderEnum.ByTituloDesc)?nameof(SortOrderEnum.ByTituloAsc):nameof(SortOrderEnum.ByTituloDesc))"></button>
+                        </th>
+                        <th title="ApprovementDate" width="10%">
+                            @L["ChaptersList.Header.ApprovementDate"]
+                            <button name="sortOrder" class="@(Model.OrderBy?.SortOrder==nameof(SortOrderEnum.ByApprovementDateDesc)?"order_asc":Model.OrderBy?.SortOrder==nameof(SortOrderEnum.ByApprovementDateAsc)?"order_desc":"order_default" )" value="@(Model.OrderBy?.SortOrder==nameof(SortOrderEnum.ByApprovementDateDesc)?nameof(SortOrderEnum.ByApprovementDateAsc):nameof(SortOrderEnum.ByApprovementDateDesc))"></button>
+                        </th>
+                        <th title="VersionNumber" width="5%">
+                            @L["ChaptersList.Header.VersionNumber"]
+                            <button name="sortOrder" class="@(Model.OrderBy?.SortOrder==nameof(SortOrderEnum.ByVersionNumberDesc)?"order_asc":Model.OrderBy?.SortOrder==nameof(SortOrderEnum.ByVersionNumberAsc)?"order_desc":"order_default" )" value="@(Model.OrderBy?.SortOrder==nameof(SortOrderEnum.ByVersionNumberDesc)?nameof(SortOrderEnum.ByVersionNumberAsc):nameof(SortOrderEnum.ByVersionNumberDesc))"></button>
+                        </th>
+                        <th title="CreatedBy" width="10%">
+                            @L["ChaptersList.Header.CreatedBy"]
+                            <button name="sortOrder" class="@(Model.OrderBy?.SortOrder==nameof(SortOrderEnum.ByCreatedByDesc)?"order_asc":Model.OrderBy?.SortOrder==nameof(SortOrderEnum.ByCreatedByAsc)?"order_desc":"order_default" )" value="@(Model.OrderBy?.SortOrder==nameof(SortOrderEnum.ByCreatedByDesc)?nameof(SortOrderEnum.ByCreatedByAsc):nameof(SortOrderEnum.ByCreatedByDesc))"></button>
+                        </th>
+                        <th title="ReviewedBy" width="10%">
+                            @L["ChaptersList.Header.ReviewedBy"]
+                            <button name="sortOrder" class="@(Model.OrderBy?.SortOrder==nameof(SortOrderEnum.ByReviewerDesc)?"order_asc":Model.OrderBy?.SortOrder==nameof(SortOrderEnum.ByReviewerAsc)?"order_desc":"order_default" )" value="@(Model.OrderBy?.SortOrder==nameof(SortOrderEnum.ByReviewerDesc)?nameof(SortOrderEnum.ByReviewerAsc):nameof(SortOrderEnum.ByReviewerDesc))"></button>
+                        </th>
+                        <th title="ApprovedBy" width="10%">
+                            @L["ChaptersList.Header.ApprovedBy"]
+                            <button name="sortOrder" class="@(Model.OrderBy?.SortOrder==nameof(SortOrderEnum.ByApprovedByDesc)?"order_asc":Model.OrderBy?.SortOrder==nameof(SortOrderEnum.ByApprovedByAsc)?"order_desc":"order_default" )" value="@(Model.OrderBy?.SortOrder==nameof(SortOrderEnum.ByApprovedByDesc)?nameof(SortOrderEnum.ByApprovedByAsc):nameof(SortOrderEnum.ByApprovedByDesc))"></button>
+                        </th>
+                        <th title="ProducedBy" width="10%">
+                            @L["ChaptersList.Header.ProducedBy"]
+                        </th>
+                        <th title="Actions" width="5%">
+                            @L["ChaptersList.Header.Actions"]
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @{
+                        if (Model.ChaptersResponse?.Value != null)
+                        {
+                            foreach (var item in Model.ChaptersResponse.Value.Chapters)
+                            {
+                                int showingVersionNumber = item.ChapterVersion.Max(x => x.VersionNumber);
+                                int chapterVersionId = item.ChapterVersion?.FirstOrDefault(x => x.VersionNumber == showingVersionNumber).Id ?? default(int);
+                                <tr>
+                                    <td onclick="location.href='@Url.Page("/Models/Administration/ChaptersAndActivities/ChapterDetails/Index",new { ChapterVersionId = chapterVersionId ,ChapterId=item.Id})'">
+                                        @*@item.Id*@
+                                        @item.Number
+                                    </td>
+                                    <td onclick="location.href='@Url.Page("/Models/Administration/ChaptersAndActivities/ChapterDetails/Index",new { ChapterVersionId = chapterVersionId ,ChapterId=item.Id})'">
+                                        @item.Title
+                                    </td>
+                                    <td onclick="location.href='@Url.Page("/Models/Administration/ChaptersAndActivities/ChapterDetails/Index",new { ChapterVersionId = chapterVersionId ,ChapterId=item.Id})'">
+                                        @item.ChapterVersion?.FirstOrDefault(x => x.Id == chapterVersionId).ApprovementDate?.ToString("dd/MM/yyyy")
+                                    </td>
+                                    <td onclick="location.href='@Url.Page("/Models/Administration/ChaptersAndActivities/ChapterDetails/Index",new { ChapterVersionId = chapterVersionId ,ChapterId=item.Id})'">
+                                        @item.ChapterVersion?.FirstOrDefault(x => x.Id == chapterVersionId)?.VersionNumber
+                                        @if (item.ChapterVersion?.FirstOrDefault(x => x.Id == chapterVersionId).ApprovementDate == null ||
+                                        item.ChapterVersion?.FirstOrDefault(x => x.Id == chapterVersionId).ApprovementDate > DateTime.Now)
+                                        {
+                                            @:<span class="fas fa-file-signature version_posterior"></span>
+                                        }
+                                    </td>
+                                    <td onclick="location.href='@Url.Page("/Models/Administration/ChaptersAndActivities/ChapterDetails/Index",new { ChapterVersionId = chapterVersionId ,ChapterId=item.Id})'">
+                                        @item.ChapterVersion?.FirstOrDefault(x => x.Id == chapterVersionId).CreatedByNavigation?.CompleteName
+                                    </td>
+                                    <td onclick="location.href='@Url.Page("/Models/Administration/ChaptersAndActivities/ChapterDetails/Index",new { ChapterVersionId = chapterVersionId ,ChapterId=item.Id})'">
+                                        @item.ChapterVersion?.FirstOrDefault(x => x.Id == chapterVersionId).IdReviewerNavigation?.CompleteName
+                                    </td>
+                                    <td onclick="location.href='@Url.Page("/Models/Administration/ChaptersAndActivities/ChapterDetails/Index",new { ChapterVersionId = chapterVersionId ,ChapterId=item.Id})'">
+                                        @item.ChapterVersion?.FirstOrDefault(x => x.Id == chapterVersionId).AprovedByNavigation?.CompleteName
+                                    </td>
+                                    <td onclick="location.href='@Url.Page("/Models/Administration/ChaptersAndActivities/ChapterDetails/Index",new { ChapterVersionId = chapterVersionId ,ChapterId=item.Id})'">
+                                        <ul>
+                                            @foreach (var userChapter in item.ChapterVersion?.FirstOrDefault(x => x.Id == chapterVersionId).ProducedBy)
+                                            {
+                                                <li>
+                                                    @userChapter.User.CompleteName
+                                                </li>
+                                            }
+                                        </ul>
+                                    </td>
+                                    <td class="text-center">
+                                        <a class="nav-link" href="#" id="navbarDropdownProfile2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            <span class="fas fa-ellipsis-v"></span>
+                                        </a>
+                                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownProfile2">
+                                            <a class="dropdown-item" asp-page="/Models/Administration/ChaptersAndActivities/ChapterDetails/Index" asp-route-chapterVersionId="@chapterVersionId" asp-route-chapterId="@item.Id">@L["ChaptersList.Actions.Visualize"]</a>
+                                            <a class="dropdown-item" asp-page="/Models/Administration/ChaptersAndActivities/ChapterDetails/Index" asp-route-chapterVersionId="@chapterVersionId" asp-route-isEditMode="true" asp-route-chapterId="@item.Id">@L["ChaptersList.Actions.Edit"]</a>
+                                            @*@if (item.ChapterVersion?.Count() > 1)
+                                                {
+                                                    <a class="dropdown-item" href="#">@L["ChaptersList.Actions.SeeLatestVersion"]</a>
+                                                }*@
+                                            <a class="dropdown-item" href="#" data-toggle="modal" data-target="#chapterVersions@(item.Id)">@L["ChaptersList.Actions.SeeOtherVersions"]</a>
+
+                                            @if ((item.ChapterVersion?.FirstOrDefault(x => x.Id == chapterVersionId).ApprovementDate < DateTime.Now &&
+                                                 item.ChapterVersion?.FirstOrDefault(x => x.Id == chapterVersionId).EndDate == null) ||
+                                                 item.ChapterVersion?.FirstOrDefault(x => x.Id == chapterVersionId).EndDate > DateTime.Now)
+                                            {
+                                                <a class="dropdown-item" asp-page="/Models/Administration/ChaptersAndActivities/ChapterDetails/Index" asp-route-chapterId="@item.Id" asp-route-isEditMode="true">@L["ChaptersList.Actions.NewVersion"]</a>
+                                            }
+
+                                            <div class="dropdown-divider"></div>
+                                            @*<button class="dropdown-item" asp-page="/Models/Administration/ChaptersAndActivities/List/ActivityList" name="chapterToRemoveId" value="@item.Id">@L["ChaptersList.Actions.Delete"]</button>*@
+                                            <button class="dropdown-item" type="button" onclick="DeleteChapterAlert(@item.Id)">@L["ChaptersList.Actions.Delete"]</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    }
+                </tbody>
+            </table>
+
+            @if (Model.ChaptersResponse.Value != null)
+            {
+                foreach (var chapter in Model.ChaptersResponse.Value.Chapters)
+                {
+                    <!-- Modal -->
+                    <div class="modal fade bd-example-modal-lg modal-planos" id="chapterVersions@(chapter.Id)" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-lg" role="document">
+
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body" id="chapterVersionsModalTable@(chapter.Id)">
+                                    <table class="table table-bordered table-striped sortable table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>@L["ChaptersList.Header.Chapter"] </th>
+                                                <th>@L["ChaptersList.Header.Title"] </th>
+                                                <th>@L["ChaptersList.Header.ApprovementDate"] </th>
+                                                <th>@L["ChaptersList.Header.VersionNumber"] </th>
+                                                <th>@L["ChaptersList.Header.Actions"] </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @if (chapter.ChapterVersion != null)
+                                            {
+                                                chapter.ChapterVersion = chapter.ChapterVersion.OrderBy(x => x.ApprovementDate).OrderByDescending(x => x.ApprovementDate.HasValue).ToList();
+                                                foreach (var version in chapter.ChapterVersion)
+                                                {
+                                                    <tr class="table-row">
+                                                        <td onclick="location.href='@Url.Page("/Models/Administration/ChaptersAndActivities/ChapterDetails/Index",new { ChapterVersionId = version.Id })'">@version.IdChapterNavigationNumber</td>
+                                                        <td onclick="location.href='@Url.Page("/Models/Administration/ChaptersAndActivities/ChapterDetails/Index",new { ChapterVersionId = version.Id })'">@version.Title</td>
+                                                        <td onclick="location.href='@Url.Page("/Models/Administration/ChaptersAndActivities/ChapterDetails/Index",new { ChapterVersionId = version.Id })'">@version.ApprovementDate?.ToString("dd/MM/yyyy")</td>
+                                                        <td onclick="location.href='@Url.Page("/Models/Administration/ChaptersAndActivities/ChapterDetails/Index",new { ChapterVersionId = version.Id })'">@version.VersionNumber</td>
+
+                                                        <td class="text-center">
+                                                            <a class="nav-link" href="#" id="navbarDropdownProfile2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                                <span class="fas fa-ellipsis-v"></span>
+                                                            </a>
+                                                            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownProfile2">
+                                                                <a class="dropdown-item" asp-page="/Models/Administration/ChaptersAndActivities/ChapterDetails/Index" asp-route-chapterVersionId="@version.Id">@L["ChaptersList.Actions.Visualize"]</a>
+                                                                <a class="dropdown-item" asp-page="/Models/Administration/ChaptersAndActivities/ChapterDetails/Index" asp-route-chapterVersionId="@version.Id" asp-route-isEditMode="true">@L["ChaptersList.Actions.Edit"]</a>
+
+                                                                @if (chapter.ChapterVersion.Count() > 1)
+                                                                {
+                                                                    <div class="dropdown-divider"></div>
+                                                                    <a class="dropdown-item" href="#" onclick="submitDeleteVersion(@version.Id,@chapter.Id)">@L["ChaptersList.Actions.Delete"]</a>
+                                                                }
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                }
+                                            }
+                                        </tbody>
+                                    </table>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- / Modal -->
+                }
+            }
+
+            <button type="button" class="nuevo btn btn-fab btn-round" onclick="location.href='@Url.Page("/Models/Administration/ChaptersAndActivities/ChapterDetails/Index",new { ChapterVersionId = 0 ,IsEditMode=true})'"> <i class="fas fa-plus"></i> </button>
+            <div class="footer-table ">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-6 text-left">
+                            <button id="ExportWordButton" class="btn exportar">
+                                <i class="fas fa-file-download"></i> Descargar
+                                <div class="ripple-container"></div>
+                            </button>
+                        </div>
+                        <div class="col-2 ml-auto text-left">
+                            <div class="row">
+                                <label class="col-8 col-form-label">@L["Planes.Table.Registros"]</label>
+                                <div class="col-4">
+                                    <div class="dropdown bootstrap-select show-tick">
+                                        <select id="PageSizeHandler" asp-for="PageSize" class="selectpicker" data-style="select-with-transition" title="Registros" data-size="4" tabindex="-98" onchange="$('#SearchButton').trigger('click');">
+                                            <option value="15">15 </option>
+                                            <option value="25">25</option>
+                                            <option value="50">50</option>
+                                            <option value="100">100</option>
+                                        </select>
+
+                                        <button type="button" class="btn dropdown-toggle" data-toggle="dropdown" role="button" title="Registros">
+                                            <div class="filter-option">
+                                                <div class="filter-option-inner">
+                                                    <div class="filter-option-inner-inner">Registros</div>
+                                                </div>
+                                            </div>
+                                            <div class="ripple-container"></div>
+                                        </button>
+
+                                        <div class="dropdown-menu " role="combobox">
+                                            <div class="inner show" role="listbox" aria-expanded="false" tabindex="-1">
+                                                <ul class="dropdown-menu inner show">
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-4 ">
+                            <div class="row">
+                                <div class="col-4 paginacion text-right">
+
+                                    @{
+                                        if (Model.ChaptersResponse?.Value != null)
+                                        {
+                                            @(Model.ChaptersResponse.Value.SkippedRows + 1)
+                                            @:-
+                                            @(Model.ChaptersResponse.Value.SkippedRows + Model.PageSize > Model.ChaptersResponse.Value.TotalCount ? Model.ChaptersResponse.Value.TotalCount : Model.ChaptersResponse.Value.SkippedRows + Model.PageSize)
+                                            @:@L["Common.De"]
+                                            @(Model.ChaptersResponse.Value.TotalCount)
+                                        }
+                                        else
+                                        {
+                                            @: 0 - 0 - 0
+                                        }
+                                    }
+                                </div>
+                                <div class="col-8 text-right">
+                                    <button name="currentPage" value="@(Model.CurrentPage - 1)" class="btn @(!Model.ShowPrevious? "disabled":"")">
+                                        <i class="fas fa-chevron-left "></i>
+                                    </button>
+                                    <button name="currentPage" value="@(Model.CurrentPage + 1)" class="btn @(!Model.ShowNext? "disabled":"")">
+                                        <i class="fas fa-chevron-right "></i>
+                                    </button>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @if (Model.OrderBy?.SortOrder != null)
+    {
+        <input name="sortOrder" type="hidden" value="@Model.OrderBy.SortOrder" />
+    }
+</form>
+
+<!-- Modal Create Chapter-->
+@*<form asp-page="/Models/Administration/ChaptersAndActivities/ChapterDetails/Index" method="get" id="createChapter">
+        <input name="IsEditMode" type="hidden" value="true"  />
+    </form>*@
+@*<form asp-page="/Models/Administration/ChaptersAndActivities/ChapterDetails/Index" method="get">
+        <div class="modal notificacion fade" id="createChapter" tabindex="-1" role="dialog" aria-labelledby="createChapter" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title error">Nombre del nuevo Capítulo</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar"> <span aria-hidden="true">&times;</span> </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <input name="createChapterTitle" type="text" maxlength="250" class="form-control justify-content-center" required />
+                        </div>
+                        <div class="row mt-4">
+                            <div class="col-6"><button class="btn btn-default btn-lg col-12" data-dismiss="modal">Cancelar<div class="ripple-container"></div></button></div>
+                            <div class="col-6">
+                                <button class="btn btn-primary btn-lg col-12">
+                                    Crear
+                                    <div class="ripple-container"></div>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>*@
+<!-- /Modal Create Chapter-->
+<form id="ExportToWordForm" asp-page="/Models/Administration/ChaptersAndActivities/List/ActivityList" asp-page-handler="ExportToWord" method="post"></form>
+
+<form asp-page-handler="DeleteChapterVersion" id="deleteVersionForm" data-ajax="true" data-ajax-method="POST" method="post" data-ajax-update="#chapterVersionsModalTable3" data-ajax-mode="replace">
+    <input type="hidden" id="deleteVersionInput" name="versionId" />
+    <input type="hidden" name="chapterId" id="chapterIdInput" />
+    <input type="submit" id="submitButton" style="display:none" />
+</form>
+
+<form method="post">
+    <input asp-for="ChapterToRemoveId" type="hidden" id="deleteChapterForm" />
+    <button type="submit" id="deleteChapterFormBtn" style="display:none" />
+</form>
+
+<script src="~/assets/js/plugins/sweetalert2.js"></script>
+
+<script>
+
+    (function () {
+        const ExportWordButton = document.getElementById('ExportWordButton');
+
+        function AddEventToWordForm() {
+
+            ExportWordButton.addEventListener('click', function (e) {
+                e.preventDefault();
+
+                ExportToWordForm.submit();
+            });
+        }
+        AddEventToWordForm();
+    })();
+
+    function deleteSearchTab(inputName) {
+
+        const searcherInputs = document.getElementsByClassName('searcherInputs');
+        const searchBtn = document.getElementById('SearchButton');
+
+        searcherInputs[inputName].value = null;
+
+        searchBtn.click();
+    }
+
+    function submitDeleteVersion(versionId, chapterId) {
+        deleteInput = document.getElementById('deleteVersionInput');
+        chapterIdInput = document.getElementById('chapterIdInput');
+        deleteForm = document.getElementById('deleteVersionForm');
+        deleteSubmit = document.getElementById('submitButton');
+
+        deleteForm.dataset.ajaxUpdate = '#chapterVersionsModalTable' + chapterId;
+
+        deleteInput.value = versionId;
+        chapterIdInput.value = chapterId;
+        deleteSubmit.click();
+    }
+
+    function DeleteChapterAlert(chapterId) {
+        swal({
+                 title: "@L["DeleteChapterCheckModal.Title"]",
+            text: "@L["DeleteChapterCheckModal.Text"]",
+            type: "warning",
+            showCancelButton: true,
+            confirmButtonClass: "btn-danger",
+            confirmButtonText: "@L["DeleteChapterCheckModal.Delete"]",
+            cancelButtonText: "@L["DeleteChapterCheckModal.Cancel"]"
+        }).then(function (isConfirm) {//Se puede hacer con dos funciones en vez de mirar el isConfirm.value, buscar documentación
+            if (isConfirm.value===true) {
+                @*var url = '@Url.Page("/Models/Administration/ChaptersAndActivities/List/ActivityList",new { ChapterToRemoveId = "param-id" })';*@
+                //url = url.replace("param-id", chapterId)
+                //location.href = url;
+                document.getElementById('deleteChapterForm').setAttribute('value', chapterId);
+                document.getElementById('deleteChapterFormBtn').click();
+            }
+
+            })
+    }
+</script>

@@ -1,0 +1,1386 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="AccessDenied.Message" xml:space="preserve">
+    <value>You aren't authorized to access this page</value>
+  </data>
+  <data name="AccessDenied.Return" xml:space="preserve">
+    <value>Retur to previous page</value>
+  </data>
+  <data name="Dashboad.Titulo" xml:space="preserve">
+    <value>Dashboard</value>
+  </data>
+  <data name="Dashboard.Tabla.MisPlanes" xml:space="preserve">
+    <value>My Plans</value>
+  </data>
+  <data name="Dashboard.Tabla.Pendiente" xml:space="preserve">
+    <value>Pending</value>
+  </data>
+  <data name="Dashboard.Tabla.TodosLosPlanes" xml:space="preserve">
+    <value>All Plans</value>
+  </data>
+  <data name="DetallePlan.Actividades.Descripcion" xml:space="preserve">
+    <value>Description</value>
+  </data>
+  <data name="DetallePlan.Actividades.Disponibles.Titulo" xml:space="preserve">
+    <value>Available Activities</value>
+  </data>
+  <data name="DetallePlan.Actividades.Seleccionadas.Boton.Nuevo" xml:space="preserve">
+    <value>+ Add New</value>
+  </data>
+  <data name="DetallePlan.Actividades.Seleccionadas.Titulo" xml:space="preserve">
+    <value>Selected Activities (Chapter 1 already included)</value>
+  </data>
+  <data name="DetallePlan.ContAdic.Descripcion.Actividades" xml:space="preserve">
+    <value>Activities Description </value>
+  </data>
+  <data name="DetallePlan.ContAdic.Descripcion.Centros" xml:space="preserve">
+    <value>Upcoming Assistance Centers</value>
+  </data>
+  <data name="DetallePlan.ContAdic.Descripcion.Obra" xml:space="preserve">
+    <value>Work and Situation's Description</value>
+  </data>
+  <data name="DetallePlan.ContAdic.Descripcion.PlanEmergencia" xml:space="preserve">
+    <value>Emergency Plan</value>
+  </data>
+  <data name="DetallePlan.ContAdic.Descripcion.Plazo" xml:space="preserve">
+    <value>Execution and workforce Term</value>
+  </data>
+  <data name="DetallePlan.ContAdic.Descripcion.Presupuesto" xml:space="preserve">
+    <value>Total Security Budget</value>
+  </data>
+  <data name="DetallePlan.ContAdic.Descripcion.Servicios" xml:space="preserve">
+    <value>Interferences and Services Affected</value>
+  </data>
+  <data name="DetallePlan.ContAdic.Empresa" xml:space="preserve">
+    <value>Company that Prepares the Study</value>
+  </data>
+  <data name="DetallePlan.ContAdic.Estructura" xml:space="preserve">
+    <value>Organizational structure</value>
+  </data>
+  <data name="DetallePlan.ContAdic.Localizacion" xml:space="preserve">
+    <value>Work Localization</value>
+  </data>
+  <data name="DetallePlan.ContAdic.Plazo.Dias" xml:space="preserve">
+    <value>Execution term (days)</value>
+  </data>
+  <data name="DetallePlan.ContAdic.Plazo.Meses" xml:space="preserve">
+    <value>Execution term (months)</value>
+  </data>
+  <data name="DetallePlan.ContAdic.Presupuesto" xml:space="preserve">
+    <value>Contract Execution Budget</value>
+  </data>
+  <data name="DetallePlan.ContAdic.Presupuesto.PSS" xml:space="preserve">
+    <value>PSS Budget available for Execute for that Part</value>
+  </data>
+  <data name="DetallePlan.ContAdic.Promotor" xml:space="preserve">
+    <value>Promoter</value>
+  </data>
+  <data name="DetallePlan.ContAdic.Trabajadores.Media" xml:space="preserve">
+    <value>Average of Workers</value>
+  </data>
+  <data name="DetallePlan.ContAdic.Trabajadores.NumMax" xml:space="preserve">
+    <value>Max Workers Number  </value>
+  </data>
+  <data name="DetallePlan.DatGen.Cliente" xml:space="preserve">
+    <value>Customer</value>
+  </data>
+  <data name="DetallePlan.DatGen.Cliente.Actividad" xml:space="preserve">
+    <value>Activity</value>
+  </data>
+  <data name="DetallePlan.DatGen.Cliente.Nombre" xml:space="preserve">
+    <value>Customer's Name</value>
+  </data>
+  <data name="DetallePlan.DatGen.Delegacion" xml:space="preserve">
+    <value>Delegation</value>
+  </data>
+  <data name="DetallePlan.DatGen.Direccion" xml:space="preserve">
+    <value>Subdirectorate General / Directorate</value>
+  </data>
+  <data name="DetallePlan.DatGen.DocSeguridad.Anagrama" xml:space="preserve">
+    <value>Anagram</value>
+  </data>
+  <data name="DetallePlan.DatGen.DocSeguridad.Anagrama.Adjuntar" xml:space="preserve">
+    <value>Attach Documentation</value>
+  </data>
+  <data name="DetallePlan.DatGen.DocSeguridad.Anagrama.Texto" xml:space="preserve">
+    <value>Drag Files or Click to Add</value>
+  </data>
+  <data name="DetallePlan.DatGen.DocSeguridad.PersonaAprobacion" xml:space="preserve">
+    <value>Approved by the Coordinator</value>
+  </data>
+  <data name="DetallePlan.DatGen.DocSeguridad.Plantilla" xml:space="preserve">
+    <value>Template</value>
+  </data>
+  <data name="DetallePlan.DatGen.DocSeguridad.Tipo" xml:space="preserve">
+    <value>Type</value>
+  </data>
+  <data name="DetallePlan.DatGen.DocSeguridad.Tipo.Radio.T1" xml:space="preserve">
+    <value>Evaluation</value>
+  </data>
+  <data name="DetallePlan.DatGen.DocSeguridad.Tipo.Radio.T2" xml:space="preserve">
+    <value>Risk Map</value>
+  </data>
+  <data name="DetallePlan.DatGen.DocSeguridad.Titulo" xml:space="preserve">
+    <value>Security Document Characteristics</value>
+  </data>
+  <data name="DetallePlan.DatGen.Empresa" xml:space="preserve">
+    <value>Company / Subsidiary</value>
+  </data>
+  <data name="DetallePlan.DatGen.FechaCreacion" xml:space="preserve">
+    <value>Creation Date</value>
+  </data>
+  <data name="DetallePlan.DatGen.FechaModificacion" xml:space="preserve">
+    <value>Update Date</value>
+  </data>
+  <data name="DetallePlan.DatGen.PersonaElaboracion" xml:space="preserve">
+    <value>Produced by</value>
+  </data>
+  <data name="DetallePlan.DatGen.PersonaElaboracion.Cargo" xml:space="preserve">
+    <value>Position</value>
+  </data>
+  <data name="DetallePlan.DatGen.PersonaRevision" xml:space="preserve">
+    <value>Reviewed by </value>
+  </data>
+  <data name="DetallePlan.DatGen.Plan" xml:space="preserve">
+    <value>Plan</value>
+  </data>
+  <data name="DetallePlan.DatGen.Proyecto.Actividad" xml:space="preserve">
+    <value>Generic Activity</value>
+  </data>
+  <data name="DetallePlan.DatGen.Proyecto.Nombre" xml:space="preserve">
+    <value>Project's Name</value>
+  </data>
+  <data name="DetallePlan.DatGen.UTE" xml:space="preserve">
+    <value>UTE</value>
+  </data>
+  <data name="DetallePlan.NavTabs.Actividades" xml:space="preserve">
+    <value>Activities</value>
+  </data>
+  <data name="DetallePlan.NavTabs.Adicional" xml:space="preserve">
+    <value>Additional Content</value>
+  </data>
+  <data name="DetallePlan.NavTabs.Generales" xml:space="preserve">
+    <value>General Data</value>
+  </data>
+  <data name="DetallePlan.NavTabs.OtrosDocumentos" xml:space="preserve">
+    <value>Blueprints </value>
+  </data>
+  <data name="DetallePlan.NavTabs.Presupuesto" xml:space="preserve">
+    <value>Budget</value>
+  </data>
+  <data name="DetallePlan.PlaOtrDoc.PlanAni.Boton.Nuevo" xml:space="preserve">
+    <value>+ Add New</value>
+  </data>
+  <data name="DetallePlan.PlaOtrDoc.PlanAni.Col.Descripcion" xml:space="preserve">
+    <value>Description</value>
+  </data>
+  <data name="DetallePlan.PlaOtrDoc.PlanAni.Col.Familia" xml:space="preserve">
+    <value>Family</value>
+  </data>
+  <data name="DetallePlan.PlaOtrDoc.PlanAni.Col.Imagen" xml:space="preserve">
+    <value>Image</value>
+  </data>
+  <data name="DetallePlan.PlaOtrDoc.PlanAni.Col.Numero" xml:space="preserve">
+    <value>#</value>
+  </data>
+  <data name="DetallePlan.PlaOtrDoc.PlanAni.Titulo" xml:space="preserve">
+    <value>Added Blueprints</value>
+  </data>
+  <data name="DetallePlan.PlaOtrDoc.PlanGen.Titulo" xml:space="preserve">
+    <value>Generic Blueprints</value>
+  </data>
+  <data name="DetallePlan.Presupuesto.Tabla.Articulos.Titulo" xml:space="preserve">
+    <value>Available Items</value>
+  </data>
+  <data name="DetallePlan.Presupuesto.Tabla.Presupuesto.Col.Articulo" xml:space="preserve">
+    <value>Item</value>
+  </data>
+  <data name="DetallePlan.Presupuesto.Tabla.Presupuesto.Col.Precio" xml:space="preserve">
+    <value>Price/Unit</value>
+  </data>
+  <data name="DetallePlan.Presupuesto.Tabla.Presupuesto.Col.Familia" xml:space="preserve">
+    <value>Family</value>
+  </data>
+  <data name="DetallePlan.Presupuesto.Tabla.Presupuesto.Col.Total" xml:space="preserve">
+    <value>Total</value>
+  </data>
+  <data name="DetallePlan.Presupuesto.Tabla.Presupuesto.Col.Unidad" xml:space="preserve">
+    <value>Units</value>
+  </data>
+  <data name="DetallePlan.Presupuesto.Tabla.Presupuesto.Diferencia" xml:space="preserve">
+    <value>Difference</value>
+  </data>
+  <data name="DetallePlan.Presupuesto.Tabla.Presupuesto.Subtotal" xml:space="preserve">
+    <value>Study Budget</value>
+  </data>
+  <data name="DetallePlan.Presupuesto.Tabla.Presupuesto.Titulo" xml:space="preserve">
+    <value>Budget</value>
+  </data>
+  <data name="DetallePlan.Presupuesto.Tabla.Presupuesto.Total" xml:space="preserve">
+    <value>Total</value>
+  </data>
+  <data name="DetallePlan.Titulo" xml:space="preserve">
+    <value>Plan details</value>
+  </data>
+  <data name="Error.Message" xml:space="preserve">
+    <value>An error has occurred, try again later</value>
+  </data>
+  <data name="General.Boton.Cerrar" xml:space="preserve">
+    <value>Close</value>
+  </data>
+  <data name="General.Boton.Duplicar" xml:space="preserve">
+    <value>Duplicate</value>
+  </data>
+  <data name="General.Boton.Eliminar" xml:space="preserve">
+    <value>Remove</value>
+  </data>
+  <data name="General.Boton.Guardar" xml:space="preserve">
+    <value>Save</value>
+  </data>
+  <data name="General.Boton.GuardarYCerrar" xml:space="preserve">
+    <value>Save and Close</value>
+  </data>
+  <data name="General.Boton.GuardarYNuevo" xml:space="preserve">
+    <value>Save and New</value>
+  </data>
+  <data name="General.Boton.VerTodas" xml:space="preserve">
+    <value>See All</value>
+  </data>
+  <data name="General.Radio.No" xml:space="preserve">
+    <value>No</value>
+  </data>
+  <data name="General.Radio.Plazo.Corto" xml:space="preserve">
+    <value>Short</value>
+  </data>
+  <data name="General.Radio.Plazo.Largo" xml:space="preserve">
+    <value>Long</value>
+  </data>
+  <data name="General.Radio.Plazo.Mediano" xml:space="preserve">
+    <value>Medium</value>
+  </data>
+  <data name="General.Radio.Si" xml:space="preserve">
+    <value>Yes</value>
+  </data>
+  <data name="General.Table.Duplicate" xml:space="preserve">
+    <value>Duplicate</value>
+  </data>
+  <data name="General.Table.Edit" xml:space="preserve">
+    <value>Edit</value>
+  </data>
+  <data name="General.Table.Remove" xml:space="preserve">
+    <value>Remove</value>
+  </data>
+  <data name="General.Table.Visualize" xml:space="preserve">
+    <value>Visualize</value>
+  </data>
+  <data name="Identity.Login.AccessDenied.Again" xml:space="preserve">
+    <value>Log in again</value>
+  </data>
+  <data name="Identity.Login.AccessDenied.Message" xml:space="preserve">
+    <value>There was an error logging in. Check the access data.</value>
+  </data>
+  <data name="Identity.Login.AccessDenied.Title" xml:space="preserve">
+    <value>Incorrect access</value>
+  </data>
+  <data name="Identity.Login.Enter" xml:space="preserve">
+    <value>Get in</value>
+  </data>
+  <data name="Identity.Login.ForgotPassword" xml:space="preserve">
+    <value>Forgot your password?</value>
+  </data>
+  <data name="Identity.Login.Password" xml:space="preserve">
+    <value>Password</value>
+  </data>
+  <data name="Identity.Login.RecoverMessage" xml:space="preserve">
+    <value>If you forgot your password please send an email to &lt;a href="mailto:informatica@elecnor.com"&gt;informatica@elecnor.com&lt;/a&gt;</value>
+  </data>
+  <data name="Identity.Login.RestorePasswordText" xml:space="preserve">
+    <value>We have received your password recovery request. We will reply to your email address as quickly as possible.</value>
+  </data>
+  <data name="Identity.Login.RestorePasswordTitle" xml:space="preserve">
+    <value>Restore password</value>
+  </data>
+  <data name="Identity.Login.SessionOpen" xml:space="preserve">
+    <value>Keep session open</value>
+  </data>
+  <data name="Identity.Login.TitleH1" xml:space="preserve">
+    <value>Segurplan &lt;span&gt;Access&lt;/span&gt; </value>
+  </data>
+  <data name="Identity.Login.UserName" xml:space="preserve">
+    <value>User</value>
+  </data>
+  <data name="NavBar.Account" xml:space="preserve">
+    <value>Account</value>
+  </data>
+  <data name="NavBar.LogOut" xml:space="preserve">
+    <value>Disconnect</value>
+  </data>
+  <data name="NavBar.MisPlanes" xml:space="preserve">
+    <value>My security plans</value>
+  </data>
+  <data name="NavBar.Search" xml:space="preserve">
+    <value>Search</value>
+  </data>
+  <data name="Plans.Filter.Activity" xml:space="preserve">
+    <value>Activity</value>
+  </data>
+  <data name="Plans.Filter.ApprovedBy" xml:space="preserve">
+    <value>Approved by</value>
+  </data>
+  <data name="Plans.Filter.CheckedBy" xml:space="preserve">
+    <value>Checked by</value>
+  </data>
+  <data name="Plans.Filter.ProducedFromDate" xml:space="preserve">
+    <value>Produced From</value>
+  </data>
+  <data name="Plans.Filter.ProducedToDate" xml:space="preserve">
+    <value>Produced To</value>
+  </data>
+  <data name="Planes.Filtro.ElaboradoPor" xml:space="preserve">
+    <value>Produced by</value>
+  </data>
+  <data name="Plans.Filter.Organization" xml:space="preserve">
+    <value>Business address / General sub-directorate</value>
+  </data>
+  <data name="Plans.Filter.Title" xml:space="preserve">
+    <value>Title</value>
+  </data>
+  <data name="Planes.Filtros.Search" xml:space="preserve">
+    <value>Search</value>
+  </data>
+  <data name="Planes.OpcionTable.Duplicar" xml:space="preserve">
+    <value>Duplicate</value>
+  </data>
+  <data name="Planes.OpcionTable.Editar" xml:space="preserve">
+    <value>Edit</value>
+  </data>
+  <data name="Planes.OpcionTable.Eliminar" xml:space="preserve">
+    <value>Remove</value>
+  </data>
+  <data name="Planes.OpcionTable.GenerarPlan" xml:space="preserve">
+    <value>Generate plan</value>
+  </data>
+  <data name="Planes.OpcionTable.GenerarPresupuesto" xml:space="preserve">
+    <value>Generate budget</value>
+  </data>
+  <data name="Planes.OpcionTable.Visualizar" xml:space="preserve">
+    <value>View</value>
+  </data>
+  <data name="Planes.Table.BotonRegistros" xml:space="preserve">
+    <value>Records</value>
+  </data>
+  <data name="Planes.Table.Registros" xml:space="preserve">
+    <value>Records / Page</value>
+  </data>
+  <data name="Planes.TablePlan.Acciones" xml:space="preserve">
+    <value>Actions</value>
+  </data>
+  <data name="Planes.TablePlan.Account" xml:space="preserve">
+    <value>Account</value>
+  </data>
+  <data name="Planes.TablePlan.Actividad" xml:space="preserve">
+    <value>Activitty</value>
+  </data>
+  <data name="Planes.TablePlan.Cliente" xml:space="preserve">
+    <value>Customer</value>
+  </data>
+  <data name="Plans.Filter.ProducedBy" xml:space="preserve">
+    <value>Produced by</value>
+  </data>
+  <data name="Planes.TablePlan.GenerateBudget" xml:space="preserve">
+    <value>Generate Budget</value>
+  </data>
+  <data name="Planes.TablePlan.GeneratePlan" xml:space="preserve">
+    <value>Generate Plan</value>
+  </data>
+  <data name="Planes.TablePlan.Modificado" xml:space="preserve">
+    <value>Modified</value>
+  </data>
+  <data name="Planes.TablePlan.Organizacion" xml:space="preserve">
+    <value>Business address / General sub-directorate</value>
+  </data>
+  <data name="Planes.TablePlan.Plan" xml:space="preserve">
+    <value>Plan</value>
+  </data>
+  <data name="Planes.TablePlan.Titulo" xml:space="preserve">
+    <value>Plan title</value>
+  </data>
+  <data name="SideBar.Administracion" xml:space="preserve">
+    <value>Administration</value>
+  </data>
+  <data name="SideBar.AllPlanes" xml:space="preserve">
+    <value>All Plans</value>
+  </data>
+  <data name="SideBar.Elecnor" xml:space="preserve">
+    <value>Elecnor</value>
+  </data>
+  <data name="SideBar.EvaluacionRiesgos" xml:space="preserve">
+    <value>Risk Evaluation</value>
+  </data>
+  <data name="SideBar.Listados" xml:space="preserve">
+    <value>Listings</value>
+  </data>
+  <data name="SideBar.MisPlanes" xml:space="preserve">
+    <value>My Plans</value>
+  </data>
+  <data name="SideBar.Planes" xml:space="preserve">
+    <value>Plans</value>
+  </data>
+  <data name="Plans.Title.AllPlans" xml:space="preserve">
+    <value>All Plans</value>
+  </data>
+  <data name="Plans.Title.MyPlans" xml:space="preserve">
+    <value>My Plans</value>
+  </data>
+  <data name="SideBar.AdministracionUsuarios" xml:space="preserve">
+    <value>Users</value>
+  </data>
+  <data name="AdminUsers.Filters.Name" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="AdminUsers.Filters.UserRole" xml:space="preserve">
+    <value>Profile</value>
+  </data>
+  <data name="AdminUsers.Filters.UserId" xml:space="preserve">
+    <value>ID</value>
+  </data>
+  <data name="AdminUsers.Filters.UserName" xml:space="preserve">
+    <value>Username</value>
+  </data>
+  <data name="Administration.Users.List.Title" xml:space="preserve">
+    <value>Users List</value>
+  </data>
+  <data name="AdminUsers.EditTitle" xml:space="preserve">
+    <value>Edit user</value>
+  </data>
+  <data name="Administration.Users.DeleteMsg" xml:space="preserve">
+    <value>User will be deleted permanently ¿continue?</value>
+  </data>
+  <data name="Administration.Users.DeleteTitle" xml:space="preserve">
+    <value>Delete user</value>
+  </data>
+  <data name="Administration.User.Center" xml:space="preserve">
+    <value>Center</value>
+  </data>
+  <data name="Administration.User.Code" xml:space="preserve">
+    <value>Code</value>
+  </data>
+  <data name="Administration.User.Name" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="Administration.User.RoleName" xml:space="preserve">
+    <value>Profile</value>
+  </data>
+  <data name="Administration.User.Cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="Administration.User.CreateNew" xml:space="preserve">
+    <value>Create new</value>
+  </data>
+  <data name="Administration.User.New" xml:space="preserve">
+    <value>New</value>
+  </data>
+  <data name="General.CurrenLanguage" xml:space="preserve">
+    <value>en</value>
+  </data>
+  <data name="Validation.Email.msg" xml:space="preserve">
+    <value>E-mail format is not valid</value>
+  </data>
+  <data name="Validation.Required" xml:space="preserve">
+    <value>This field cant be empty</value>
+  </data>
+  <data name="Administration.Field.Duplicate" xml:space="preserve">
+    <value>This field already exist in database</value>
+  </data>
+  <data name="Administracion.Users.Volver" xml:space="preserve">
+    <value>Back</value>
+  </data>
+  <data name="SideBar.MeasureList" xml:space="preserve">
+    <value>Preventive measures</value>
+  </data>
+  <data name="Administration.Measures.descripcion" xml:space="preserve">
+    <value>Description</value>
+  </data>
+  <data name="Administration.Measures.Measure" xml:space="preserve">
+    <value>Preventive measures</value>
+  </data>
+  <data name="Administration.Measure.DeleteMsg" xml:space="preserve">
+    <value>Preventive measure will be deleted permanently ¿continue?</value>
+  </data>
+  <data name="Administration.Measure.DeleteTitle" xml:space="preserve">
+    <value>Delete preventive measure</value>
+  </data>
+  <data name="Administration.Measure.name" xml:space="preserve">
+    <value>User name</value>
+  </data>
+  <data name="Administration.Activitys.Title" xml:space="preserve">
+    <value>Activitys</value>
+  </data>
+  <data name="Administracion.Activitys.Title" xml:space="preserve">
+    <value>Activity list</value>
+  </data>
+  <data name="Administration.Activitys.Chapter" xml:space="preserve">
+    <value>Subchapter</value>
+  </data>
+  <data name="Administration.Activitys.Description" xml:space="preserve">
+    <value>Description</value>
+  </data>
+  <data name="Administration.Activitys.Number" xml:space="preserve">
+    <value>Number</value>
+  </data>
+  <data name="Administration.Activitys.Version" xml:space="preserve">
+    <value>Version</value>
+  </data>
+  <data name="Administration.Activitys.Subchapter" xml:space="preserve">
+    <value>Chapter</value>
+  </data>
+  <data name="Administration.Activitys.Exportar" xml:space="preserve">
+    <value>Export</value>
+  </data>
+  <data name="Administration.Measure.DeleteMsg1" xml:space="preserve">
+    <value>Preventive measure with code </value>
+  </data>
+  <data name="Administration.Measure.DeleteMsg2" xml:space="preserve">
+    <value> will be deleted permanently ¿continue?</value>
+  </data>
+  <data name="Select.empty.option" xml:space="preserve">
+    <value>Select option</value>
+  </data>
+  <data name="Error.BBDD" xml:space="preserve">
+    <value>Database error, contact the administrator</value>
+  </data>
+  <data name="Error.Admin" xml:space="preserve">
+    <value>An error has occurred, contact the administrator</value>
+  </data>
+  <data name="Planes.Title.Create" xml:space="preserve">
+    <value>Create new plan</value>
+  </data>
+  <data name="Common.Accept" xml:space="preserve">
+    <value>Accept</value>
+  </data>
+  <data name="Validation.PlanFilter.DatesError" xml:space="preserve">
+    <value>Produced To date can´t be lower than Produced From</value>
+  </data>
+  <data name="SideBar.ListadoCapitulos" xml:space="preserve">
+    <value>Chapters and Activities</value>
+  </data>
+  <data name="ChaptersList.Header.Actions" xml:space="preserve">
+    <value>Actions</value>
+  </data>
+  <data name="ChaptersList.Header.ApprovedBy" xml:space="preserve">
+    <value>Approved by</value>
+  </data>
+  <data name="ChaptersList.Header.ApprovementDate" xml:space="preserve">
+    <value>Effective date</value>
+  </data>
+  <data name="ChaptersList.Header.Chapter" xml:space="preserve">
+    <value>Chapter</value>
+  </data>
+  <data name="ChaptersList.Header.CreatedBy" xml:space="preserve">
+    <value>Created by</value>
+  </data>
+  <data name="ChaptersList.Header.ReviewedBy" xml:space="preserve">
+    <value>Checked by</value>
+  </data>
+  <data name="ChaptersList.Header.Title" xml:space="preserve">
+    <value>Title</value>
+  </data>
+  <data name="ChaptersList.Header.VersionNumber" xml:space="preserve">
+    <value>Version number</value>
+  </data>
+  <data name="ChaptersList.Search.ApprovedBy" xml:space="preserve">
+    <value>Approved by</value>
+  </data>
+  <data name="ChaptersList.Search.ChapterId" xml:space="preserve">
+    <value>Chapter</value>
+  </data>
+  <data name="ChaptersList.Search.CreatedBy" xml:space="preserve">
+    <value>Created by</value>
+  </data>
+  <data name="ChaptersList.Search.ReviewedBy" xml:space="preserve">
+    <value>Checked by</value>
+  </data>
+  <data name="ChaptersList.Search.Title" xml:space="preserve">
+    <value>Title</value>
+  </data>
+  <data name="Common.De" xml:space="preserve">
+    <value>of</value>
+  </data>
+  <data name="ChaptersList.Actions.Delete" xml:space="preserve">
+    <value>Delete</value>
+  </data>
+  <data name="ChaptersList.Actions.Edit" xml:space="preserve">
+    <value>Edit</value>
+  </data>
+  <data name="ChaptersList.Actions.SeeLatestVersion" xml:space="preserve">
+    <value>See latest version</value>
+  </data>
+  <data name="ChaptersList.Actions.SeeOtherVersions" xml:space="preserve">
+    <value>See other versions</value>
+  </data>
+  <data name="ChaptersList.Actions.Visualize" xml:space="preserve">
+    <value>Visualize</value>
+  </data>
+  <data name="ChaptersList.View.Title" xml:space="preserve">
+    <value>Chapters and Activities List</value>
+  </data>
+  <data name="Files.Dropzone.Image" xml:space="preserve">
+    <value>Drag image or click to add</value>
+  </data>
+  <data name="Modal-nuevos-planos-descripcion" xml:space="preserve">
+    <value>Description</value>
+  </data>
+  <data name="Modal-nuevos-planos-familia" xml:space="preserve">
+    <value>Family</value>
+  </data>
+  <data name="Modal-nuevos-planos-save" xml:space="preserve">
+    <value>Save blueprint</value>
+  </data>
+  <data name="Modal-nuevos-planos-title" xml:space="preserve">
+    <value>New blueprint</value>
+  </data>
+  <data name="SideBar.PreventiveMeasures" xml:space="preserve">
+    <value>Assignment of risks and preventive measures</value>
+  </data>
+  <data name="PreventiveMeasuresList.Search.Chapter" xml:space="preserve">
+    <value>Chapter</value>
+  </data>
+  <data name="PreventiveMeasuresList.Search.SubChapter" xml:space="preserve">
+    <value>SubChapter</value>
+  </data>
+  <data name="PreventiveMeasuresList.Titulo" xml:space="preserve">
+    <value>Assignment of risks and preventive measures</value>
+  </data>
+  <data name="PreventiveMeasuresList.Search.Activities" xml:space="preserve">
+    <value>Activities</value>
+  </data>
+  <data name="PreventiveMeasuresList.Search.Preventive_Measure" xml:space="preserve">
+    <value>Preventive measure</value>
+  </data>
+  <data name="PreventiveMeasuresList.Search.Risk" xml:space="preserve">
+    <value>Risk</value>
+  </data>
+  <data name="RisksAndPreventiveMeasures.table.Act." xml:space="preserve">
+    <value>Act.</value>
+  </data>
+  <data name="RisksAndPreventiveMeasures.table.Cap." xml:space="preserve">
+    <value>Chapt.</value>
+  </data>
+  <data name="RisksAndPreventiveMeasures.table.Description" xml:space="preserve">
+    <value>Activity description</value>
+  </data>
+  <data name="RisksAndPreventiveMeasures.table.LevelOfRisk" xml:space="preserve">
+    <value>Level of risk</value>
+  </data>
+  <data name="RisksAndPreventiveMeasures.table.Measure" xml:space="preserve">
+    <value>Measure</value>
+  </data>
+  <data name="RisksAndPreventiveMeasures.table.Probability" xml:space="preserve">
+    <value>Probability</value>
+  </data>
+  <data name="RisksAndPreventiveMeasures.table.Risk" xml:space="preserve">
+    <value>Risk</value>
+  </data>
+  <data name="RisksAndPreventiveMeasures.table.Seriousness" xml:space="preserve">
+    <value>Seriousness</value>
+  </data>
+  <data name="RisksAndPreventiveMeasures.table.Subcap." xml:space="preserve">
+    <value>SubChapt.</value>
+  </data>
+  <data name="Common.Select" xml:space="preserve">
+    <value>- Select -</value>
+  </data>
+  <data name="PreventiveMeasuresList.Search.DeleteAllTags" xml:space="preserve">
+    <value>Clear all filters</value>
+  </data>
+  <data name="General.Add" xml:space="preserve">
+    <value>Add</value>
+  </data>
+  <data name="RisksAndPreventiveMeasures.Add.Measure" xml:space="preserve">
+    <value>Add Measure</value>
+  </data>
+  <data name="RisksAndPreventiveMeasures.Import" xml:space="preserve">
+    <value>Import</value>
+  </data>
+  <data name="RisksAndPreventiveMeasures.Order" xml:space="preserve">
+    <value>Order</value>
+  </data>
+  <data name="RisksAndPreventiveMeasures.OrderAction" xml:space="preserve">
+    <value>Order</value>
+  </data>
+  <data name="RisksAndPreventiveMeasures.ReorderRisks" xml:space="preserve">
+    <value>Reorder risks</value>
+  </data>
+  <data name="RisksAndPreventiveMeasures.RiskOrder" xml:space="preserve">
+    <value>Risk order</value>
+  </data>
+  <data name="RisksAndPreventiveMeasures.table.Risks" xml:space="preserve">
+    <value>Risks</value>
+  </data>
+  <data name="ChapterDetails.Header.Title" xml:space="preserve">
+    <value>Chapter {0}: {1}</value>
+  </data>
+  <data name="Common.Actions" xml:space="preserve">
+    <value>Actions</value>
+  </data>
+  <data name="ChapterDetails.Subchapter" xml:space="preserve">
+    <value>Subchapter</value>
+  </data>
+  <data name="ChapterDetails.Subchapters" xml:space="preserve">
+    <value>Subchapters</value>
+  </data>
+  <data name="ChapterDetails.Title" xml:space="preserve">
+    <value>Title</value>
+  </data>
+  <data name="ChapterDetails.AddSubchapter" xml:space="preserve">
+    <value>Add subchapter</value>
+  </data>
+  <data name="ChapterDetails.ChangeVersion" xml:space="preserve">
+    <value>Change version</value>
+  </data>
+  <data name="ChapterDetails.Chapter" xml:space="preserve">
+    <value>Chapter</value>
+  </data>
+  <data name="ChapterDetails.CurrentVersion" xml:space="preserve">
+    <value>Current version</value>
+  </data>
+  <data name="ChapterDetails.DraftVersion" xml:space="preserve">
+    <value>Draft version</value>
+  </data>
+  <data name="ChapterDetails.EffectiveDate" xml:space="preserve">
+    <value>Effective date</value>
+  </data>
+  <data name="ChapterDetails.GeneralData" xml:space="preserve">
+    <value>General data</value>
+  </data>
+  <data name="ChapterDetails.NoCurrentVersion" xml:space="preserve">
+    <value>Not current version</value>
+  </data>
+  <data name="ChapterDetails.OtherData" xml:space="preserve">
+    <value>Other data</value>
+  </data>
+  <data name="ChapterDetails.VersionNumber" xml:space="preserve">
+    <value>Version number</value>
+  </data>
+  <data name="ChapterDetails.SelectUser" xml:space="preserve">
+    <value>Select User</value>
+  </data>
+  <data name="Common.NoResults" xml:space="preserve">
+    <value>No results</value>
+  </data>
+  <data name="Common.SelectSearch" xml:space="preserve">
+    <value>Search...</value>
+  </data>
+  <data name="SubChapterDetails.Header.Title" xml:space="preserve">
+    <value>Subchapter {0}: {1}</value>
+  </data>
+  <data name="ChapterDetails.AprovedBy" xml:space="preserve">
+    <value>Aproved by</value>
+  </data>
+  <data name="ChapterDetails.CheckedBy" xml:space="preserve">
+    <value>Checked by</value>
+  </data>
+  <data name="ChapterDetails.CreatedBy" xml:space="preserve">
+    <value>Created by</value>
+  </data>
+  <data name="ChapterDetails.CreationDate" xml:space="preserve">
+    <value>Creation date</value>
+  </data>
+  <data name="ChapterDetails.MachineTool" xml:space="preserve">
+    <value>Machine tool</value>
+  </data>
+  <data name="ChapterDetails.Text" xml:space="preserve">
+    <value>Text</value>
+  </data>
+  <data name="ChapterDetails.UpdateDate" xml:space="preserve">
+    <value>Update date</value>
+  </data>
+  <data name="ChapterDetails.View.Title" xml:space="preserve">
+    <value>Chapter {0}</value>
+  </data>
+  <data name="ChapterDetails.WorkDescription" xml:space="preserve">
+    <value>Work description</value>
+  </data>
+  <data name="ChapterDetails.WorkOrganization" xml:space="preserve">
+    <value>Work organization</value>
+  </data>
+  <data name="Common.WriteHere" xml:space="preserve">
+    <value>Write here</value>
+  </data>
+  <data name="SubChapterDetails.Activities" xml:space="preserve">
+    <value>Activities</value>
+  </data>
+  <data name="SubChapterDetails.Activity" xml:space="preserve">
+    <value>Activity</value>
+  </data>
+  <data name="SubChapterDetails.ActivityDescription" xml:space="preserve">
+    <value>Description</value>
+  </data>
+  <data name="SubChapterDetails.AddActivity" xml:space="preserve">
+    <value>Add activity</value>
+  </data>
+  <data name="SubChapterDetails.Chapter" xml:space="preserve">
+    <value>Chapter</value>
+  </data>
+  <data name="SubChapterDetails.CreationDate" xml:space="preserve">
+    <value>Creation date</value>
+  </data>
+  <data name="SubChapterDetails.MachineTool" xml:space="preserve">
+    <value>Machine tool</value>
+  </data>
+  <data name="SubChapterDetails.SubChapter" xml:space="preserve">
+    <value>Subchapter</value>
+  </data>
+  <data name="SubChapterDetails.Text" xml:space="preserve">
+    <value>Text</value>
+  </data>
+  <data name="SubChapterDetails.Title" xml:space="preserve">
+    <value>Title</value>
+  </data>
+  <data name="SubChapterDetails.UpdateDate" xml:space="preserve">
+    <value>Update date</value>
+  </data>
+  <data name="SubChapterDetails.View.Title" xml:space="preserve">
+    <value>Subchapter {0}</value>
+  </data>
+  <data name="SubChapterDetails.WorkDescription" xml:space="preserve">
+    <value>Work description</value>
+  </data>
+  <data name="SubChapterDetails.WorkOrganization" xml:space="preserve">
+    <value>Work organization</value>
+  </data>
+  <data name="Common.Search" xml:space="preserve">
+    <value>Search</value>
+  </data>
+  <data name="PreventiveMeasure.Modal.Search.Code" xml:space="preserve">
+    <value>Preventive Measure Code</value>
+  </data>
+  <data name="PreventiveMeasure.Modal.Search.Description" xml:space="preserve">
+    <value>Search For Word</value>
+  </data>
+  <data name="ActivityDetails.Activities" xml:space="preserve">
+    <value>Activities</value>
+  </data>
+  <data name="ActivityDetails.Activity" xml:space="preserve">
+    <value>Activity</value>
+  </data>
+  <data name="ActivityDetails.Description" xml:space="preserve">
+    <value>Description</value>
+  </data>
+  <data name="ActivityDetails.AddActivity" xml:space="preserve">
+    <value>Add activity</value>
+  </data>
+  <data name="ActivityDetails.Chapter" xml:space="preserve">
+    <value>Chapter</value>
+  </data>
+  <data name="ActivityDetails.CreationDate" xml:space="preserve">
+    <value>Creation date</value>
+  </data>
+  <data name="ActivityDetails.Header.Title" xml:space="preserve">
+    <value>Activity {0}: {1}</value>
+  </data>
+  <data name="ActivityDetails.MachineTool" xml:space="preserve">
+    <value>Machine tool</value>
+  </data>
+  <data name="ActivityDetails.SubChapter" xml:space="preserve">
+    <value>Subchapter</value>
+  </data>
+  <data name="ActivityDetails.Text" xml:space="preserve">
+    <value>Text</value>
+  </data>
+  <data name="ActivityDetails.Title" xml:space="preserve">
+    <value>Title</value>
+  </data>
+  <data name="ActivityDetails.UpdateDate" xml:space="preserve">
+    <value>Update date</value>
+  </data>
+  <data name="ActivityDetails.View.Title" xml:space="preserve">
+    <value>Activity {0}</value>
+  </data>
+  <data name="ActivityDetails.WorkDescription" xml:space="preserve">
+    <value>Work description</value>
+  </data>
+  <data name="ActivityDetails.WorkOrganization" xml:space="preserve">
+    <value>Work organization</value>
+  </data>
+  <data name="ChapterDetails.NewChapterTitle" xml:space="preserve">
+    <value>Title of new Chapter</value>
+  </data>
+  <data name="Common.Cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="Common.Create" xml:space="preserve">
+    <value>Create</value>
+  </data>
+  <data name="DeleteCheckModal.Activity" xml:space="preserve">
+    <value>The activity cannot be removed</value>
+  </data>
+  <data name="DeleteCheckModal.Chapter" xml:space="preserve">
+    <value>Chapter {0} cannot be removed</value>
+  </data>
+  <data name="DeleteCheckModal.SubChapter" xml:space="preserve">
+    <value>Subchapter {0} cannot be removed</value>
+  </data>
+  <data name="DeleteCheckModal.Title" xml:space="preserve">
+    <value>Request canceled</value>
+  </data>
+  <data name="SubChapterDetails.NewActivityDescription" xml:space="preserve">
+    <value>Description of new Activity</value>
+  </data>
+  <data name="SubChapterDetails.NewSubChapterTitle" xml:space="preserve">
+    <value>Title of new Subchapter</value>
+  </data>
+  <data name="ActivityDetails.New" xml:space="preserve">
+    <value>New Activity</value>
+  </data>
+  <data name="ChapterDetails.New" xml:space="preserve">
+    <value>New Chapter</value>
+  </data>
+  <data name="SubChapterDetails.New" xml:space="preserve">
+    <value>New Subchapter</value>
+  </data>
+  <data name="ChaptersList.Actions.NewVersion" xml:space="preserve">
+    <value>Create new version</value>
+  </data>
+  <data name="ChapterDetails.DeleteChapter" xml:space="preserve">
+    <value>Delete Chapter</value>
+  </data>
+  <data name="ChapterDetails.DeteleChapter.Message" xml:space="preserve">
+    <value>The Chapter and all its versions will be deleted</value>
+  </data>
+  <data name="Common.FieldsReview" xml:space="preserve">
+    <value>Review the required fields</value>
+  </data>
+  <data name="SideBar.RiskAssessmentsAndMaps" xml:space="preserve">
+    <value>Risk assessments and maps</value>
+  </data>
+  <data name="SideBar.RiskAssessmentsAndMaps.AnagramTiltle" xml:space="preserve">
+    <value>You can select another image to replace the anagram configured by default from the administration.</value>
+  </data>
+  <data name="SideBar.RiskAssessmentsAndMaps.MapOfRisksOfTitle" xml:space="preserve">
+    <value>Este nombre aparecerá en la portada del documento del Mapa de riesgos para personalizarlo.</value>
+  </data>
+  <data name="SideBar.RiskAssessmentsAndMaps.MapOfRisksOfTitlePlaceholder" xml:space="preserve">
+    <value>Client, work, etc.</value>
+  </data>
+  <data name="SideBar.RiskAssessmentsAndMaps.RiskEvaluation" xml:space="preserve">
+    <value>Risks evaluation</value>
+  </data>
+  <data name="SideBar.RiskAssessmentsAndMaps.RiskPerActivity" xml:space="preserve">
+    <value>Risks by activity</value>
+  </data>
+  <data name="SideBar.RiskAssessmentsAndMaps.SpecificDocumentCharacteristics" xml:space="preserve">
+    <value>Generation of a joint document of Evaluations</value>
+  </data>
+  <data name="SideBar.RiskAssessmentsAndMaps.TitleHelp" xml:space="preserve">
+    <value>If multiple chapters are selected, different documents will be generated (one per chapter). When filling in the 'Title' field, a single document will be generated with all the selected chapters.</value>
+  </data>
+  <data name="SideBar.RiskAssessmentsAndMaps.TitlePlaceholder" xml:space="preserve">
+    <value>Joint document title</value>
+  </data>
+  <data name="Activities.Remove" xml:space="preserve">
+    <value>Remove</value>
+  </data>
+  <data name="Common.filter.Placeholder" xml:space="preserve">
+    <value>Filter</value>
+  </data>
+  <data name="DetallePlan.Actividades.Seleccionadas.Titulo.Filter" xml:space="preserve">
+    <value>Selected Activities</value>
+  </data>
+  <data name="RisksAndPreventiveMeasures.table.Label" xml:space="preserve">
+    <value>Risks and preventive measures</value>
+  </data>
+  <data name="DetallePlan.ContAdic.municipality" xml:space="preserve">
+    <value>Municipality</value>
+  </data>
+  <data name="SideBar.Template" xml:space="preserve">
+    <value>Template</value>
+  </data>
+  <data name="SideBar.Templates" xml:space="preserve">
+    <value>Templates</value>
+  </data>
+  <data name="Administration.Templates.Id" xml:space="preserve">
+    <value>Id</value>
+  </data>
+  <data name="Administration.Templates.Template" xml:space="preserve">
+    <value>Template</value>
+  </data>
+  <data name="Administration.Templates.FilePath" xml:space="preserve">
+    <value>File path</value>
+  </data>
+  <data name="Administration.Templates.Notes" xml:space="preserve">
+    <value>Description</value>
+  </data>
+  <data name="Administration.Template.DeleteMsg1" xml:space="preserve">
+    <value>Template with code </value>
+  </data>
+  <data name="Administration.Template.DeleteMsg2" xml:space="preserve">
+    <value> will be deleted permanently ¿continue?</value>
+  </data>
+  <data name="Administration.Template.DeleteTitle" xml:space="preserve">
+    <value>Delete template</value>
+  </data>
+  <data name="Administration.Templates.CreatedBy" xml:space="preserve">
+    <value>Created by</value>
+  </data>
+  <data name="Administration.Templates.ModifiedBy" xml:space="preserve">
+    <value>Modified by</value>
+  </data>
+  <data name="Administration.Templates.ModifiedDate" xml:space="preserve">
+    <value>Modified</value>
+  </data>
+  <data name="SideBar.SeriousnessList" xml:space="preserve">
+    <value>Seriousness</value>
+  </data>
+  <data name="Administration.Seriousness.Seriousness" xml:space="preserve">
+    <value>Seriousness</value>
+  </data>
+  <data name="Administration.Seriousness.DeleteMsg1" xml:space="preserve">
+    <value>Seriousness with code </value>
+  </data>
+  <data name="Administration.Seriousness.DeleteMsg2" xml:space="preserve">
+    <value> will be deleted permanently ¿continue?</value>
+  </data>
+  <data name="Administration.Seriousness.DeleteTitle" xml:space="preserve">
+    <value>Delete seriousness</value>
+  </data>
+  <data name="Administration.Seriousness.Id" xml:space="preserve">
+    <value>Id</value>
+  </data>
+  <data name="Plan.Anagram" xml:space="preserve">
+    <value>Insert to add logo</value>
+  </data>
+  <data name="CustomActivityModal.AddEditSubchapter" xml:space="preserve">
+    <value>Add/Edit Subchapters</value>
+  </data>
+  <data name="CustomActivityModal.AlertMessage" xml:space="preserve">
+    <value>Cannot be saved until each Subchapter has assigned activities</value>
+  </data>
+  <data name="CustomActivityModal.Remove" xml:space="preserve">
+    <value>Remove</value>
+  </data>
+  <data name="DeleteChapterCheckModal.Cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="DeleteChapterCheckModal.Delete" xml:space="preserve">
+    <value>Delete</value>
+  </data>
+  <data name="DeleteChapterCheckModal.Text" xml:space="preserve">
+    <value>All its versions with their Subchapters and Activities will be deleted</value>
+  </data>
+  <data name="DeleteChapterCheckModal.Title" xml:space="preserve">
+    <value>Do you want to delete the Chapter?</value>
+  </data>
+  <data name="PreventiveMeasure.Modal.Search.preventiveMeasureSearchBeginning" xml:space="preserve">
+    <value>Search for the beginning</value>
+  </data>
+  <data name="Common.ModifiedBy" xml:space="preserve">
+    <value>Modified by</value>
+  </data>
+  <data name="ChaptersList.Header.ReviewDate" xml:space="preserve">
+    <value>Review date</value>
+  </data>
+  <data name="UserManagement.DarDeAlta" xml:space="preserve">
+    <value>Unsubscribe</value>
+  </data>
+  <data name="UserManagement.DarDeBaja" xml:space="preserve">
+    <value>Register</value>
+  </data>
+  <data name="Administration.Users.UpdateTitle" xml:space="preserve">
+    <value>Update User</value>
+  </data>
+  <data name="UserManagement.DarDeAltaModal" xml:space="preserve">
+    <value>Register User, continue?</value>
+  </data>
+  <data name="UserManagement.DarDeBajaModal" xml:space="preserve">
+    <value>Unsubscribe User, continue?</value>
+  </data>
+  <data name="UserDetails.IsInDBError" xml:space="preserve">
+    <value>User {0} already exists in Database</value>
+  </data>
+  <data name="UserDetails.NotInAdError" xml:space="preserve">
+    <value>User {0} doesn't exists in Active Directory</value>
+  </data>
+  <data name="Common.Role.Admin" xml:space="preserve">
+    <value>Administrator</value>
+  </data>
+  <data name="Common.Role.User" xml:space="preserve">
+    <value>User</value>
+  </data>
+  <data name="UserManagement.IsSuscribedUser" xml:space="preserve">
+    <value>Is User suscribed</value>
+  </data>
+  <data name="Administration.Users.IsSuscribed" xml:space="preserve">
+    <value>Is Suscribed</value>
+  </data>
+  <data name="General.Submit" xml:space="preserve">
+    <value>Submit</value>
+  </data>
+  <data name="Administration.Users.UserNameInput" xml:space="preserve">
+    <value>Insert User name</value>
+  </data>
+  <data name="Measures.Error.Delete" xml:space="preserve">
+    <value>You cannot delete a measure if it is applied to safety plan.</value>
+  </data>
+  <data name="Seriousness.Error.Delete" xml:space="preserve">
+    <value>You cannot delete a seriousness if it is applied to a preventative measure.</value>
+  </data>
+  <data name="Validation.Image.File" xml:space="preserve">
+    <value>Only images allowed</value>
+  </data>
+  <data name="ChaptersList.Header.ProducedBy" xml:space="preserve">
+    <value>Produced by</value>
+  </data>
+  <data name="Administration.Risk.Code" xml:space="preserve">
+    <value>Code</value>
+  </data>
+  <data name="Administration.Risk.DeleteMsg1" xml:space="preserve">
+    <value>Risk with code</value>
+  </data>
+  <data name="Administration.Risk.DeleteMsg2" xml:space="preserve">
+    <value>will be deleted permanently,do you wish to continue?</value>
+  </data>
+  <data name="Administration.Risk.DeleteTitle" xml:space="preserve">
+    <value>Delete risk</value>
+  </data>
+  <data name="Administration.Risk.Id" xml:space="preserve">
+    <value>Id</value>
+  </data>
+  <data name="Administration.Risk.Name" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="SideBar.Risks" xml:space="preserve">
+    <value>Risks</value>
+  </data>
+  <data name="Risk.Error.Delete" xml:space="preserve">
+    <value>A risk associated to a risk assignment cannot be deleted</value>
+  </data>
+  <data name="PreventiveMeasuresList.Search.BorradorCheck" xml:space="preserve">
+    <value>Draft</value>
+  </data>
+  <data name="DetalleActividades.ActividadesRelacionadas.Titulo" xml:space="preserve">
+    <value>Related Activities</value>
+  </data>
+  <data name="Administration.Users.Management.Title" xml:space="preserve">
+    <value>User Management</value>
+  </data>
+  <data name="Administration.Family.DeleteMsg1" xml:space="preserve">
+    <value>The family </value>
+  </data>
+  <data name="Administration.Family.DeleteMsg2" xml:space="preserve">
+    <value>will be deleted permanently, do you wish to continue?</value>
+  </data>
+  <data name="Administration.Family.DeleteTitle" xml:space="preserve">
+    <value>Delete family</value>
+  </data>
+  <data name="Administration.Family.Family" xml:space="preserve">
+    <value>Family</value>
+  </data>
+  <data name="Administration.Family.Id" xml:space="preserve">
+    <value>Code</value>
+  </data>
+  <data name="Family.Error.Delete" xml:space="preserve">
+    <value>A family associated to an article cannot be deleted</value>
+  </data>
+  <data name="Administration.Articles.AddTask" xml:space="preserve">
+    <value>Add Task</value>
+  </data>
+  <data name="Administration.Articles.AmortizationTime" xml:space="preserve">
+    <value>Amortization Time</value>
+  </data>
+  <data name="Administration.Articles.Cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="Administration.Articles.DeleteMsg1" xml:space="preserve">
+    <value>The article with the following code</value>
+  </data>
+  <data name="Administration.Articles.DeleteMsg2" xml:space="preserve">
+    <value>will be deleted permanently, do you wish to continue?</value>
+  </data>
+  <data name="Administration.Articles.DeleteTitle" xml:space="preserve">
+    <value>Delete Article</value>
+  </data>
+  <data name="Administration.Articles.Family" xml:space="preserve">
+    <value>Family</value>
+  </data>
+  <data name="Administration.Articles.Id" xml:space="preserve">
+    <value>Code</value>
+  </data>
+  <data name="Administration.Articles.MinimumUnit" xml:space="preserve">
+    <value>Minimum Unit</value>
+  </data>
+  <data name="Administration.Articles.Name" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="Administration.Articles.Percentage" xml:space="preserve">
+    <value>Percentage (%)</value>
+  </data>
+  <data name="Administration.Articles.Price" xml:space="preserve">
+    <value>Price (€)</value>
+  </data>
+  <data name="Administration.Articles.TimeOfWork" xml:space="preserve">
+    <value>Time of Work</value>
+  </data>
+  <data name="Administration.Task.Add.Article" xml:space="preserve">
+    <value>Add Article</value>
+  </data>
+  <data name="Administration.Task.DeleteMsg1" xml:space="preserve">
+    <value>The task with the following code</value>
+  </data>
+  <data name="Administration.Task.DeleteMsg2" xml:space="preserve">
+    <value>will be deleted permanently, do you wish to continue?</value>
+  </data>
+  <data name="Administration.Task.DeleteTitle" xml:space="preserve">
+    <value>Delete Task</value>
+  </data>
+  <data name="Administration.Task.Id" xml:space="preserve">
+    <value>Code</value>
+  </data>
+  <data name="Administration.Task.Name" xml:space="preserve">
+    <value>Task</value>
+  </data>
+  <data name="Article.Error.Delete" xml:space="preserve">
+    <value>An article associated to a task cannot be deleted</value>
+  </data>
+  <data name="SideBar.ArticleFamily" xml:space="preserve">
+    <value>Family/Articles</value>
+  </data>
+  <data name="SideBar.Articles" xml:space="preserve">
+    <value>Articles</value>
+  </data>
+  <data name="SideBar.ArticleTask" xml:space="preserve">
+    <value>Tasks/Articles</value>
+  </data>
+  <data name="Task.Error.Delete" xml:space="preserve">
+    <value>A task with associated articles cannot be deleted</value>
+  </data>
+  <data name="NavBar.FullScreen" xml:space="preserve">
+    <value>Full Screen</value>
+  </data>
+  <data name="NavBar.Help" xml:space="preserve">
+    <value>Help</value>
+  </data>
+  <data name="Articles.Modal.Search.Name" xml:space="preserve">
+    <value>Search by Name</value>
+  </data>
+  <data name="PreventiveMeasuresList.Search.Order" xml:space="preserve">
+    <value>Order</value>
+  </data>
+</root>

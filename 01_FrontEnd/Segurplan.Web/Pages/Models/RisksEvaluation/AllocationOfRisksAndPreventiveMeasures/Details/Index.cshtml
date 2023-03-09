@@ -1,0 +1,1058 @@
+﻿@page "{id:int}/{isEdit:bool}"
+@inject SharedLocalizer L
+@model Segurplan.Web.Pages.Models.RisksEvaluation.AllocationOfRisksAndPreventiveMeasures.Details.IndexModel
+@{
+    ViewData["Title"] = @L["PreventiveMeasuresList.Titulo"];
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<form id="Save-changes-form" asp-page-handler="SaveChanges" method="post">
+
+    <div class="content tabs elec-content-layout">
+        <div class="container-fluid">
+            <div class="card card-nav-tabs">
+                <div class="card-header">
+                    <div class="elec-content-title">
+                        <div class="row mx-0 py-2 align-items-center">
+                            <div class="col">
+                                <h1>@L["RisksAndPreventiveMeasures.table.Risk"] @Model.RisksAndPreventiveMeasure.RiskCode : @Model.RisksAndPreventiveMeasure.RiskName</h1>
+                            </div>
+                            <div class="col-auto">
+                                <!--button class="btn btn-link btn-dark p-2"> <i class="fas fa-file-word"></i> Generar plan </button>
+                                <button class="btn btn-link btn-dark p-2"> <i class="fas fa-file-excel"></i> Generar presupuesto </button>-->
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="card-body bg-white pt-3">
+                    <div class="tab-content">
+
+                        <div class="container formularioDetalle">
+
+                            <input id="save-type" type="hidden" asp-for="SaveType" />
+                            <input type="hidden" asp-for="RisksAndPreventiveMeasure.Id" />
+                            <input type="hidden" asp-for="SearchValues" value="@Model.SearchValues"/>
+                            @{
+                                if (Model.Id != 0)
+                                {
+                                    <div class="row">
+                                        <div class="form-group bmd-form-group col-4 col-sm-4 col-md-3 col-lg-2 disabled">
+                                            <div class="input-group">
+                                                <label for="fechaCreacion" class="bmd-label-floating">@L["DetallePlan.DatGen.FechaCreacion"]</label>
+                                                <input asp-for="RisksAndPreventiveMeasure.CreateDate" type="text" class="form-control" id="fechaCreacion" />
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group bmd-form-group col-4 col-sm-4 col-md-3 col-lg-2 disabled">
+                                            <div class="input-group">
+                                                <label for="fechaModificacion" class="bmd-label-floating">@L["DetallePlan.DatGen.FechaModificacion"]</label>
+                                                <input asp-for="RisksAndPreventiveMeasure.UpdateDate" type="text" class="form-control" id="fechaModificacion" />
+                                            </div>
+                                        </div>
+                                        @{
+                                            if (!string.IsNullOrEmpty(Model.RisksAndPreventiveMeasure.CreatedByName))
+                                            {
+                                                <div class="form-group bmd-form-group col-4 col-sm-4 col-md-3 col-lg-2 disabled">
+                                                    <div class="input-group">
+                                                        <label for="usuarioCreador" class="bmd-label-floating">@L["ChapterDetails.CreatedBy"]</label>
+                                                        <input asp-for="RisksAndPreventiveMeasure.CreatedByName" type="text" class="form-control" id="usuarioCreador" />
+                                                    </div>
+                                                </div>
+                                            }
+
+                                            if (!string.IsNullOrEmpty(Model.RisksAndPreventiveMeasure.ModifiedByName))
+                                            {
+                                                <div class="form-group bmd-form-group col-4 col-sm-4 col-md-3 col-lg-2 disabled">
+                                                    <div class="input-group">
+                                                        <label for="usuarioModificador" class="bmd-label-floating">@L["Common.ModifiedBy"]</label>
+                                                        <input asp-for="RisksAndPreventiveMeasure.ModifiedByName" type="text" class="form-control" id="usuarioModificador" />
+                                                    </div>
+                                                </div>
+                                            }
+                                        }
+                                    </div>
+                                }
+                            }
+
+                            <div class="row">
+                                <div class="form-group bmd-form-group col-4">
+                                    <div class="input-group">
+                                        <label for="capitulo">@L["PreventiveMeasuresList.Search.Chapter"] *</label>
+                                        <select asp-for="RisksAndPreventiveMeasure.ChapterId" asp-items="@Model.Dropdowns?.ChapterVersion?.Select(n => new SelectListItem { Text =$"{n.Number} : {n.Title}", Value = n.Id.ToString()})"
+                                                class="form-control selectpicker" data-style="select-with-transition" id="capitulo" required disabled="@(Model.IsEdit?false:true)"
+                                                data-live-search="true" data-live-search-normalize="false" data-none-results-text="@L["Common.NoResults"]" data-live-search-placeholder="@L["Common.SelectSearch"]" title="@L["Common.Select"]"
+                                                onchange="ChangeDependantData(this.value, 'subChapterVersion', 'subcapitulo','actividad')">
+                                            <option value="">@L["Common.Select"]</option>
+                                        </select>
+                                        <span asp-validation-for="RisksAndPreventiveMeasure.ChapterId" class="error"></span>
+                                    </div>
+                                </div>
+                                <div class="form-group bmd-form-group col-4">
+                                    <div class="input-group">
+                                        <label for="subcapitulo">@L["PreventiveMeasuresList.Search.SubChapter"]</label>
+                                        <select asp-for="RisksAndPreventiveMeasure.SubChapterId" asp-items="@Model.DropdownFields.SubShapterDropdownItems" required
+                                                class="form-control selectpicker" data-style="select-with-transition" id="subcapitulo"
+                                                disabled="@(Model.RisksAndPreventiveMeasure.ChapterId==0 || !Model.IsEdit)"
+                                                onchange="ChangeDependantData(this.value, 'actividad' , 'actividad' )"
+                                                title="@L["Common.Select"]">
+                                            <option value="">@L["Common.Select"]</option>
+                                        </select>
+                                        <span asp-validation-for="RisksAndPreventiveMeasure.SubChapterId" class="error"></span>
+                                    </div>
+                                </div>
+                                <div class="form-group bmd-form-group col-4">
+                                    <div class="input-group">
+                                        <label for="actividad">@L["DetallePlan.DatGen.Cliente.Actividad"]</label>
+                                        <select asp-for="RisksAndPreventiveMeasure.ActivityId" asp-items="@Model.DropdownFields.ActivityDropdownItems" required
+                                                class="form-control selectpicker" data-style="select-with-transition" id="actividad"
+                                                disabled="@(Model.RisksAndPreventiveMeasure.SubChapterId==0 || !Model.IsEdit)"
+                                                title="@L["Common.Select"]">
+                                            <option value="">@L["Common.Select"]</option>
+                                        </select>
+                                        <span asp-validation-for="RisksAndPreventiveMeasure.ActivityId" class="error"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="form-group bmd-form-group col-4 mt-0">
+                                    <div class="input-group">
+                                        <label for="riesgo">@L["RisksAndPreventiveMeasures.table.Risk"] *</label>
+                                        <select asp-for="RisksAndPreventiveMeasure.RiskId" asp-items="@Model.Dropdowns?.Risk?.Select(n => new SelectListItem { Text =$"{n.Code} : {n.Name}", Value = n.Id.ToString()})"
+                                                class="form-control selectpicker" data-style="select-with-transition" id="riesgo" disabled="@(Model.IsEdit?false:true)" required
+                                                data-live-search="true" data-live-search-normalize="false" data-none-results-text="@L["Common.NoResults"]" data-live-search-placeholder="@L["Common.SelectSearch"]" title="@L["Common.Select"]">
+                                            <option>@L["Common.Select"]</option>
+                                        </select>
+                                        @{
+                                            if (@Model.RiskIsAlreadyAsigned)
+                                            {
+                                                <span class="error">@L["RisksAndPreventiveMeasures.RiskAlreadyAsigned"]</span>
+                                            }
+                                        }
+                                        <span asp-validation-for="RisksAndPreventiveMeasure.RiskId" class="error"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="form-group bmd-form-group col-4 mt-0">
+                                    <div class="input-group">
+                                        <label for="riesgoOrden">@L["RisksAndPreventiveMeasures.RiskOrder"] *</label>
+                                        <select asp-for="RisksAndPreventiveMeasure.RiskOrder" asp-items="@Model.DropdownFields.RiskOrderDropdownItems" required
+                                                class="form-control selectpicker" data-style="select-with-transition" id="medida" disabled="@(Model.IsEdit?false:true)">
+                                            <option value="">@L["Common.Select"]</option>
+                                        </select>
+                                        <span asp-validation-for="RisksAndPreventiveMeasure.RiskOrder" class="error"></span>
+                                    </div>
+                                </div>
+                                @*<div class="form-group bmd-form-group col-4 col-lg-2 disabled dark">
+                <div class="input-group">
+                    <label for="riskOrigin" class="bmd-label-floating">@L["RisksAndPreventiveMeasures.RiskOrder"]</label>
+                    <input type="text" class="form-control" id="riskOrigin" value="1" />
+                </div>
+            </div>
+            <div class="col-3 mt-3">
+                <button class="btn btn-outline out-primary" type="button" data-toggle="modal" data-target=".bd-example-modal-lg"><span class="fas fa-sort"></span> @L["RisksAndPreventiveMeasures.ReorderRisks"]</button>
+
+            </div>*@
+
+
+                            </div>
+                            <div class="row">
+                                <div class="form-group bmd-form-group col-4">
+                                    <div class="input-group">
+                                        <label for="probabilidad">@L["RisksAndPreventiveMeasures.table.Probability"]</label>
+                                        <select asp-for="RisksAndPreventiveMeasure.ProbabilityId" required asp-items="@Model.Dropdowns?.Probability?.Select(n => new SelectListItem { Text =$"{n.Id} : {n.Value}", Value = n.Id.ToString()})"
+                                                class="form-control selectpicker" onchange="UpdateRiskLevel()" data-style="select-with-transition" id="probabilidad" disabled="@(Model.IsEdit?false:true)">
+                                            <option value="">@L["Common.Select"]</option>
+                                        </select>
+                                        <span asp-validation-for="RisksAndPreventiveMeasure.ProbabilityId" class="error"></span>
+                                    </div>
+                                </div>
+
+                                <div class="form-group bmd-form-group col-4">
+                                    <div class="input-group">
+                                        <label for="gravedad">@L["RisksAndPreventiveMeasures.table.Seriousness"]</label>
+                                        <select asp-for="RisksAndPreventiveMeasure.SeriousnessId" required asp-items="@Model.Dropdowns?.Seriousness?.Select(n => new SelectListItem { Text =$"{n.Id} : {n.Value}", Value = n.Id.ToString()})"
+                                                class="form-control selectpicker" onchange="UpdateRiskLevel()" data-style="select-with-transition" id="gravedad" disabled="@(Model.IsEdit?false:true)">
+                                            <option value="">@L["Common.Select"]</option>
+                                        </select>
+                                        <span asp-validation-for="RisksAndPreventiveMeasure.SeriousnessId" class="error"></span>
+                                    </div>
+                                </div>
+
+                                <div class="form-group bmd-form-group col-4">
+                                    <div class="input-group disabled">
+                                        <input asp-for="RisksAndPreventiveMeasure.RiskLevelId" class="form-control" id="nivel_riesgo" type="hidden" />
+                                        <label for="nivel_riesgo_view" class="bmd-label-floating">@L["RisksAndPreventiveMeasures.table.LevelOfRisk"]</label>
+                                        <input value="@Model.RisksAndPreventiveMeasure.RiskLevelLevel" class="form-control disabled" id="nivel_riesgo_view" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-12">
+
+                                    <table class="table table-bordered table-striped table-hover" id="example">
+                                        <caption>@L["SideBar.MeasureList"]</caption>
+                                        <thead>
+                                            <tr>
+                                                <th style="width:70px">@L["Administration.User.Code"] <span class=""></span></th>
+                                                <th>@L["PreventiveMeasuresList.Search.Preventive_Measure"]<span class=""></span></th>
+                                                <th style="width:70px">@L["PreventiveMeasuresList.Search.Order"]<span class=""></span></th>
+                                                <th class="text-center">@L["Planes.TablePlan.Acciones"]</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="preventive-measures-page-table-body">
+                                            @{
+                                                int i = 0;
+                                                foreach (var preventiveMeasure in Model.RisksAndPreventiveMeasure.PreventiveMeasures)
+                                                {
+                                                    <tr id="table-@i" class="table-row preventiveMeasuresTable" data-href="segurplan_riesgosymedidas_medida.html">
+                                                        <td>
+                                                            @preventiveMeasure.PreventiveMeasureCode
+                                                            <input class="measures-table-id" type="hidden" name="RisksAndPreventiveMeasure.PreventiveMeasures[@i].PreventiveMeasureId" value="@preventiveMeasure.PreventiveMeasureId" />
+                                                            <input class="measures-table-code" type="hidden" name="RisksAndPreventiveMeasure.PreventiveMeasures[@i].PreventiveMeasureCode" value="@preventiveMeasure.PreventiveMeasureCode" />
+
+                                                        </td>
+                                                        <td>
+                                                            @Html.Raw(preventiveMeasure.PreventiveMeasureDescription)
+                                                            <input class="measures-table-description" type="hidden" name="RisksAndPreventiveMeasure.PreventiveMeasures[@i].PreventiveMeasureDescription" value="@preventiveMeasure.PreventiveMeasureDescription" />
+                                                        </td>
+                                                        <td>
+                                                            @preventiveMeasure.PreventiveMeasureOrder
+                                                            <input class="measures-table-order" type="hidden" name="RisksAndPreventiveMeasure.PreventiveMeasures[@i].PreventiveMeasureOrder" value="@preventiveMeasure.PreventiveMeasureOrder" />
+
+                                                        </td>
+                                                        <td class="text-center">
+                                                            <a class="nav-link @(Model.IsEdit ? "": "disabled")" href="#" id="navbarDropdownProfile2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                                <span class="fas fa-ellipsis-v"></span>
+
+                                                            </a>
+                                                            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownProfile2">
+                                                                @*<a class="dropdown-item" href="#">Editar</a>
+                                            <div class="dropdown-divider"></div>*@
+                                                                <a class="dropdown-item" onclick="DeletePageTableRow('table-@i')" href="#" disabled="@(Model.IsEdit?false:true)">@L["General.Table.Remove"]</a>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+
+                                                    i++;
+                                                }
+
+                                            }
+
+                                        </tbody>
+                                    </table>
+                                    <ul class="mt-4 mb-5 list-inline">
+                                        <li class="list-inline-item @(Model.IsEdit ? "": "disabled")"><a href="#" class="anadir" data-toggle="modal" data-target="#listadoMedidas"><span class="fas fa-plus "></span> @L["RisksAndPreventiveMeasures.Add.Measure"]</a></li>
+                                        @*<li class="list-inline-item"><a href="#" class="anadir" data-toggle="modal" data-target="#myModal"><span class="material-icons">play_for_work</span> Importar de otras actividades</a></li>*@
+                                    </ul>
+                                </div>
+                            </div>
+
+
+
+
+                            <!-- Modal listado medidas-->
+                            <div class="modal fade" id="listadoMedidas" tabindex="-1" role="dialog" aria-labelledby="listadoCotizaciones" aria-hidden="true">
+                                <div class="modal-dialog listadoModal modalMedidas" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h4 class="modal-title text-left">@L["SideBar.MeasureList"]</h4>
+                                            <button id="measureModalClose" type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+                                            @*<h3>Titulo buscador</h3>*@
+                                            <div class="col-12">
+                                                <div class="row">
+                                                    <div class="form-group bmd-form-group col-3 mt-0">
+                                                        <div class="input-group">
+                                                            <label for="preventiveMeasureCode" class="bmd-label-floating">@L["PreventiveMeasure.Modal.Search.Code"]</label>
+                                                            <input class="form-control searched" type="number" id="preventiveMeasureCode">
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group bmd-form-group col-3 mt-0">
+                                                        <div class="input-group">
+                                                            <label for="preventiveMeasureDescription" class="bmd-label-floating">@L["PreventiveMeasure.Modal.Search.Description"]</label>
+                                                            <input class="form-control searched" type="text" id="preventiveMeasureDescription">
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group bmd-form-group col-3 mt-0">
+                                                        <div class="input-group">
+                                                            <label for="preventiveMeasureInitialWord" class="bmd-label-floating">@L["PreventiveMeasure.Modal.Search.preventiveMeasureSearchBeginning"]</label>
+                                                            <input class="form-control searched" type="text" id="preventiveMeasureInitialWord">
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-1 form-group" id="SearchSubmit">
+                                                        <button class="btn btn-white buscar" type="button" onclick="ModalSearchSubmit()">
+                                                            @L["Common.Search"]
+                                                        </button>
+                                                    </div>
+                                                    <div id="loading" class="form-group"></div>
+                                                </div>
+                                            </div>
+                                            <div class="table-listadoModal">
+                                                <table class="table table-bordered table-striped sortable" id="example3">
+                                                    <thead>
+                                                        <tr>
+                                                            <th style="width: 60px;" class="text-center">
+                                                                <div class="form-check">
+                                                                    <label class="form-check-label">
+                                                                        <input class="form-check-input" onclick="setAllChecked('preventive-measures-modal-table-body', this)" type="checkbox" value="" />
+                                                                        <span class="form-check-sign"><span class="check"></span></span>
+                                                                    </label>
+                                                                </div>
+                                                            </th>
+                                                            <th style="width: 70px;">@L["Administration.User.Code"] <span class="icon sort"></span></th>
+                                                            <th>@L["PreventiveMeasuresList.Search.Preventive_Measure"]<span class="icon sort"></span></th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody id="preventive-measures-modal-table-body">
+                                                        @{
+                                                            int it = 0;
+                                                            foreach (var preventiveMeasure in Model?.PreventiveMeasureList?.Value?.PreventiveMeasures)
+                                                            {
+                                                                @*<tr data-href="segurplan_riesgosymedidas_medida.html">*@
+                                                                <tr id="Modal-@it">
+                                                                    <td class="text-center">
+                                                                        <div class="form-check">
+                                                                            <label class="form-check-label">
+                                                                                <input class="form-check-input" type="checkbox" value="Modal-@it" onclick="CheckBehaviour('@preventiveMeasure.Id')" />
+                                                                                <span class="form-check-sign">
+                                                                                    <span class="check"></span>
+                                                                                </span>
+                                                                            </label>
+                                                                        </div>
+                                                                        <input class="modal-id" type="hidden" value="@preventiveMeasure.Id" />
+                                                                    </td>
+
+                                                                    <td id="code-@preventiveMeasure.Id" class="modal-code">
+                                                                        @preventiveMeasure.Code
+                                                                    </td>
+                                                                    <td id="description-@preventiveMeasure.Id" class="modal-description">
+                                                                        @Html.Raw(preventiveMeasure.Description)
+                                                                    </td>
+                                                                </tr>
+                                                                it++;
+                                                            }
+                                                        }
+                                                    </tbody>
+                                                </table>
+                                            </div>
+
+                                            <div class="row">
+                                                <div class="col-12">
+                                                    <div class="row">
+
+                                                        <div id="preventive-measures-modal-pagination-count" class="col-6 paginacion text-right">
+                                                            @{
+                                                                if (Model.PreventiveMeasureList?.Value != null)
+                                                                {
+                                                                    @(Model.PreventiveMeasureList.Value.SkippedRows + 1)
+                                                                    @:-
+                                                                    @(Model.PreventiveMeasureList.Value.SkippedRows + Model.PreventiveMeasureModalPageSize > Model.PreventiveMeasureList.Value.TotalCount ?
+                                                                        Model.PreventiveMeasureList.Value.TotalCount : Model.PreventiveMeasureList.Value.SkippedRows + Model.PreventiveMeasureModalPageSize)
+                                                                    @:@L["Common.De"]
+                                                                    @(Model.PreventiveMeasureList.Value.TotalCount)
+                                                                }
+                                                                else
+                                                                {
+                                                                    @: 0 - 0 - 0
+                                                                }
+                                                            }
+                                                        </div>
+                                                        <div class="col-3 text-right botones-paginacion">
+                                                            <button class="btn" type="button" onclick="ChangeModalPage('previous',event)"> <i class="fas fa-chevron-left"></i> </button>
+                                                            <button class="btn" type="button" onclick="ChangeModalPage('next',event)"> <i class="fas fa-chevron-right"></i> </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                        <div class="modal-footer">
+
+                                            <ul class="list-inline ml-auto">
+                                                <li class="list-inline-item">
+                                                    <button type="button" onclick="CloseMeasureModal()" class="btn btn-default">@L["Administration.User.Cancel"]</button>
+                                                </li>
+                                                <li class="list-inline-item"><button type="button" onclick="AddPreventiveMeasures(event)" class="btn btn-primary">@L["General.Add"]</button></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+
+                        @*<a href="#back-top" class="elec-btn-scrollup btn btn-fab btn-round"><span class="fas fa-angle-up"></span></a>*@
+
+
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <input id="measures-page-number" type="hidden" asp-for="PreventiveMeasureModalPageNumber" />
+        @if (Model.PreventiveMeasureList?.Value != null)
+        {
+            <input id="measures-TotalCount" type="hidden" value="@Model.PreventiveMeasureList.Value?.TotalCount" />
+            <input id="measures-Rows-per-page" type="hidden" value="@Model.PreventiveMeasureList.Value?.PageSize" />
+        }
+    </div>
+    @*Footer to component*@
+    <div class="footer-formularioDetalle">
+        <div class="container-fluid">
+            <div class="row px-4 align-items-center">
+                <div class="col-auto">
+                    <ul class="list-inline">
+                        @{
+                            if (Model.IsEdit && Model.Id != 0)
+                            {
+                                <li class="list-inline-item">
+                                    @*<form asp-page-handler="Delete" method="post">*@
+                                    <button form="deleteForm" class="btn btn-link btn-dark p-2">
+                                        <span class="fas fa-trash-alt"></span>
+                                    </button>
+                                    @*</form>*@
+                                </li>
+                            }
+                        }
+                    </ul>
+                </div>
+                <div class="col-auto ml-auto">
+                    <ul class="list-inline">
+                        <li class="list-inline-item">
+                            @*<form asp-page-handler="ClosePage" method="post">*@
+                            <button form="closePageForm" class="btn btn-default">@L["General.Boton.Cerrar"]</button>
+                            @*</form>*@
+                        </li>
+
+                        @{
+                            if (Model.IsEdit)
+                            {
+                                <li class="list-inline-item">
+                                    <div class="btn-group">
+                                        <button class="btn btn-primary" type="submit" onclick="Save('save')">
+                                            @L["General.Boton.Guardar"]
+                                        </button>
+                                        <button type="button" class="btn btn-primary dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            <span class="sr-only">Toggle Dropdown</span>
+                                        </button>
+                                        <div class="dropdown-menu">
+                                            <button class="dropdown-item" onclick="Save('saveAndClose')">@L["General.Boton.GuardarYCerrar"]</button>
+                                            <button class="dropdown-item" onclick="Save('saveAndNew')">@L["General.Boton.GuardarYNuevo"]</button>
+                                        </div>
+                                    </div>
+                                </li>
+                            }
+                        }
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <input type="hidden" asp-for="IndexPage" value="@Model.IndexPage" />
+</form>
+<form asp-page-handler="Delete" id="deleteForm" method="post">
+    <input type="hidden" asp-for="IndexPage" value="@Model.IndexPage" />
+    <input type="hidden" asp-for="SearchValues" />
+</form>
+<form asp-page-handler="ClosePage" id="closePageForm" method="post">
+    <input type="hidden" asp-for="IndexPage" value="@Model.IndexPage" />
+    <input type="hidden" asp-for="SearchValues"/>
+</form>
+<!-- Modal risk order-->
+<div class="modal fade bd-example-modal-lg modal-planos" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+
+        <div class="modal-content">
+            <div class="modal-header">
+                <!-- <h4 class="modal-title">Modal Heading</h4> -->
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <table class="table table-bordered table-striped table-hover" id="example">
+                    <caption>@L["RisksAndPreventiveMeasures.table.Risks"]</caption>
+                    <thead>
+                        <tr>
+                            <th style="width:68px">@L["RisksAndPreventiveMeasures.Order"]</th>
+                            <th>@L["RisksAndPreventiveMeasures.table.Risk"]</th>
+                            <th class="text-center" style="width:100px">@L["RisksAndPreventiveMeasures.OrderAction"]</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1</td>
+                            <td>Contactos eléctricos</td>
+                            <td class="text-center">
+                                <button class="btn btn-just-icon btn-link btn-round btn-sm"> <span class="fas fa-angle-down"></span> </button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td>Atrapamientos</td>
+                            <td class="text-center">
+                                <button class="btn btn-just-icon btn-link btn-round btn-sm"> <span class="fas fa-angle-up"></span> </button>
+                                <button class="btn btn-just-icon btn-link btn-round btn-sm"> <span class="fas fa-angle-down"></span> </button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>3</td>
+                            <td>Atropellos</td>
+                            <td class="text-center">
+                                <button class="btn btn-just-icon btn-link btn-round btn-sm"> <span class="fas fa-angle-up"></span> </button>
+                                <button class="btn btn-just-icon btn-link btn-round btn-sm"> <span class="fas fa-angle-down"></span> </button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>4</td>
+                            <td>Caída de objetos</td>
+                            <td class="text-center">
+                                <button class="btn btn-just-icon btn-link btn-round btn-sm"> <span class="fas fa-angle-up"></span> </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+            </div>
+        </div>
+    </div>
+</div>
+<!-- / Modal -->
+<!-- Modal activities -->
+<div id="myModal" class="modal fade bd-example-modal-lg modal-planos" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+
+        <div class="modal-content">
+            <div class="modal-header">
+                <!-- <h4 class="modal-title">Modal Heading</h4> -->
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+
+
+                <div class="tab-pane" id="actividades">
+                    <div class="formularioDetalle container-picklist my-4">
+                        @*nested form see=>
+                            https://html.spec.whatwg.org/multipage/forms.html#the-form-element
+                            4.10.3 The form element
+                                Content model  *@
+                        <form action="#" method="">
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="card card-picklist">
+                                        <div class="card-header">
+                                            <p class="card-title">@L["DetallePlan.Actividades.Disponibles.Titulo"]</p>
+                                        </div>
+                                        <div class="card-body p-0">
+                                            <div class="row card-body-top mx-0">
+                                                <div class="activities-actions col-1">
+                                                    <div class="form-check">
+                                                        <label>
+                                                            <input class="form-check-input" type="checkbox" value="">
+                                                            <span class="form-check-sign"><span class="check"></span></span>
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                <div class="col-9 pl-2">
+                                                    <div class="search-filter input-group">
+                                                        <input type="text" value="" class="form-control" placeholder="Filtrar">
+                                                    </div>
+                                                </div>
+                                                <div class="activities-actions col-2 pr-2"> <span class="fas fa-sort"></span> </div>
+                                            </div>
+
+                                            <!-- accordion-ordered-list -->
+                                            <div class="accordion-ordered-list container-scrollbar">
+                                                <ol>
+
+                                                    <!-- 1level accordion -->
+                                                    <li class="accordion-firstlevel">
+                                                        <div class="accordion-container">
+                                                            <div class="activities-actions align-left">
+                                                                <div class="form-check">
+                                                                    <label>
+                                                                        <input class="form-check-input" type="checkbox" value="">
+                                                                        <span class="form-check-sign"><span class="check"></span></span>
+                                                                    </label>
+                                                                </div>
+                                                            </div>
+                                                            <a data-toggle="collapse" href="#collapseTrabajo1" aria-expanded="true" aria-controls="collapseTrabajo1" class="accordion-toggle">Prescripciones de seguridad para todo tipo de trabajos</a>
+                                                        </div>
+                                                        <ol id="collapseTrabajo1" data-parent=".accordion-firstlevel" class="collapse show">
+
+                                                            <!-- 2level accordion -->
+                                                            <li class="accordion-secondlevel">
+                                                                <div class="accordion-container">
+                                                                    <div class="activities-actions align-left">
+                                                                        <div class="form-check">
+                                                                            <label>
+                                                                                <input class="form-check-input" type="checkbox" value="">
+                                                                                <span class="form-check-sign"><span class="check"></span></span>
+                                                                            </label>
+                                                                        </div>
+                                                                    </div>
+                                                                    <a data-toggle="collapse" href="#collapseTrabajo2" aria-expanded="false" aria-controls="collapseTrabajo2" class="accordion-toggle">Consideraciones generales para todo tipo de trabajos</a>
+                                                                </div>
+                                                                <ol id="collapseTrabajo2" data-parent=".accordion-secondlevel" class="collapse">
+                                                                    <li class="accordion-container">
+                                                                        <div class="activities-actions align-left">
+                                                                            <div class="form-check">
+                                                                                <label>
+                                                                                    <input class="form-check-input" type="checkbox" value="">
+                                                                                    <span class="form-check-sign"><span class="check"></span></span>
+                                                                                </label>
+                                                                            </div>
+                                                                        </div>
+                                                                        <span class="accordion-toggle">Consideraciones generales</span>
+                                                                    </li>
+                                                                </ol>
+                                                            </li>
+                                                            <li class="accordion-secondlevel">
+                                                                <div class="accordion-container">
+                                                                    <div class="activities-actions align-left">
+                                                                        <div class="form-check">
+                                                                            <label>
+                                                                                <input class="form-check-input" type="checkbox" value="">
+                                                                                <span class="form-check-sign"><span class="check"></span></span>
+                                                                            </label>
+                                                                        </div>
+                                                                    </div>
+                                                                    <span class="accordion-toggle">Consideraciones a tener en cuenta en la realización de trabajos en condiciones ambientales</span>
+                                                                </div>
+                                                            </li>
+                                                            <li class="accordion-secondlevel">
+                                                                <div class="accordion-container">
+                                                                    <div class="activities-actions align-left">
+                                                                        <div class="form-check">
+                                                                            <label>
+                                                                                <input class="form-check-input" type="checkbox" value="">
+                                                                                <span class="form-check-sign"><span class="check"></span></span>
+                                                                            </label>
+                                                                        </div>
+                                                                    </div>
+                                                                    <span class="accordion-toggle">Consideraciones a tener en cuenta para viajes/estancias en el extranjero</span>
+                                                                </div>
+                                                            </li>
+                                                            <li class="accordion-secondlevel">
+                                                                <div class="accordion-container">
+                                                                    <div class="activities-actions align-left">
+                                                                        <div class="form-check">
+                                                                            <label>
+                                                                                <input class="form-check-input" type="checkbox" value="">
+                                                                                <span class="form-check-sign"><span class="check"></span></span>
+                                                                            </label>
+                                                                        </div>
+                                                                    </div>
+                                                                    <span class="accordion-toggle">Accidentes laborales no traumáticos</span>
+                                                                </div>
+                                                            </li>
+                                                        </ol>
+                                                    </li>
+                                                    <li class="accordion-firstlevel">
+                                                        <div class="accordion-container">
+                                                            <div class="activities-actions align-left">
+                                                                <div class="form-check">
+                                                                    <label>
+                                                                        <input class="form-check-input" type="checkbox" value="">
+                                                                        <span class="form-check-sign"><span class="check"></span></span>
+                                                                    </label>
+                                                                </div>
+                                                            </div>
+                                                            <span class="accordion-toggle">Trabajos de excavación y hormigonado</span>
+                                                        </div>
+                                                    </li>
+                                                    <li class="accordion-firstlevel">
+                                                        <div class="accordion-container">
+                                                            <div class="activities-actions align-left">
+                                                                <div class="form-check">
+                                                                    <label>
+                                                                        <input class="form-check-input" type="checkbox" value="">
+                                                                        <span class="form-check-sign"><span class="check"></span></span>
+                                                                    </label>
+                                                                </div>
+                                                            </div>
+                                                            <span class="accordion-toggle">Construcción, montaje y mantenimientode líneas eléctricas</span>
+                                                        </div>
+                                                    </li>
+                                                    <li class="accordion-firstlevel">
+                                                        <div class="accordion-container">
+                                                            <div class="activities-actions align-left">
+                                                                <div class="form-check">
+                                                                    <label>
+                                                                        <input class="form-check-input" type="checkbox" value="">
+                                                                        <span class="form-check-sign"><span class="check"></span></span>
+                                                                    </label>
+                                                                </div>
+                                                            </div>
+                                                            <span class="accordion-toggle">Trabajos en subestaciones y estaciones receptoras</span>
+                                                        </div>
+                                                    </li>
+                                                    <li class="accordion-firstlevel">
+                                                        <div class="accordion-container">
+                                                            <div class="activities-actions align-left">
+                                                                <div class="form-check">
+                                                                    <label>
+                                                                        <input class="form-check-input" type="checkbox" value="">
+                                                                        <span class="form-check-sign"><span class="check"></span></span>
+                                                                    </label>
+                                                                </div>
+                                                            </div>
+                                                            <span class="accordion-toggle">Trabajos en centros de transformación</span>
+                                                        </div>
+                                                    </li>
+                                                    <li class="accordion-firstlevel">
+                                                        <div class="accordion-container">
+                                                            <div class="activities-actions align-left">
+                                                                <div class="form-check">
+                                                                    <label>
+                                                                        <input class="form-check-input" type="checkbox" value="">
+                                                                        <span class="form-check-sign"><span class="check"></span></span>
+                                                                    </label>
+                                                                </div>
+                                                            </div>
+                                                            <span class="accordion-toggle">Trabajos en tensión</span>
+                                                        </div>
+                                                    </li>
+                                                    <li class="accordion-firstlevel">
+                                                        <div class="accordion-container">
+                                                            <div class="activities-actions align-left">
+                                                                <div class="form-check">
+                                                                    <label>
+                                                                        <input class="form-check-input" type="checkbox" value="">
+                                                                        <span class="form-check-sign"><span class="check"></span></span>
+                                                                    </label>
+                                                                </div>
+                                                            </div>
+                                                            <span class="accordion-toggle">Red general de tierras</span>
+                                                        </div>
+                                                    </li>
+                                                    <li class="accordion-firstlevel">
+                                                        <div class="accordion-container">
+                                                            <div class="activities-actions align-left">
+                                                                <div class="form-check">
+                                                                    <label>
+                                                                        <input class="form-check-input" type="checkbox" value="">
+                                                                        <span class="form-check-sign"><span class="check"></span></span>
+                                                                    </label>
+                                                                </div>
+                                                            </div>
+                                                            <span class="accordion-toggle">Trabajos de telecomunicaciones</span>
+                                                        </div>
+                                                    </li>
+                                                    <li class="accordion-firstlevel">
+                                                        <div class="accordion-container">
+                                                            <div class="activities-actions align-left">
+                                                                <div class="form-check">
+                                                                    <label>
+                                                                        <input class="form-check-input" type="checkbox" value="">
+                                                                        <span class="form-check-sign"><span class="check"></span></span>
+                                                                    </label>
+                                                                </div>
+                                                            </div>
+                                                            <span class="accordion-toggle">Montaje, desmontaje y puesta en servicio de instalaciones</span>
+                                                        </div>
+                                                    </li>
+                                                    <li class="accordion-firstlevel">
+                                                        <div class="accordion-container">
+                                                            <div class="activities-actions align-left">
+                                                                <div class="form-check">
+                                                                    <label>
+                                                                        <input class="form-check-input" type="checkbox" value="">
+                                                                        <span class="form-check-sign"><span class="check"></span></span>
+                                                                    </label>
+                                                                </div>
+                                                            </div>
+                                                            <span class="accordion-toggle">Montaje y mantenimiento de instalaciones de alumbrado público y semáforos</span>
+                                                        </div>
+                                                    </li>
+                                                    <li class="accordion-firstlevel">
+                                                        <div class="accordion-container">
+                                                            <div class="activities-actions align-left">
+                                                                <div class="form-check">
+                                                                    <label>
+                                                                        <input class="form-check-input" type="checkbox" value="">
+                                                                        <span class="form-check-sign"><span class="check"></span></span>
+                                                                    </label>
+                                                                </div>
+                                                            </div>
+                                                            <span class="accordion-toggle">Construcción y montaje de F.F.C.C. - catenaria</span>
+                                                        </div>
+                                                    </li>
+                                                    <li class="accordion-firstlevel">
+                                                        <div class="accordion-container">
+                                                            <div class="activities-actions align-left">
+                                                                <div class="form-check">
+                                                                    <label>
+                                                                        <input class="form-check-input" type="checkbox" value="">
+                                                                        <span class="form-check-sign"><span class="check"></span></span>
+                                                                    </label>
+                                                                </div>
+                                                            </div>
+                                                            <span class="accordion-toggle">Trabajos en conducciones de gas</span>
+                                                        </div>
+                                                    </li>
+                                                    <li class="accordion-firstlevel">
+                                                        <div class="accordion-container">
+                                                            <div class="activities-actions align-left">
+                                                                <div class="form-check">
+                                                                    <label>
+                                                                        <input class="form-check-input" type="checkbox" value="">
+                                                                        <span class="form-check-sign"><span class="check"></span></span>
+                                                                    </label>
+                                                                </div>
+                                                            </div>
+                                                            <span class="accordion-toggle">Construcción y montaje de canalización de tubería, perforaciones dirigidas y horizontales (perforaciones)</span>
+                                                        </div>
+                                                    </li>
+                                                </ol>
+                                            </div>
+                                            <!-- accordion-ordered-list -->
+
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <ul class="list-inline">
+                    <li class="list-inline-item"><button type="button" class="btn btn-default">@L["Administration.User.Cancel"]</button></li>
+                    <li class="list-inline-item"><button type="button" class="btn btn-primary">@L["RisksAndPreventiveMeasures.Import"]</button></li>
+                </ul>
+            </div>
+
+        </div>
+        <!-- / Modal -->
+    </div>
+</div>
+
+
+<!-- Modal listado medidas ????-->
+@*<div class="modal fade" id="listadoMedidas" tabindex="-1" role="dialog" aria-labelledby="listadoCotizaciones" aria-hidden="true">
+        <div class="modal-dialog listadoModal modalMedidas" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title text-left">@L["SideBar.MeasureList"]</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="table-listadoModal">
+                        <table class="table table-bordered table-striped sortable" id="example3">
+                            <thead>
+                                <tr>
+                                    <th style="width: 60px;" class="text-center">
+                                        <div class="form-check">
+                                            <label class="form-check-label">
+                                                <input class="form-check-input" type="checkbox" value="" />
+                                                <span class="form-check-sign"><span class="check"></span></span>
+                                            </label>
+                                        </div>
+                                    </th>
+                                    <th style="width: 70px;">@L["Administration.User.Code"] <span class="icon sort"></span></th>
+                                    <th>@L["PreventiveMeasuresList.Search.Preventive_Measure"]<span class="icon sort"></span></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr data-href="segurplan_riesgosymedidas_medida.html">
+                                    <td class="text-center">
+                                        <div class="form-check">
+                                            <label class="form-check-label">
+                                                <input class="form-check-input" type="checkbox" value="" />
+                                                <span class="form-check-sign"><span class="check"></span></span>
+                                            </label>
+                                        </div>
+                                    </td>
+                                    <td>4222</td>
+                                    <td>
+                                        La excavación se realizará mecánicamente hasta 1 m antes de llegar a la conducción y a partir de entonces, la excavación será manual con perforadores neumáticos, picos, etc., hasta 0,50 m, utilizando la pala o pico manual a
+                                        partir de esta distancia.
+                                    </td>
+                                </tr>
+                                <tr data-href="segurplan_riesgosymedidas_medida.html">
+                                    <td class="text-center">
+                                        <div class="form-check">
+                                            <label class="form-check-label">
+                                                <input class="form-check-input" type="checkbox" value="" />
+                                                <span class="form-check-sign"><span class="check"></span></span>
+                                            </label>
+                                        </div>
+                                    </td>
+                                    <td>4239</td>
+                                    <td>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed porta turpis justo, quis pulvinar eros blandit sed. Integer ultricies finibus mi.</td>
+                                </tr>
+                                <tr data-href="segurplan_riesgosymedidas_medida.html">
+                                    <td class="text-center">
+                                        <div class="form-check">
+                                            <label class="form-check-label">
+                                                <input class="form-check-input" type="checkbox" value="" />
+                                                <span class="form-check-sign"><span class="check"></span></span>
+                                            </label>
+                                        </div>
+                                    </td>
+                                    <td>4222</td>
+                                    <td>
+                                        La excavación se realizará mecánicamente hasta 1 m antes de llegar a la conducción y a partir de entonces, la excavación será manual con perforadores neumáticos, picos, etc., hasta 0,50 m, utilizando la pala o pico manual a
+                                        partir de esta distancia.
+                                    </td>
+                                </tr>
+                                <tr data-href="segurplan_riesgosymedidas_medida.html">
+                                    <td class="text-center">
+                                        <div class="form-check">
+                                            <label class="form-check-label">
+                                                <input class="form-check-input" type="checkbox" value="" />
+                                                <span class="form-check-sign"><span class="check"></span></span>
+                                            </label>
+                                        </div>
+                                    </td>
+                                    <td>4239</td>
+                                    <td>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed porta turpis justo, quis pulvinar eros blandit sed. Integer ultricies finibus mi.</td>
+                                </tr>
+                                <tr data-href="segurplan_riesgosymedidas_medida.html">
+                                    <td class="text-center">
+                                        <div class="form-check">
+                                            <label class="form-check-label">
+                                                <input class="form-check-input" type="checkbox" value="" />
+                                                <span class="form-check-sign"><span class="check"></span></span>
+                                            </label>
+                                        </div>
+                                    </td>
+                                    <td>4222</td>
+                                    <td>
+                                        La excavación se realizará mecánicamente hasta 1 m antes de llegar a la conducción y a partir de entonces, la excavación será manual con perforadores neumáticos, picos, etc., hasta 0,50 m, utilizando la pala o pico manual a
+                                        partir de esta distancia.
+                                    </td>
+                                </tr>
+                                <tr data-href="segurplan_riesgosymedidas_medida.html">
+                                    <td class="text-center">
+                                        <div class="form-check">
+                                            <label class="form-check-label">
+                                                <input class="form-check-input" type="checkbox" value="" />
+                                                <span class="form-check-sign"><span class="check"></span></span>
+                                            </label>
+                                        </div>
+                                    </td>
+                                    <td>4239</td>
+                                    <td>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed porta turpis justo, quis pulvinar eros blandit sed. Integer ultricies finibus mi.</td>
+                                </tr>
+                                <tr data-href="segurplan_riesgosymedidas_medida.html">
+                                    <td class="text-center">
+                                        <div class="form-check">
+                                            <label class="form-check-label">
+                                                <input class="form-check-input" type="checkbox" value="" />
+                                                <span class="form-check-sign"><span class="check"></span></span>
+                                            </label>
+                                        </div>
+                                    </td>
+                                    <td>4222</td>
+                                    <td>
+                                        La excavación se realizará mecánicamente hasta 1 m antes de llegar a la conducción y a partir de entonces, la excavación será manual con perforadores neumáticos, picos, etc., hasta 0,50 m, utilizando la pala o pico manual a
+                                        partir de esta distancia.
+                                    </td>
+                                </tr>
+                                <tr data-href="segurplan_riesgosymedidas_medida.html">
+                                    <td class="text-center">
+                                        <div class="form-check">
+                                            <label class="form-check-label">
+                                                <input class="form-check-input" type="checkbox" value="" />
+                                                <span class="form-check-sign"><span class="check"></span></span>
+                                            </label>
+                                        </div>
+                                    </td>
+                                    <td>4239</td>
+                                    <td>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed porta turpis justo, quis pulvinar eros blandit sed. Integer ultricies finibus mi.</td>
+                                </tr>
+                                <tr data-href="segurplan_riesgosymedidas_medida.html">
+                                    <td class="text-center">
+                                        <div class="form-check">
+                                            <label class="form-check-label">
+                                                <input class="form-check-input" type="checkbox" value="" />
+                                                <span class="form-check-sign"><span class="check"></span></span>
+                                            </label>
+                                        </div>
+                                    </td>
+                                    <td>4222</td>
+                                    <td>
+                                        La excavación se realizará mecánicamente hasta 1 m antes de llegar a la conducción y a partir de entonces, la excavación será manual con perforadores neumáticos, picos, etc., hasta 0,50 m, utilizando la pala o pico manual a
+                                        partir de esta distancia.
+                                    </td>
+                                </tr>
+                                <tr data-href="segurplan_riesgosymedidas_medida.html">
+                                    <td class="text-center">
+                                        <div class="form-check">
+                                            <label class="form-check-label">
+                                                <input class="form-check-input" type="checkbox" value="" />
+                                                <span class="form-check-sign"><span class="check"></span></span>
+                                            </label>
+                                        </div>
+                                    </td>
+                                    <td>4239</td>
+                                    <td>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed porta turpis justo, quis pulvinar eros blandit sed. Integer ultricies finibus mi.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-12 text-left">
+                            <div class="row">
+                                <div class="col-9 paginacion text-right">1-10 de 100</div>
+                                <div class="col-3 text-right botones-paginacion">
+                                    <button class="btn"><i class="fas fa-chevron-left"></i></button>
+                                    <button class="btn"><i class="fas fa-chevron-right"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <ul class="list-inline">
+                        <li class="list-inline-item"><button type="button" class="btn btn-default">Cancelar</button></li>
+                        <li class="list-inline-item"><button type="button" class="btn btn-primary">Añadir</button></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>*@
+<script src="~/assets/js/RiskAndPreventiveMeasuresDetail.js" asp-append-version="true"></script>
+<script>
+    
+        document.getElementById("adminCaret").setAttribute("aria-expanded", "true");
+        document.getElementById("pagesAdmin").classList.add("show");
+        
+    var commonDe = '@L["Common.De"]',
+        commonDelete='@L["General.Table.Remove"]';
+
+    function GetRiskAndPreventiveMeasuresId() {
+        return @Model.Id;
+    }
+
+    function GetRiskAndPreventiveMeasuresEdit() {
+        return @Model.IsEdit.ToString().ToLower();
+    }
+
+     function antiForgeryGen() {
+        var token = '@Html.AntiForgeryToken()';
+        token = $(token).val();
+        return token;
+    }
+
+    var riskLevelMatrixData =@Html.Raw(Json.Serialize(Model.RiskLevelMatrixData));
+
+    var selectedMeasuresCodes =@Html.Raw(Json.Serialize(Model.SelectedMeasuresCodes));
+
+</script>

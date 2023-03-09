@@ -1,0 +1,141 @@
+﻿@model UserDetailsViewComponentModel
+@inject SharedLocalizer L
+
+@{
+    string fieldState = Model.IsEditMode ? string.Empty : "disabled";
+}
+
+<form asp-page-handler="@Model.PageHandler" method="post">
+    <div class="content tabs elec-content-layout">
+        <div class="container formularioDetalle">
+            @if (Model.IsEditMode)
+            {
+                @if (Model.UserDetailsModel.Id == 0)
+                {
+                    <input type="hidden" asp-for="UserDetailsModel.UserADGuid" />
+
+                }
+                else
+                {
+                    <input type="hidden" asp-for="UserDetailsModel.Id" />
+                }
+            }
+            @if (Model.ErrorMsg != null)
+            {
+                <div class="alert alert-warning alert-dismissible fade show alert-with-icon" role="alert">
+                    <span class="material-icons" data-notify="icon">error_outline</span>
+                    @Model.ErrorMsg
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+            }
+
+
+            @{
+                if (Model.UserDetailsModel.Id != 0)
+                {
+                    <div class="row">
+                        <div class="form-group bmd-form-group col-4 disabled">
+                            <div class="input-group">
+                                <label for="CreationDate" class="bmd-label-floating">@L["DetallePlan.DatGen.FechaCreacion"]</label>
+                                <input class="form-control" type="text" value="@Model.UserDetailsModel.CreateDate.ToString("dd/MM/yy")" disabled />
+                            </div>
+                        </div>
+                        <div class="form-group bmd-form-group col-4 disabled">
+                            <div class="input-group ">
+                                <label for="ModifiedDate" class="bmd-label-floating">@L["DetallePlan.DatGen.FechaModificacion"]</label>
+                                <input class="form-control" type="text" value="@Model.UserDetailsModel.ModifiedDate.ToString("dd/MM/yy")" disabled />
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+
+            <div class="row">
+                <div class="form-group bmd-form-group col-4 disabled">
+                    <div class="input-group ">
+                        <label for="UserName" class="bmd-label-floating">@L["Identity.Login.UserName"]</label>
+                        <input asp-for="UserDetailsModel.UserName" class="form-control" />
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="form-group bmd-form-group col-4 disabled">
+                    <div class="input-group ">
+                        <label for="Name" class="bmd-label-floating">@L["Administration.User.Name"]</label>
+                        @Html.TextBoxFor(model => model.UserDetailsModel.CompleteName, new
+                   {
+                       @class = "form-control",
+                       @required = "required",
+                   })
+                    </div>
+                </div>
+
+                <div class="form-group bmd-form-group col-4 disabled">
+                    <div class="input-group ">
+                        <label for="User_Email" class="bmd-label-floating">E-mail</label>
+                        <input asp-for="UserDetailsModel.Email" class="form-control" />
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="form-group bmd-form-group col-6 @fieldState">
+                    <div class="input-group ">
+                        <label asp-for="UserDetailsModel.UserRole">@L["Administration.User.RoleName"]</label>
+                        <select class="form-control selectpicker" asp-for="UserDetailsModel.UserRole">
+                            <option value="">@L["Common.Select"]</option>
+                            <option value="Administrador">@L["Common.Role.Admin"]</option>
+                            <option value="Usuario">@L["Common.Role.User"]</option>
+                        </select>
+                    </div>
+                    <span asp-validation-for="UserDetailsModel.UserRole" class="error"></span>
+                </div>
+            </div>
+
+            <div class="row">
+                <fieldset class="col-xl-6 col-lg-6 @fieldState">
+                    <legend>@L["UserManagement.IsSuscribedUser"]</legend>
+                    <div class="form-check form-check-radio form-check-inline">
+                        <label for="radio1" class="form-check-label">
+                            <input class="form-check-input" asp-for="UserDetailsModel.IsSuscribed" type="radio" value="true" id="radio1" checked>
+                            @L["General.Radio.Si"]<span class="circle"> <span class="check"></span> </span>
+                        </label>
+                    </div>
+                    <div class="form-check form-check-radio form-check-inline">
+                        <label for="radio2" class="form-check-label">
+                            <input class="form-check-input" asp-for="UserDetailsModel.IsSuscribed" type="radio" value="false" id="radio2">
+                            @L["General.Radio.No"] <span class="circle"> <span class="check"></span> </span>
+                        </label>
+                    </div>
+                </fieldset>
+            </div>
+        </div>
+    </div>
+    <div class="footer-formularioDetalle">
+        <div class="container-fluid">
+            <div class="row px-4 align-items-center">
+                <div class="col-auto ml-auto">
+                    <ul class="list-inline">
+                        <li class="list-inline-item">
+                            <a class="btn btn-default" asp-page="/Models/Administration/Users/UsermanagementList">@L["General.Boton.Cerrar"]</a>
+                        </li>
+                        @if (Model.IsEditMode)
+                        {
+                            <li class="list-inline-item">
+                                <div class="btn-group">
+                                    <button class="btn btn-primary" type="submit">
+                                        @L["General.Boton.Guardar"]
+                                    </button>
+                                </div>
+                            </li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</form>

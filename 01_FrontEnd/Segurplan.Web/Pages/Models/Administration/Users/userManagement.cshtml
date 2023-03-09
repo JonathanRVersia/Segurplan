@@ -1,0 +1,12 @@
+﻿@page "/UserManagement"
+@model Segurplan.Web.Pages.Models.Administration.Users.UserManagementModel
+@using Segurplan.Core.Actions.Administration
+
+@inject SharedLocalizer L
+
+    <div id="userDetailsView">
+@{
+    ViewData["Title"] = @L["Administration.Users.Management.Title"];
+}
+        @await Component.InvokeAsync(typeof(Pages.Components.UserDetails.UserDetailsViewComponent), Model.UserDetails)
+    </div>

@@ -1,0 +1,91 @@
+﻿@model NavBarViewModel
+
+@inject SharedLocalizer L
+@{
+    bool showSearch = Convert.ToBoolean(ViewData["NavBar.ShowSearch"]);
+    bool searchLessPage = Convert.ToBoolean(ViewData["IsSearchLessPage"]);
+}
+
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-fixed fixed-top  ">
+    <div class="container-fluid">
+        <div class="navbar-wrapper"> <a class="navbar-brand ml-0" href="#">@ViewData["Title"]</a> </div>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" aria-controls="navigation-index" aria-expanded="false" aria-label="Toggle navigation"> <span class="sr-only">Toggle navigation</span> <span class="navbar-toggler-icon icon-bar"></span> <span class="navbar-toggler-icon icon-bar"></span> <span class="navbar-toggler-icon icon-bar"></span> </button>
+        <div class="collapse navbar-collapse justify-content-end">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    @{
+                        if (!searchLessPage)
+                        {
+                            <a class="nav-link buscadorRelativo" title="@L["NavBar.Search"]" href="#">
+                                <i class="material-icons-outlined search">search</i>
+                                <p class="d-lg-none d-md-block"> @L["NavBar.Search"] </p>
+                            </a>
+                        }
+                    }
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link" href="#" id="navbarDropdownProfile" data-toggle="dropdown" title="@L["NavBar.Account"]" aria-haspopup="true" aria-expanded="false">
+                        <i class="material-icons-outlined">person</i>
+                        <p class="d-lg-none d-md-block"> @L["NavBar.Account"] </p>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-right usuarioPerfil" aria-labelledby="navbarDropdownProfile">
+                        <div class="perfil">
+                            <div class="nombre">@Model.UserName</div>
+                            <div class="centro">@Model.Role</div>
+                        </div>
+                        <div class="logOut">
+                            <a class="btn" asp-page="/Models/Account/Logout">
+                                <i class="fas fa-power-off"></i>
+                            </a>
+                        </div>
+
+
+
+                    </div>
+                    <!--<div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownProfile">
+                        @*opciones*@
+                        <a class="dropdown-item" href="#">Opción 1</a> <a class="dropdown-item" href="#">Opción 2</a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" href="/logout">@L["NavBar.LogOut"]</a>
+                    </div>-->
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link fullPage" href="" title="@L["NavBar.FullScreen"]">
+                        <i class="material-icons-outlined">open_in_full</i>
+                        <p class="d-lg-none d-md-block"> Stats </p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="~/Manual-Usuario-Segurplan.pdf" target="_blank" title="@L["NavBar.Help"]">
+                        <i class="material-icons-outlined">help_outline</i>
+                        <p class="d-lg-none d-md-block"> Stats </p>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+<!-- End Navbar -->
+<!-- jquery not found temporal fix -->
+<script src="~/assets/js/core/jquery.min.js"></script>
+
+<script type="text/javascript" defer on-content-loaded>
+    (function () {
+        $('body').on('click', '.buscadorRelativo .search', function (e) {
+            $('.buscadorRelativoContent').show(500);
+            $('.buscadorRelativoContent .btn .cerrarBuscador').show();
+            $('.buscadorRelativo').hide();
+            $('.tags').hide(500);
+        })
+
+        $('body').on('click', '.buscadorRelativoContent .cerrarBuscador', function (e) {
+            e.preventDefault();
+
+            $('.buscadorRelativoContent').hide(500);
+            $('.buscadorRelativoContent .cerrarBuscador').hide();
+            $('.buscadorRelativo').show();
+            $('.tags').show(500);
+        })
+    })();
+</script>

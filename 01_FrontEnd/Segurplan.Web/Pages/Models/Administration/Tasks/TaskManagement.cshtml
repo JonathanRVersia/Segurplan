@@ -1,0 +1,287 @@
+﻿@page "/TaskManagement"
+@model Segurplan.Web.Pages.Models.Administration.TasksArticle.TaskManagementModel
+@using Segurplan.Core.Actions.Administration
+@inject SharedLocalizer L
+@{
+    ViewData["Title"] = L["SideBar.ArticleTask"];
+
+    bool editEnabled = Model.CurrentOperation != AdministrationActionType.Read;
+
+    string fieldState = editEnabled ? string.Empty : "disabled";
+}
+
+<form id="EditTaskForm" enctype="multipart/form-data" method="post">
+    <div class="content tabs elec-content-layout planes">
+        <div class="tab-content">
+            <div class="container formularioDetalle">
+                @Html.HiddenFor(model => model.Task.Id)
+                @Html.HiddenFor(model => model.CurrentOperation)
+
+
+                @{
+                    <div class="row">
+                        <div class="form-group bmd-form-group col-6 col-sm-4 col-md-3 col-lg-2 disabled">
+                            <div class="input-group">
+                                <label asp-for="Task.CreateDate" class="bmd-label-floating">@L["ChapterDetails.CreationDate"]</label>
+                                <input type="text" class="form-control" id="fechaCreacion" asp-for="Task.CreateDate" />
+                            </div>
+                        </div>
+
+                        <div class="form-group bmd-form-group col-6 col-sm-4 col-md-3 col-lg-2 disabled">
+                            <div class="input-group">
+                                <label asp-for="Task.UpdateDate" class="bmd-label-floating">@L["ChapterDetails.UpdateDate"]</label>
+                                <input type="text" class="form-control" id="fechaModificacion" asp-for="Task.UpdateDate" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group bmd-form-group col-10">
+                            <div class="input-group">
+                                <label class="bmd-label-floating">@L["Administration.Task.Name"]</label>
+                                <input asp-for="Task.Name" required value="@Model.Task.Name" class="form-control
+                            @(Model.CurrentOperation == AdministrationActionType.Read?"disabled":"")" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="container formularioDetalle">
+                        <div class="row">
+                            <div class="col-12">
+
+                                <table class="table table-bordered table-striped sortable table-hover" id="example">
+                                    <caption>@L["SideBar.Articles"]</caption>
+                                    <thead>
+                                        <tr>
+                                            <th style="width:5%">@L["Administration.Articles.Id"] <span class="icon sort"></span></th>
+                                            <th style="width:50%">@L["Administration.Articles.Name"]<span class="icon sort"></span></th>
+                                            <th style="width:3%" class="text-center">@L["Planes.TablePlan.Acciones"]</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="articles-page-table-body">
+                                        @{
+                                            int i = 0;
+                                            foreach (var item in Model.Task.TaskDetails)
+                                            {
+                                                <tr id="table-@i" class="table-row articlesTable">
+                                                    <td>
+                                                        @item.Article.Id
+                                                        <input class="article-table-id" type="hidden" name="Task.TaskDetails[@i].Article.Id" value="@item.Article.Id" />
+                                                    </td>
+                                                    <td>
+                                                        @Html.Raw(item.Article.Name)
+                                                        <input class="article-table-name" type="hidden" name="Task.TaskDetails[@i].Article.Name" value="@item.Article.Name" />
+                                                        <input class="article-table-createdBy" type="hidden" name="Task.TaskDetails[@i].CreatedBy" value="@item.CreatedBy" />
+                                                        <input class="article-table-createDate" type="hidden" name="Task.TaskDetails[@i].CreateDate" value="@item.CreateDate" />
+                                                    </td>
+                                                    <td class="text-center">
+                                                        <a class="nav-link @(Model.CurrentOperation == AdministrationActionType.Read?" disabled":"")" href="#" id="navbarDropdownProfile2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                            <span class="fas fa-ellipsis-v"></span>
+
+                                                        </a>
+                                                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownProfile2">
+                                                            <a class="dropdown-item" onclick="DeletePageTableRow('table-@i')" href="#" disabled="@(Model.CurrentOperation == AdministrationActionType.Read?" disabled":"")">@L["General.Table.Remove"]</a>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                                i++;
+                                            }
+                                        }
+
+                                    </tbody>
+                                </table>
+                                <ul class="mt-4 mb-5 list-inline">
+                                    <li class="list-inline-item @(Model.CurrentOperation == AdministrationActionType.Read?" disabled":"")"><a href="#" class="anadir" data-toggle="modal" data-target="#listadoArticulos"><span class="fas fa-plus "></span> @L["Administration.Task.Add.Article"]</a></li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <input type="hidden" asp-for="Task.CreatedBy" value="@Model.Task.CreatedBy" class="form-control" />
+                        <input type="hidden" asp-for="Task.CreateDate" value="@Model.Task.CreateDate" class="form-control" />
+
+                        <!-- Modal listado equipos-->
+                        <div class="modal fade" id="listadoArticulos" tabindex="-1" role="dialog" aria-labelledby="listadoCotizaciones" aria-hidden="true">
+                            <div class="modal-dialog listadoModal modalMedidas" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h4 class="modal-title text-left">@L["SideBar.Articles"]</h4>
+                                        <button id="articleModalClose" type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="col-12">
+                                            <div class="row">
+                                                <div class="form-group bmd-form-group col-8 mt-0">
+                                                    <div class="input-group">
+                                                        <label for="Name" class="bmd-label-floating">@L["Articles.Modal.Search.Name"]</label>
+                                                        <input class="form-control searched" type="text" id="articleName">
+                                                    </div>
+                                                </div>
+                                                <div class="col-1 form-group" id="SearchSubmit">
+                                                    <button class="btn btn-white buscar" type="button" onclick="ModalSearchSubmit()">
+                                                        @L["Common.Search"]
+                                                    </button>
+                                                </div>
+                                                <div id="loading" class="form-group"></div>
+                                            </div>
+                                        </div>
+                                        <div class="table-listadoModal">
+                                            <table class="table table-bordered table-striped sortable" id="example3">
+                                                <thead>
+                                                    <tr>
+                                                        <th style="width: 60px;" class="text-center">
+                                                            <div class="form-check">
+                                                                <label class="form-check-label">
+                                                                    <input class="form-check-input" onclick="setAllChecked('articles-modal-table-body', this)" type="checkbox" value="" />
+                                                                    <span class="form-check-sign"><span class="check"></span></span>
+                                                                </label>
+                                                            </div>
+                                                        </th>
+                                                        <th style="width: 7%">@L["Administration.User.Code"] <span class="icon sort"></span></th>
+                                                        <th>@L["Administration.Articles.Name"]<span class="icon sort"></span></th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody id="articles-modal-table-body">
+                                                    @{
+                                                        int it = 0;
+                                                        if (Model?.ArticlesList != null) {
+                                                            foreach (var article in Model?.ArticlesList?.Value?.Articles)
+                                                            {
+
+                                                            <tr id="Modal-@it">
+                                                                <td class="text-center">
+                                                                    <div class="form-check">
+                                                                        <label class="form-check-label">
+                                                                            <input class="form-check-input" type="checkbox" value="Modal-@it" onclick="CheckBehaviour('@article.Id')" />
+                                                                            <span class="form-check-sign">
+                                                                                <span class="check"></span>
+                                                                            </span>
+                                                                        </label>
+                                                                    </div>
+                                                                    <input class="modal-id" type="hidden" value="@article.Id" />
+                                                                </td>
+
+                                                                <td id="id-@article.Id" class="modal-id">
+                                                                    @article.Id
+                                                                </td>
+                                                                <td id="name-@article.Id" class="modal-name">
+                                                                    @Html.Raw(article.Name)
+                                                                </td>
+                                                            </tr>
+                                                                    it++;
+                                                                } }
+                                                        }
+                                                </tbody>
+                                            </table>
+                                        </div>
+
+                                        <div class="row">
+                                            <div class="col-12">
+                                                <div class="row">
+
+                                                    <div id="articles-modal-pagination-count" class="col-6 paginacion text-right">
+                                                        @{
+                                                            if (Model.ArticlesList?.Value != null)
+                                                            {
+                                                                @(Model.ArticlesList.Value.SkippedRows + 1)
+                                                                @:-
+                                                                @(Model.ArticlesList.Value.SkippedRows + Model.ArticlesModalPageSize > Model.ArticlesList.Value.TotalCount ?
+                                                                        Model.ArticlesList.Value.TotalCount : Model.ArticlesList.Value.SkippedRows + Model.ArticlesModalPageSize)
+                                                                @:@L["Common.De"]
+                                                                @(Model.ArticlesList.Value.TotalCount)
+                                                            }
+                                                            else
+                                                            {
+                                                                @: 0 - 0 - 0
+                                                            }
+                                                        }
+                                                    </div>
+                                                    <div class="col-3 text-right botones-paginacion">
+                                                        <button class="btn" type="button" onclick="ChangeModalPage('previous',event)"> <i class="fas fa-chevron-left"></i> </button>
+                                                        <button class="btn" type="button" onclick="ChangeModalPage('next',event)"> <i class="fas fa-chevron-right"></i> </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                    <div class="modal-footer">
+
+                                        <ul class="list-inline ml-auto">
+                                            <li class="list-inline-item">
+                                                <button type="button" onclick="CloseArticleModal()" class="btn btn-default">@L["Administration.User.Cancel"]</button>
+                                            </li>
+                                            <li class="list-inline-item"><button type="button" onclick="AddArticle(event)" class="btn btn-primary">@L["General.Add"]</button></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+        <input id="articles-page-number" type="hidden" asp-for="ArticleModalPageNumber" />
+        @if (Model.ArticlesList?.Value != null)
+        {
+            <input id="articles-TotalCount" type="hidden" value="@Model.ArticlesList.Value?.TotalCount" />
+            <input id="articles-Rows-per-page" type="hidden" value="@Model.ArticlesList.Value?.PageSize" />
+        }
+    </div>
+    <div class="footer-formularioDetalle">
+        <div class="container-fluid">
+            <div class="row px-4 align-items-center">
+                <div class="col-auto ml-auto">
+                    @{
+                        if (editEnabled)
+                        {
+                            <ul class="list-inline">
+                                <li class="list-inline-item">
+                                    <button class="btn btn-default" onclick="back();">
+                                        @L["Administration.Articles.Cancel"]
+                                    </button>
+                                </li>
+                                <li class="list-inline-item">
+                                    <button type="submit" asp-page-handler="SaveTask" class="btn btn-primary">
+                                        @L["General.Boton.Guardar"]
+                                    </button>
+                                </li>
+                            </ul>
+                        }
+                        else
+                        {
+                            <button class="btn btn-primary" onclick="back();">
+                                @L["Administracion.Users.Volver"]
+                            </button>
+
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+<script src="~/assets/js/ArticlesByTaskDetail.js" asp-append-version="true"></script>
+<script>
+
+     var commonDe = '@L["Common.De"]',
+        commonDelete='@L["General.Table.Remove"]';
+
+    function back() {
+        event.preventDefault();
+        location.href = '/TasksList';
+    }
+
+    function antiForgeryGen() {
+        var token = '@Html.AntiForgeryToken()';
+        token = $(token).val();
+        return token;
+    }
+
+    //expand menu
+    document.getElementById("adminCaret").setAttribute("aria-expanded", "true");
+    document.getElementById("pagesAdmin").classList.add("show");
+    var cultureInfo = "@System.Globalization.CultureInfo.CurrentCulture.Name"
+
+    var selectedArticlesCodes = @Html.Raw(Json.Serialize(@Model.SelectedArticlesCodes));
+
+</script>

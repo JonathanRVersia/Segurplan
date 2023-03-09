@@ -1,0 +1,45 @@
+﻿@page
+@model Segurplan.Web.Pages.Models.Administration.ChaptersAndActivities.ActivityDetails.IndexModel
+
+@inject SharedLocalizer L
+
+@{
+    if (Model.ActivityVersion.Id != 0)
+    {
+        ViewData["Title"] = L["ActivityDetails.View.Title", Model.ActivityVersion.IdActivityNavigation.Number];
+    }
+    else
+    {
+        ViewData["Title"] = L["ActivityDetails.New"];
+    }
+}
+
+<script asp-append-version="true" async>
+    var subchapterVersionId = "@Html.Raw(Model.SubChapterVersionId)";
+    var activityVersionId = "@Html.Raw(Model.ActivityVersionId)";
+    if (window.performance && window.performance.navigation.type === window.performance.navigation.TYPE_BACK_FORWARD && activityVersionId == 0) {
+            document.body.innerHTML = "";
+            location.href = `/Models/Administration/ChaptersAndActivities/SubChapterDetails?subChapterVersionId=${subchapterVersionId}&isEditMode=true`;
+        }
+</script>
+
+@await Component.InvokeAsync(typeof(Pages.Components.ActivityDetails.ActivityDetailsViewComponent))
+
+@*Modal alert when Chapter/SubChapter/Activity cannot be removed*@
+@if (Model.DeleteCheck != null)
+{
+    @await Component.InvokeAsync(typeof(Pages.Components.ChapterActivitiesDeleteCheckModal.ChapterActivitiesDeleteCheckModalViewComponent), Model.DeleteCheck);
+}
+<script>
+    function GetLastFilterData() {
+        return [
+               @{
+                   foreach (var item in Model.FilterData)
+                   {
+                     @:{chapterId: @(item.IdChapterRelation), subChapterId: @(item.IdSubChapterRelation), activityId: @(item.IdActivityRelation),},
+                   }
+                }
+            ];
+    }
+
+</script>

@@ -1,0 +1,653 @@
+﻿@using Segurplan.Web.Utils
+@using Segurplan.Web.Pages.Models.SafetyPlans
+@using Segurplan.Core.Actions.Plans
+
+@model Pages.Models.SafetyPlans.PlansBase
+
+@inject SharedLocalizer L
+@{
+    string filtersStyle = Model.TableState.AllPlans && Model.TableState.FirstLoad
+        ? "display:block"
+        : "display:none";
+}
+
+<form id="planList" method="post" enctype="multipart/form-data">
+    @Html.AntiForgeryToken()
+    <div class="content listado no-tabs">
+        <div class="container-fluid p-0">
+            <!-- Buscador -->
+            @{
+                if (Model.TableState.AllPlans && Model.TableState.FirstLoad)
+                {
+                    filtersStyle = "display:block";
+                }
+                else
+                {
+                    filtersStyle = "display:none";
+                }
+            }
+
+            <div class="row buscadorRelativoContent ml-2" id="filterZone" style="@filtersStyle">
+
+                <div class="row">
+                    <div class="col-11">
+                        <div class="row">
+                            <div class="form-group bmd-form-group col-4">
+                                <div class="input-group">
+                                    <label for="actividad" class="bmd-label-floating">@L["Plans.Filter.Activity"]</label>
+                                    <input type="text" asp-for="ActivityFilter" class="form-control" value=@Model.ActivityFilter>
+                                </div>
+                            </div>
+
+                            <div class="form-group bmd-form-group col-8">
+                                <div class="input-group">
+                                    <label for="titulo" class="bmd-label-floating">@L["Plans.Filter.Title"]</label>
+                                    <input type="text" asp-for="TitleFilter" class="form-control" value=@Model.TitleFilter>
+                                </div>
+                            </div>
+
+                            <div class="form-group bmd-form-group col-4 pt-2">
+                                <div class="input-group">
+                                    <label for="elaborado" class="bmd-label-floating">@L["Plans.Filter.ProducedBy"]</label>
+                                    <input type="text" asp-for="ProducedByFilter" class="form-control" value=@Model.ProducedByFilter>
+                                </div>
+                            </div>
+
+                            <div class="form-group bmd-form-group col-4 pt-2">
+                                <div class="input-group">
+                                    <label for="comprobado" class="bmd-label-floating">@L["Plans.Filter.CheckedBy"]</label>
+                                    <input type="text" asp-for="CheckedByFilter" class="form-control" value=@Model.CheckedByFilter>
+                                </div>
+                            </div>
+
+                            <div class="form-group bmd-form-group col-4 pt-2">
+                                <div class="input-group">
+                                    <label for="aprobado" class="bmd-label-floating">@L["Plans.Filter.ApprovedBy"]</label>
+                                    <input type="text" asp-for="ApprovedByFilter" class="form-control" value=@Model.ApprovedByFilter>
+                                </div>
+                            </div>
+
+                            <div class="form-group bmd-form-group col-4 pt-2">
+                                <div class="input-group">
+                                    <label for="organizacion" class="bmd-label-floating">@L["Plans.Filter.Organization"]</label>
+                                    <input type="text" asp-for="OrganizationFilter" class="form-control" value=@Model.OrganizationFilter>
+                                </div>
+                            </div>
+
+                            <div class="form-group bmd-form-group col-3 pt-2">
+                                <div class="input-group is-filled">
+                                    <label for="fecha" class="bmd-label-floating">@L["Plans.Filter.ProducedFromDate"]</label>
+                                    <input type="text" asp-for="FromDateFilter" class="form-control datepicker" value=@Model.FromDateFilter placeholder="dd/MM/yyyy">
+                                </div>
+                            </div>
+                            <div class="form-group bmd-form-group col-3 pt-2">
+                                <div class="input-group is-filled">
+                                    <label class="bmd-label-floating">@L["Plans.Filter.ProducedToDate"]</label>
+                                    <input type="text" asp-for="ToDateFilter" class="form-control datepicker" value=@Model.ToDateFilter placeholder="dd/MM/yyyy">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class=""></div>
+                    <div class="col-1 acciones_buscador">
+
+                        <button class="btn btn-just-icon btn-white">
+                            <i class="material-icons cerrarBuscador" id="searchClose" style="display:block">close</i>
+                            <div class="ripple-container"></div>
+                        </button>
+
+                        <button type="submit" asp-page-handler="LoadPlans" class="btn btn-white buscar" onclick="ValidateSearchFilters(event);">
+                            @L["Planes.Filtros.Search"]
+                        </button>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="row tags">
+                <div class="col-12 px-0">
+                    <ul>
+                        @{
+                            if (!string.IsNullOrWhiteSpace(Model.ActivityFilter))
+                            {
+
+                            <li>
+                                @L[$"Plans.Filter.Activity"]
+                                <span><label asp-for="ActivityFilter">@Model.ActivityFilter</label></span>
+                                <button asp-page-handler="LoadPlans" asp-route-filterIndex="@PlansBase.FilterIndex.Activity" type="submit" onclick="setMandatoryFiels();" class="btn btn-just-icon btn-white">
+                                    <i class="material-icons">close</i>
+                                </button>
+                            </li>
+                            }
+                            if (!string.IsNullOrWhiteSpace(Model.TitleFilter))
+                            {
+                            <li>
+                                @L[$"Plans.Filter.Title"]
+                                <span><label asp-for="TitleFilter">@Model.TitleFilter</label></span>
+                                <button asp-page-handler="LoadPlans" asp-route-filterIndex="@PlansBase.FilterIndex.Title" type="submit" onclick="setMandatoryFields();" class="btn btn-just-icon btn-white">
+                                    <i class="material-icons">close</i>
+                                </button>
+                            </li>
+                            }
+                            if (!string.IsNullOrWhiteSpace(Model.ProducedByFilter))
+                            {
+                            <li>
+                                @L[$"Plans.Filter.ProducedBy"]
+                                <span><label asp-for="ProducedByFilter">@Model.ProducedByFilter</label></span>
+                                <button asp-page-handler="LoadPlans" asp-route-filterIndex="@PlansBase.FilterIndex.ProducedBy" type="submit" onclick="setMandatoryFields();" class="btn btn-just-icon btn-white">
+                                    <i class="material-icons">close</i>
+                                </button>
+                            </li>
+                            }
+                            if (!string.IsNullOrWhiteSpace(Model.CheckedByFilter))
+                            {
+                            <li>
+                                @L[$"Plans.Filter.CheckedBy"]
+                                <span><label asp-for="CheckedByFilter">@Model.CheckedByFilter</label></span>
+                                <button asp-page-handler="LoadPlans" asp-route-filterIndex="@PlansBase.FilterIndex.CheckedBy" type="submit" onclick="setMandatoryFields();" class="btn btn-just-icon btn-white">
+                                    <i class="material-icons">close</i>
+                                </button>
+                            </li>
+                            }
+                            if (!string.IsNullOrWhiteSpace(Model.ApprovedByFilter))
+                            {
+                            <li>
+                                @L[$"Plans.Filter.ApprovedBy"]
+                                <span><label asp-for="ApprovedByFilter">@Model.ApprovedByFilter</label></span>
+                                <button type="submit" asp-page-handler="LoadPlans" asp-route-filterIndex="@PlansBase.FilterIndex.ApprovedBy" onclick="setMandatoryFields();" class="btn btn-just-icon btn-white">
+                                    <i class="material-icons">close</i>
+                                </button>
+                            </li>
+                            }
+                            if (!string.IsNullOrWhiteSpace(Model.OrganizationFilter))
+                            {
+                            <li>
+                                @L[$"Plans.Filter.Organization"]
+                                <span><label asp-for="OrganizationFilter">@Model.OrganizationFilter</label></span>
+                                <button type="submit" asp-page-handler="LoadPlans" asp-route-filterIndex="@PlansBase.FilterIndex.Organization" onclick="setMandatoryFields();" class="btn btn-just-icon btn-white">
+                                    <i class="material-icons">close</i>
+                                </button>
+                            </li>
+                            }
+                            if (!string.IsNullOrWhiteSpace(Model.FromDateFilter))
+                            {
+                            <li>
+                                @L[$"Plans.Filter.ProducedFromDate"]
+                                <span><label asp-for="FromDateFilter">@Model.FromDateFilter</label></span>
+                                <button type="submit" asp-page-handler="LoadPlans" asp-route-filterIndex="@PlansBase.FilterIndex.FromDate" onclick="setMandatoryFields();" class="btn btn-just-icon btn-white">
+                                    <i class="material-icons">close</i>
+                                </button>
+                            </li>
+                            }
+                            if (!string.IsNullOrWhiteSpace(Model.ToDateFilter))
+                            {
+                            <li>
+                                @L[$"Plans.Filter.ProducedToDate"]
+                                <span><label asp-for="ToDateFilter">@Model.ToDateFilter</label></span>
+                                <button type="submit" asp-page-handler="LoadPlans" asp-route-filterIndex="@PlansBase.FilterIndex.ToDate" onclick="setMandatoryFields();" class="btn btn-just-icon btn-white">
+                                    <i class="material-icons">close</i>
+                                </button>
+                            </li>
+                            }
+                        }
+                    </ul>
+                </div>
+            </div>
+
+            <div class="content planes" id="tableContainer">
+                <div class="">
+
+                    <table class="table table-bordered table-striped table-shortable table-hover tableFixHead" id="PlanTable">
+                        <thead>
+                            <tr>
+                                <th width="18%">
+                                    @{
+                                        var orgSortClass = !string.IsNullOrWhiteSpace(Model.OrganizationSort)
+                                            ? Model.OrganizationSort.Contains("Asc")
+                                                ? "order_asc"
+                                                : Model.OrganizationSort.Contains("Desc")
+                                                    ? "order_desc"
+                                                    : "order_default"
+                                            : "order_default";
+                                    }
+                                    <a asp-page-handler="ApplySort"
+                                       asp-route-activity="@Model.ActivityFilter"
+                                       asp-route-title="@Model.TitleFilter"
+                                       asp-route-producedBy="@Model.ProducedByFilter"
+                                       asp-route-checkedBy="@Model.CheckedByFilter"
+                                       asp-route-approvedBy="@Model.ApprovedByFilter"
+                                       asp-route-organization="@Model.OrganizationFilter"
+                                       asp-route-fromDate="@Model.FromDateFilter"
+                                       asp-route-toDate="@Model.ToDateFilter"
+                                       asp-route-rows="@Model.TableState.PageRows"
+                                       asp-route-sortOrder="@Model.OrganizationSort">@L["Planes.TablePlan.Organizacion"]<span class="@orgSortClass"></span></a>
+                                </th>
+                                <th width="33%">
+                                    @{
+                                        var titleSortClass = !string.IsNullOrWhiteSpace(Model.TitleSort)
+                                            ? Model.TitleSort.Contains("Asc")
+                                                ? "order_asc"
+                                                : Model.TitleSort.Contains("Desc")
+                                                    ? "order_desc"
+                                                    : "order_default"
+                                            : "order_default";
+                                    }
+                                    <a asp-page-handler="ApplySort"
+                                       asp-route-activity="@Model.ActivityFilter"
+                                       asp-route-title="@Model.TitleFilter"
+                                       asp-route-producedBy="@Model.ProducedByFilter"
+                                       asp-route-checkedBy="@Model.CheckedByFilter"
+                                       asp-route-approvedBy="@Model.ApprovedByFilter"
+                                       asp-route-organization="@Model.OrganizationFilter"
+                                       asp-route-fromDate="@Model.FromDateFilter"
+                                       asp-route-toDate="@Model.ToDateFilter"
+                                       asp-route-rows="@Model.TableState.PageRows"
+                                       asp-route-sortOrder="@Model.TitleSort">@L["Planes.TablePlan.Titulo"]<span class="@titleSortClass"></span></a>
+                                </th>
+                                <th width="8%">
+                                    @{
+                                        var custSortClass = !string.IsNullOrWhiteSpace(Model.CustomerSort)
+                                            ? Model.CustomerSort.Contains("Asc")
+                                                ? "order_asc"
+                                                : Model.CustomerSort.Contains("Desc")
+                                                    ? "order_desc"
+                                                    : "order_default"
+                                            : "order_default";
+                                    }
+                                    <a asp-page-handler="ApplySort"
+                                       asp-route-activity="@Model.ActivityFilter"
+                                       asp-route-title="@Model.TitleFilter"
+                                       asp-route-producedBy="@Model.ProducedByFilter"
+                                       asp-route-checkedBy="@Model.CheckedByFilter"
+                                       asp-route-approvedBy="@Model.ApprovedByFilter"
+                                       asp-route-organization="@Model.OrganizationFilter"
+                                       asp-route-fromDate="@Model.FromDateFilter"
+                                       asp-route-toDate="@Model.ToDateFilter"
+                                       asp-route-rows="@Model.TableState.PageRows"
+                                       asp-route-sortOrder="@Model.CustomerSort">@L["Planes.TablePlan.Cliente"]<span class="@custSortClass"></span></a>
+                                </th>
+                                <th width="10%">
+                                    @{
+                                        var actSortClass = !string.IsNullOrWhiteSpace(Model.ActivitySort)
+                                            ? Model.ActivitySort.Contains("Asc")
+                                                ? "order_asc"
+                                                : Model.ActivitySort.Contains("Desc")
+                                                    ? "order_desc"
+                                                    : "order_default"
+                                            : "order_default";
+                                    }
+                                    <a asp-page-handler="ApplySort"
+                                       asp-route-activity="@Model.ActivityFilter"
+                                       asp-route-title="@Model.TitleFilter"
+                                       asp-route-producedBy="@Model.ProducedByFilter"
+                                       asp-route-checkedBy="@Model.CheckedByFilter"
+                                       asp-route-approvedBy="@Model.ApprovedByFilter"
+                                       asp-route-organization="@Model.OrganizationFilter"
+                                       asp-route-fromDate="@Model.FromDateFilter"
+                                       asp-route-toDate="@Model.ToDateFilter"
+                                       asp-route-rows="@Model.TableState.PageRows"
+                                       asp-route-sortOrder="@Model.ActivitySort">@L["Planes.TablePlan.Actividad"]<span class="@actSortClass"></span></a>
+                                </th>
+                                <th width="12%">
+                                    @{
+                                        var prodSortClass = !string.IsNullOrWhiteSpace(Model.ProducedBySort)
+                                            ? Model.ProducedBySort.Contains("Asc")
+                                                ? "order_asc"
+                                                : Model.ProducedBySort.Contains("Desc")
+                                                    ? "order_desc"
+                                                    : "order_default"
+                                            : "order_default";
+                                    }
+                                    <a asp-page-handler="ApplySort"
+                                       asp-route-activity="@Model.ActivityFilter"
+                                       asp-route-title="@Model.TitleFilter"
+                                       asp-route-producedBy="@Model.ProducedByFilter"
+                                       asp-route-checkedBy="@Model.CheckedByFilter"
+                                       asp-route-approvedBy="@Model.ApprovedByFilter"
+                                       asp-route-organization="@Model.OrganizationFilter"
+                                       asp-route-fromDate="@Model.FromDateFilter"
+                                       asp-route-toDate="@Model.ToDateFilter"
+                                       asp-route-rows="@Model.TableState.PageRows"
+                                       asp-route-sortOrder="@Model.ProducedBySort">@L["Plans.Filter.ProducedBy"]<span class="@prodSortClass"></span></a>
+                                </th>
+                                <th width="12%">
+                                    @{
+                                        var modSortClass = !string.IsNullOrWhiteSpace(Model.ModifiedBySort)
+                                            ? Model.ModifiedBySort.Contains("Asc")
+                                                ? "order_asc"
+                                                : Model.ModifiedBySort.Contains("Desc")
+                                                    ? "order_desc"
+                                                    : "order_default"
+                                            : "order_default";
+                                    }
+                                    <a asp-page-handler="ApplySort"
+                                       asp-route-activity="@Model.ActivityFilter"
+                                       asp-route-title="@Model.TitleFilter"
+                                       asp-route-producedBy="@Model.ProducedByFilter"
+                                       asp-route-checkedBy="@Model.CheckedByFilter"
+                                       asp-route-approvedBy="@Model.ApprovedByFilter"
+                                       asp-route-organization="@Model.OrganizationFilter"
+                                       asp-route-fromDate="@Model.FromDateFilter"
+                                       asp-route-toDate="@Model.ToDateFilter"
+                                       asp-route-rows="@Model.TableState.PageRows"
+                                       asp-route-sortOrder="@Model.ModifiedBySort">@L["Planes.TablePlan.Modificado"]<span class="@modSortClass"></span></a>
+                                </th>
+                                <th width="7%">@L["Planes.TablePlan.Acciones"] </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @{
+                                if (Model.ListaPlanes != null)
+                                {
+                                    string rowName = string.Empty;
+                                    string dupliId = string.Empty;
+                                    string dpDown = string.Empty;
+                                    foreach (var plan in Model.ListaPlanes)
+                                    {
+                                        rowName = "row" + @plan.Id;
+                                        dpDown = "dp" + @plan.Id;
+                                        dupliId = "dup" + @plan.Id;
+                                <tr id="@rowName">
+                                    <td title="@L["General.Table.Visualize"]" onclick="planManagement(@plan.Id, '@PlanActionType.View', '')">@plan.GeneralData.BusinessAddress</td>
+                                    <td title="@L["General.Table.Visualize"]" onclick="planManagement(@plan.Id, '@PlanActionType.View', '')">@plan.GeneralData.PlanTitle</td>
+                                    <td title="@L["General.Table.Visualize"]" onclick="planManagement(@plan.Id, '@PlanActionType.View', '')">@plan.GeneralData.CustomerName</td>
+                                    <td title="@L["General.Table.Visualize"]" onclick="planManagement(@plan.Id, '@PlanActionType.View', '')">@plan.GeneralData.GeneralActivityName</td>
+                                    <td title="@L["General.Table.Visualize"]" onclick="planManagement(@plan.Id, '@PlanActionType.View', '')">@plan.GeneralData.CreatorName</td>
+                                    <td title="@L["General.Table.Visualize"]" onclick="planManagement(@plan.Id, '@PlanActionType.View', '')" class="text-right">@plan.ModifiedDate</td>
+                                    <td class="text-center">
+                                        <div class="btn-group">
+                                            <a class="nav-link" href="#" id="@dpDown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                <i class="fas fa-ellipsis-v"></i>
+                                                <p class="d-lg-none d-md-block"> Account </p>
+                                            </a>
+                                            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownProfile">
+                                                @*<a class="dropdown-item" href="/PlanManagement?id=@plan.Id&op=1">@L["General.Table.Visualize"]</a>*@
+                                                <a class="dropdown-item" asp-page="./PlanManagement" asp-route-id="@plan.Id" asp-route-op="1" asp-route-prevPage="@Model.PrevPage" >@L["General.Table.Visualize"]</a>
+                                                @{
+                                                            if (RightsController.CanEditPlan(plan.CreatedBy, Convert.ToInt32(Model.userManager.GetUserId(Model.HttpContext.User))))
+                                                            {
+                                                    @*<a class="dropdown-item" href="/PlanManagement?id=@plan.Id&op=2">@L["Planes.OpcionTable.Editar"]</a>*@
+                                                    <a class="dropdown-item" asp-page="./PlanManagement" asp-route-id="@plan.Id" asp-route-op="2" asp-route-prevPage="@Model.PrevPage">@L["Planes.OpcionTable.Editar"]</a>
+                                                            }
+                                                            else
+                                                            {
+                                                    <a class="dropdown-item disabled" href="#">@L["Planes.OpcionTable.Editar"]</a>
+                                                            }
+                                                }
+                                                <a class="dropdown-item" id="@dupliId" href="#" onclick="duplicatePlan('@plan.Id','@plan.GeneralData.PlanTitle');">@L["Planes.OpcionTable.Duplicar"]</a>
+                                                @*<a class="dropdown-item" href="#">@L["Planes.OpcionTable.GenerarPresupuesto"]</a>*@
+                                                <div class="dropdown-divider"></div>
+                                                @{
+                                                            if (RightsController.CanEditPlan(plan.CreatedBy, Convert.ToInt32(Model.userManager.GetUserId(Model.HttpContext.User))))
+                                                            {
+                                                    <a class="dropdown-item" id="@plan.Id" href="#" onclick="showDeleteConfirmation('@plan.Id','@plan.GeneralData.PlanTitle')">@L["Planes.OpcionTable.Eliminar"]</a>
+                                                            }
+                                                            else
+                                                            {
+                                                    <a class="dropdown-item disabled" id="@plan.Id">@L["Planes.OpcionTable.Eliminar"]</a>
+                                                            }
+                                                }
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                    }
+                                }
+                            }
+                        </tbody>
+                    </table>
+
+                    <!-- Modal DELETE -->
+                    <div class="modal notificacion fade" id="deleteRecord" tabindex="-1" role="dialog" aria-labelledby="delete record" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title error" id="exampleModalLabel">Borrar plan</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar"> <span aria-hidden="true">&times;</span> </button>
+                                </div>
+                                <div class="modal-body">
+                                    <p class="text-center" id="planName">
+                                        @Html.TextBoxFor(model => model.SelectedPlan, new { @class = "form-control justify-content-center disabled" })
+                                    </p>
+                                    <input asp-for="DeletedPlan" id="deletePLanId" />
+                                    <div class="row mt-4">
+                                        <div class="col-6"><button class="btn btn-default btn-lg col-12" data-dismiss="modal">No<div class="ripple-container"></div></button></div>
+                                        <div class="col-6"><button type="submit" class="btn btn-primary btn-lg col-12" asp-page-handler="DeletePlan" onclick="disableButton(this);">Si<div class="ripple-container"></div></button></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- /Modal DELETE -->
+                    <!-- Modal DUPLICATE PLAN-->
+                    <div class="modal notificacion fade" id="duplicatePlan" tabindex="-1" role="dialog" aria-labelledby="duplicate plan" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title error" id="dupPlanMsg">Nombre del nuevo plan</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar"> <span aria-hidden="true">&times;</span> </button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="form-group">
+                                        @Html.TextBoxFor(model => model.DuplicateName, new { @maxlength = "250", @class = "form-control justify-content-center", @required = "required" })
+                                        <p class="text-danger"><small id="duplicatedName"></small></p>
+                                    </div>
+                                    <input asp-for="DuplicatePlanId" />
+                                    <div class="row mt-4">
+                                        <div class="col-6"><button class="btn btn-default btn-lg col-12" data-dismiss="modal">No<div class="ripple-container"></div></button></div>
+                                        <div class="col-6">
+                                            <button type="submit" asp-page-handler="Duplicate"
+                                                    onclick="disableOkButton(this);"
+                                                    class="btn btn-primary btn-lg col-12"
+                                                    id="btnDuplicar">
+                                                Duplicar
+                                                <div class="ripple-container"></div>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- /Modal DUPLICATE PLAN-->
+                    <!-- Modal CONFIRM-->
+                    <div class="modal notificacion fade" id="confirmModal" tabindex="-1" role="dialog" aria-labelledby="duplicate plan" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title error" id="confirmModalTitle">Correcto</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar"> <span aria-hidden="true">&times;</span> </button>
+                                </div>
+                                <div class="modal-body">
+                                    <p id="confirmModalMsg"></p>
+
+                                </div>
+                                <div class="modal-footer">
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- /Modal CONFIRM-->
+
+                    <button class="nuevo btn btn-fab btn-round" title="@L["Planes.Title.Create"]" asp-page="./PlanManagement" asp-page-handler="NewPlan" asp-route-prevPage="@Model.PrevPage" onclick="setMandatoryFields();"> <i class="fas fa-plus"></i> </button>
+                    <div class="footer-table ">
+                        <div class="container">
+                            <div class="row">
+                                <div class="col-2 ml-auto text-left">
+                                    <div class="row">
+                                        <label class="col-8 col-form-label">@L["Planes.Table.Registros"]</label>
+                                        <div class="col-4">
+                                            <div class="dropdown bootstrap-select show-tick">
+                                                <select asp-for="PageRows" class="selectpicker"
+                                                        data-style="select-with-transition" id="rowsChanger"
+                                                        data-size="4" tabindex="-98" onchange="$('form').submit();">
+                                                    @{
+                                                        foreach (int rowNum in Model.TableState.PageRowList)
+                                                        {
+                                                            if (@rowNum == Model.TableState.PageRows)
+                                                            {
+                                                        <option value="@rowNum" selected>@rowNum </option>
+                                                            }
+                                                            else
+                                                            {
+                                                        <option value="@rowNum">@rowNum </option>
+                                                            }
+                                                        }
+                                                    }
+
+                                                </select>
+
+                                                <button type="button" class="btn dropdown-toggle" data-toggle="dropdown" role="button" title="Registros">
+                                                    <div class="filter-option">
+                                                        <div class="filter-option-inner">
+                                                            <div class="filter-option-inner-inner">Registros</div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="ripple-container"></div>
+                                                </button>
+
+                                                <div class="dropdown-menu " role="combobox">
+                                                    <div class="inner show" role="listbox" aria-expanded="false" tabindex="-1">
+                                                        <ul class="dropdown-menu inner show">
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-4 ">
+                                    <div class="row">
+                                        <div class="col-4 paginacion text-right">
+                                            @{
+                                                var startRecord = Model.TableState.PageRows > 0
+                                                    ? ((@Model.TableState.IndexPage * @Model.TableState.PageRows) + 1)
+                                                    : 0;
+
+                                                var results = ((@Model.TableState.IndexPage * @Model.TableState.PageRows) + @Model.TableState.PageRows);
+                                            }
+                                            <span id="startRecord">@startRecord - </span><span id="nResults">@results</span> @L["Common.De"] <span id="total">@Model.TotalRows</span>
+                                        </div>
+                                        <div class="col-8 text-right">
+                                            @{
+                                                var backEnabled = Model.TableState.IndexPage > 0 ? "" : "disabled";
+                                                var nextEnabled = Model.TableState.IndexPage < Model.TotalPages ? "" : "disabled";
+                                            }
+                                            @Html.HiddenFor(m => m.TableState.AllPlans)
+                                            @Html.HiddenFor(m => m.TableState.FirstLoad)
+                                            @Html.HiddenFor(m => m.TableState.IndexPage)
+                                            @Html.HiddenFor(m => m.TableState.OrderBy)
+                                            @Html.HiddenFor(m => m.TableState.OrderMode)
+                                            @Html.HiddenFor(m => m.TableState.PageRows)
+                                            @Html.HiddenFor(m => m.CurrentOrder)
+                                            <button class="btn @backEnabled" type="submit" asp-page-handler="PreviousPage" asp-route-index="@Model.TableState.IndexPage" onclick="CheckIfCanChangePage(event,this,@Model.TotalPages,@Model.TableState.IndexPage,'Prev');setMandatoryFields();"> <i class="fas fa-chevron-left"></i> </button>
+                                            <button class="btn @nextEnabled" type="submit" asp-page-handler="NextPage" asp-route-index="@Model.TableState.IndexPage" onclick="CheckIfCanChangePage(event,this,@Model.TotalPages,@Model.TableState.IndexPage,'Next');setMandatoryFields();"> <i class="fas fa-chevron-right"></i> </button>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+<script type="text/javascript">
+
+    setMandatoryFields();
+
+    function CheckIfCanChangePage(e,element,totalPages,page,direction) {
+        if (direction == "Next") {
+            if (totalPages-1===page) {
+                e.preventDefault();
+            }
+        } else if (direction == "Prev") {
+            if (page== 0) {
+                e.preventDefault();
+            }
+
+        }
+
+    }
+
+    function disableOkButton(btn) {
+
+        if (document.getElementById('DuplicateName').value.toString() != "") {
+            disableButton(btn);
+        }
+    }
+    function elementSet(property, value) {
+        document.getElementById(property).value = value;
+    }
+
+    function showDeleteConfirmation(planId, planName) {
+        event.preventDefault();
+
+        setMandatoryFields();
+        elementSet('deletePLanId', planId);
+
+        if (planName === '') {
+            planName = 'N/A';
+        }
+
+        elementSet('SelectedPlan', planName);
+
+        $('#deleteRecord').modal('show').fadeIn("slow");
+    }
+
+    function duplicatePlan(planId) {
+        event.preventDefault();
+
+        elementSet('DuplicatePlanId', planId);
+        elementSet('SelectedPlan', 'N/A');
+        elementSet('DuplicateName', '');
+
+        $('#duplicatePlan').modal('show').fadeIn("slow");
+    }
+
+
+    function planManagement(id, operation, newName = '', btn = null) {
+
+        event.preventDefault();
+        if (btn != null) {
+            btn.classList.add("disabled");
+        }
+
+        let queryString = "";
+
+        if (newName != '') {
+            queryString += "&planName=" + encodeURIComponent(elementGet('newName'))
+        }
+
+        location.href = "/PlanManagement?id=" + id + "&op=" + operation + queryString;
+    }
+
+    function setMandatoryFields() {
+        elementSet('DuplicateName', 'N/A');
+    }
+
+    function ValidateSearchFilters(event) {
+        let fromDate = document.getElementById('FromDateFilter').value;
+        let toDate = document.getElementById('ToDateFilter').value;
+
+        if (toDate < fromDate) {
+            document.getElementById("ToDateFilter").focus();
+            sendModalNotice("error", '@L["Validation.PlanFilter.DatesError"]');
+            event.preventDefault();
+            return false;
+        }
+
+        setMandatoryFields();
+    }
+
+    function sendModalNotice(type, msg) {
+        Swal.fire({
+            title: msg,
+            type: type,
+        });
+    }
+</script>

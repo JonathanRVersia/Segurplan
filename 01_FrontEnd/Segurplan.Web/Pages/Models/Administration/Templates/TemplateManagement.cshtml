@@ -1,0 +1,179 @@
+﻿@page "/TemplateManagement"
+@model Segurplan.Web.Pages.Models.Administration.Templates.TemplateManagementModel
+@using Segurplan.Core.Actions.Administration
+
+@inject SharedLocalizer L
+
+@{
+    ViewData["Title"] = L["SideBar.Template"];
+
+    bool editEnabled = Model.CurrentOperation != AdministrationActionType.Read;
+
+    string fieldState = editEnabled ? string.Empty : "disabled";
+
+}
+<form enctype="multipart/form-data" method="post">
+    <div class="content tabs elec-content-layout">
+        <div class="container formularioDetalle">
+
+            @if (Model.Template.Id != 0)
+            {
+                <div class="row">
+                    <div class="form-group bmd-form-group col-2 disabled">
+                        <div class="input-group">
+                            <label for="CreationDate" class="bmd-label-floating">@L["DetallePlan.DatGen.FechaCreacion"]</label>
+                            @Html.TextBoxFor(model => model.Template.CreationDate, new { @class = "form-control" })
+                        </div>
+                    </div>
+
+                    <div class="form-group bmd-form-group col-2 disabled">
+                        <div class="input-group ">
+                            <label for="ModifiedDate" class="bmd-label-floating">@L["DetallePlan.DatGen.FechaModificacion"]</label>
+                            @Html.TextBoxFor(model => model.Template.ModifiedDate, new { @class = "form-control" })
+                        </div>
+                    </div>
+                </div>
+            }
+
+
+            <div class="row">
+                @Html.HiddenFor(model => model.Template.Id)
+                @Html.HiddenFor(model => model.CurrentOperation)
+
+                <div class="form-group bmd-form-group col-6 @fieldState">
+                    <div class="input-group ">
+                        <label for="User" class="bmd-label-floating">@L["Administration.Templates.Template"]</label>
+                        @Html.TextBoxFor(model => model.Template.Name, new { @required = "required", @class = "form-control" })
+                    </div>
+                </div>
+                @if (Model.Template.Id != 0)
+                {
+                    <div class="form-group bmd-form-group col-4 disabled">
+                        <div class="input-group ">
+                            <label for="User" class="bmd-label-floating">@L["Administration.Templates.CreatedBy"]</label>
+                            @Html.TextBoxFor(model => model.Template.CreatorName, new { @class = "form-control" })
+                        </div>
+                    </div>
+                }
+            </div>
+
+            <div class="row">
+                <fieldset class="col-xl-6 col-lg-6 @fieldState">
+                    <legend>Tipo plantilla</legend>
+                    <div class="form-check form-check-radio form-check-inline">
+                        <label for="radioSinTipo" class="form-check-label">
+                            <input class="form-check-input" asp-for="Template.TemplateType" type="radio" value="@Segurplan.DataAccessLayer.Enums.TemplateType.NoType" id="radioSinTipo" checked="@(Model.Template.TemplateType.Equals(Segurplan.DataAccessLayer.Enums.TemplateType.NoType)?true : false)">
+                            Sin tipo<span class="circle"> <span class="check"></span> </span>
+                        </label>
+                    </div>
+                    <div class="form-check form-check-radio form-check-inline">
+                        <label for="radioPlan" class="form-check-label">
+                            <input class="form-check-input" asp-for="Template.TemplateType" type="radio" value="@Segurplan.DataAccessLayer.Enums.TemplateType.PlanManagement" id="radioPlan" checked="@(Model.Template.TemplateType.Equals(Segurplan.DataAccessLayer.Enums.TemplateType.PlanManagement)?true : false)">
+                            Planes <span class="circle"> <span class="check"></span> </span>
+                        </label>
+                    </div>
+                    <div class="form-check form-check-radio form-check-inline">
+                        <label for="radioRiesgos" class="form-check-label">
+                            <input class="form-check-input" asp-for="Template.TemplateType" type="radio" value="@Segurplan.DataAccessLayer.Enums.TemplateType.RiskAndPreventiveMeasures" id="radioRiesgos" checked="@(Model.Template.TemplateType.Equals(Segurplan.DataAccessLayer.Enums.TemplateType.RiskAndPreventiveMeasures)?true : false)">
+                            Medidas preventivas <span class="circle"> <span class="check"></span> </span>
+                        </label>
+                    </div>
+                </fieldset>
+            </div>
+
+            <div class="row">
+                <div class="form-group bmd-form-group col-12 @fieldState">
+                    <div class="input-group ">
+                        <label for="User" class="bmd-label-floating">@L["Administration.Templates.Notes"]</label>
+                        @Html.TextBoxFor(model => model.Template.Notes, new { @required = "required", @class = "form-control" })
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-12">
+                    <input type="hidden" asp-for="Template.DeleteExistingFile" id="RemoveExisitngAnagramFile" />
+                    @await Component.InvokeAsync("FileUploader", new { files = Model.Template.FileDetails != null ? new List<Segurplan.Core.BusinessObjects.PlanFile> { @Model.Template.FileDetails } : null, enabled = editEnabled, inputid = "templateFile", planId = Model.Template.Id, destination = "./TemplateManagement" })
+                    <div class="form-group">
+                        <input id="templateFile" class="form-control"
+                               type="file"
+                               asp-for="Template.Archivo"
+                               accept="application/msword, application/vnd.openxmlformats-officedocument.wordprocessingml.document, docx"
+                               data-title="Drag and drop a file"
+                               onclick="onClickFile(this)"
+                               oninput="onInputFile(this)" />
+                    </div>
+                </div>
+            </div>
+
+            @*<div class="row" style="margin-top:3%;">
+                    @{
+                        if (editEnabled)
+                        {
+                            <div class="col-8"></div>
+                            <div class="bmd-form-group">
+                                <div class="btn-group dropup">
+                                    <div class="col-1"></div>
+                                    <button class="btn " onclick="back();">
+                                        @L["Administration.User.Cancel"]
+                                    </button>
+                                    <div class="col-1"></div>
+                                    @{
+                                        if (editEnabled)
+                                        {
+                                            <button type="submit" asp-page-handler="SaveTemplate" class="btn btn-primary">
+                                                @L["General.Boton.Guardar"]
+                                            </button>
+                                        }
+                                    }
+                                </div>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="bmd-form-group">
+
+                                <div class="btn-group dropup">
+                                    <div class="col-1"></div>
+                                    <button class="btn btn-primary" onclick="back();">
+                                        Volver
+                                    </button>
+                                </div>
+                            </div>
+                        }
+                    }
+                </div>*@
+        </div>
+    </div>
+    <div class="footer-formularioDetalle">
+        <div class="container-fluid">
+            <div class="row px-4 align-items-center">
+                <div class="col-auto ml-auto">
+                    <ul class="list-inline">
+                        <li class="list-inline-item">
+                            <a class="btn btn-default" asp-page="/Models/Administration/Templates/TemplateList">@L["General.Boton.Cerrar"]</a>
+                        </li>
+                        @if (editEnabled)
+                        {
+                            <li class="list-inline-item">
+                                <div class="btn-group">
+                                    <button class="btn btn-primary" type="submit" asp-page-handler="SaveTemplate">
+                                        @L["General.Boton.Guardar"]
+                                    </button>
+                                </div>
+                            </li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+<script src="~/assets/js/FileManager.js"></script>
+
+<script>
+    //expand menu
+    document.getElementById("adminCaret").setAttribute("aria-expanded", "true");
+    document.getElementById("pagesAdmin").classList.add("show");
+</script>

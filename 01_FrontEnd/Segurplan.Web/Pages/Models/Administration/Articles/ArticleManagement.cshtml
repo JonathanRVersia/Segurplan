@@ -1,0 +1,141 @@
+﻿@page "/ArticleManagement"
+@model Segurplan.Web.Pages.Models.Administration.Articles.ArticleManagementModel
+@using Segurplan.Core.Actions.Administration
+
+@inject SharedLocalizer L
+
+@{
+    ViewData["Title"] = L["SideBar.Articles"];
+
+    bool editEnabled = Model.CurrentOperation != AdministrationActionType.Read;
+
+    string fieldState = editEnabled ? string.Empty : "disabled";
+}
+
+<form id="EditArticleForm" enctype="multipart/form-data" method="post">
+    <div class="content planes">
+        <div class="container formularioDetalle">
+            @Html.HiddenFor(model => model.Article.Id)
+            @Html.HiddenFor(model => model.CurrentOperation)
+            <div>
+                @{
+                    <div class="row">
+                        <div class="form-group bmd-form-group col-6">
+                            <label class="bmd-label-floating">@L["Administration.Articles.Family"]</label>
+                            <select class="form-control selectpicker" required
+                                    asp-for="@Model.Article.IdArticleFamily"
+                                    asp-items="@Model.Family?.Select(n => new SelectListItem { Text = $"{n.Id} : {n.Family}", Value = n.Id.ToString() })"
+                                    data-style="select-with-transition" data-live-search="true"
+                                    disabled="@(Model.CurrentOperation == @AdministrationActionType.Read)">
+                                <option value="">@L["Common.Select"]</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group bmd-form-group col-6 col-sm-4 col-md-3 col-lg-2 disabled">
+                            <div class="input-group">
+                                <label asp-for="Article.CreateDate" class="bmd-label-floating">@L["ChapterDetails.CreationDate"]</label>
+                                <input type="text" class="form-control" id="fechaCreacion" asp-for="Article.CreateDate" />
+                            </div>
+                        </div>
+
+                        <div class="form-group bmd-form-group col-6 col-sm-4 col-md-3 col-lg-2 disabled">
+                            <div class="input-group">
+                                <label asp-for="Article.UpdateDate" class="bmd-label-floating">@L["ChapterDetails.UpdateDate"]</label>
+                                <input type="text" class="form-control" id="fechaModificacion" asp-for="Article.UpdateDate" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group bmd-form-group col-10">
+                            <div class="input-group">
+                                <label class="bmd-label-floating">@L["Administration.Articles.Name"]</label>
+                                <input asp-for="Article.Name" required value="@Model.Article.Name" class="form-control
+                            @(Model.CurrentOperation == AdministrationActionType.Read?"disabled":"")" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group bmd-form-group col-2">
+                            <div class="input-group">
+                                <label class="bmd-label-floating">@L["Administration.Articles.Percentage"]</label>
+                                <input asp-for="Article.Percentage" required value="@Model.Article.Percentage" class="form-control
+                            @(Model.CurrentOperation == AdministrationActionType.Read?"disabled":"")" />
+                            </div>
+                        </div>
+                        <div class="form-group bmd-form-group col-2">
+                            <div class="input-group">
+                                <label class="bmd-label-floating">@L["Administration.Articles.TimeOfWork"]</label>
+                                <input asp-for="Article.TimeOfWork" required value="@Model.Article.TimeOfWork" class="form-control
+                            @(Model.CurrentOperation == AdministrationActionType.Read?"disabled":"")" />
+                            </div>
+                        </div>
+                        <div class="form-group bmd-form-group col-2">
+                            <div class="input-group">
+                                <label class="bmd-label-floating">@L["Administration.Articles.MinimumUnit"]</label>
+                                <input asp-for="Article.MinimumUnit" required value="@Model.Article.MinimumUnit" class="form-control
+                            @(Model.CurrentOperation == AdministrationActionType.Read?"disabled":"")" />
+                            </div>
+                        </div>
+                        <div class="form-group bmd-form-group col-2">
+                            <div class="input-group">
+                                <label class="bmd-label-floating">@L["Administration.Articles.Price"]</label>
+                                <input asp-for="Article.Price" required value="@Model.Article.Price" class="form-control
+                            @(Model.CurrentOperation == AdministrationActionType.Read?"disabled":"")" />
+                            </div>
+                        </div>
+                        <div class="form-group bmd-form-group col-2">
+                            <div class="input-group">
+                                <label class="bmd-label-floating">@L["Administration.Articles.AmortizationTime"]</label>
+                                <input asp-for="Article.AmortizationTime" required value="@Model.Article.AmortizationTime" class="form-control
+                            @(Model.CurrentOperation == AdministrationActionType.Read?"disabled":"")" />
+                            </div>
+                        </div>
+                    </div>
+                    <input type="hidden" asp-for="Article.CreatedBy" value="@Model.Article.CreatedBy" class="form-control" />
+                }
+            </div>
+        </div>
+    </div>
+    <div class="footer-formularioDetalle">
+        <div class="container-fluid">
+            <div class="row px-4 align-items-center">
+                <div class="col-auto ml-auto">
+                    @{
+                        if (editEnabled)
+                        {
+                            <ul class="list-inline">
+                                <li class="list-inline-item">
+                                    <button class="btn btn-default" onclick="back();">
+                                        @L["Administration.Articles.Cancel"]
+                                    </button>
+                                </li>
+                                <li class="list-inline-item">
+                                    <button type="submit" asp-page-handler="SaveArticle" class="btn btn-primary">
+                                        @L["General.Boton.Guardar"]
+                                    </button>
+                                </li>
+                            </ul>
+                        }
+                        else
+                        {
+                            <button class="btn btn-primary" onclick="back();">
+                                @L["Administracion.Users.Volver"]
+                            </button>
+
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+<script>
+    function back() {
+        event.preventDefault();
+        location.href = '/ArticlesList';
+    }
+    //expand menu
+    document.getElementById("adminCaret").setAttribute("aria-expanded", "true");
+    document.getElementById("pagesAdmin").classList.add("show");
+    var cultureInfo = "@System.Globalization.CultureInfo.CurrentCulture.Name"
+</script>

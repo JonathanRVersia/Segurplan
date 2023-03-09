@@ -1,0 +1,178 @@
+﻿@model Segurplan.Web.Pages.Components.Activities.ActivitiesModel
+@inject SharedLocalizer L
+
+<div class="col-11">
+    <div class="container-picklist mt-4">
+        <div class="row">
+            <div class="col-5 pr-5">
+                <div class="card card-picklist">
+                    <div class="card-header">
+                        <p class="card-title">@L["DetallePlan.Actividades.Disponibles.Titulo"]</p>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="row card-body-top mx-0">
+                            <div class="activities-actions col-1">
+                                <div class="form-check">
+                                    <label>
+                                        @*<input class="form-check-input" type="checkbox" value="">*@
+                                        <input id="Set-all-available-btn" class="form-check-input" onclick="setAllChecked('availableList', this)" type="checkbox" value="" />
+                                        <span class="form-check-sign"><span class="check"></span></span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="activities-actions col-1" onclick="OpenCloseChaptersBehaviour('avaiableList-Spinner' ,'toggleAllavailableList','availableList')">
+                                <span id="toggleAllavailableList" class="fas fa-plus"></span>
+                                <span id="avaiableList-Spinner" hidden><i class="fas fa-spinner fa-spin"></i></span>
+                            </div>
+                            <div class="col-8 pl-2">
+                                <div class="search-filter input-group">
+                                    <input id="available-filter" type="text" value="" class="form-control" placeholder="@L["Common.filter.Placeholder"]" onkeyup="FilterActivitiesEventHandler(this.value, 'AvailabeActivities')">
+                                </div>
+                            </div>
+                            @*<div class="activities-actions col-2 pr-2">
+                                <span class="fas fa-sort"></span>
+                                <span onclick="OrderByBehaviour(false)" class="fas fa-sort"></span>
+                            </div>*@
+                        </div>
+
+                        <!-- accordion-ordered-list -->
+                        <div class="accordion-ordered-list container-scrollbar">
+                            <ol id="availableList">
+                            </ol>
+                        </div>
+                    </div>
+                    <span class="fas fa-chevron fa-chevron-right" onclick="SetAdded()"></span>
+                </div>
+            </div>
+            <div class="col-7">
+                <div class="card card-picklist seleccionadas">
+                    <div class="card-header">
+                        <p class="card-title">@L["DetallePlan.Actividades.Seleccionadas.Titulo.Filter"]</p>
+                        @*<button class="btn">+ Crear actividad</button>*@
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="row card-body-top mx-0">
+                            <div class="activities-actions col-1">
+                                <div class="form-check">
+                                    <label>
+                                        @*<input class="form-check-input" type="checkbox" value="">*@
+                                        <input id="Set-all-selected-btn" class="form-check-input" onclick="setAllChecked('selectedList', this)" type="checkbox" value="" />
+                                        <span class="form-check-sign"><span class="check"></span></span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="activities-actions col-1" onclick="OpenCloseChaptersBehaviour('selList-Spinner' ,'toggleSelectedList','selectedList')">
+                                <span id="toggleSelectedList" class="fas fa-plus"></span>
+                                <span id="selList-Spinner" hidden><i class="fas fa-spinner fa-spin"></i></span>
+                            </div>
+                            <div class="col-7 pl-2">
+                                <div class="search-filter input-group">
+                                    <input id="selected-filter" type="text" value="" class="form-control" placeholder="@L["Common.filter.Placeholder"]" onkeyup="FilterActivitiesEventHandler(this.value, 'SelectedActivities')">
+                                </div>
+                            </div>
+                            @*<div class="activities-actions col-1 pr-2">
+                                <span class="fas fa-sort ml-0"></span>
+                                <span onclick="OrderByBehaviour(true)" class="fas fa-sort ml-0"></span>
+                            </div>*@
+                            <div class="activities-actions col-2 align-right">
+                                <small id="selected-short-status" class="text-gray pr-2">Desc.</small>
+                                <div class="dropdown ml-1">
+                                    <button class="dropdown-toggle btn btn-just-icon btn-link btn-round btn-sm pl-2" type="button" id="dropdownMenuButton2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <span class="fas fa-ellipsis-v"></span> </button>
+                                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton2" x-placement="bottom-start">
+                                        <a onclick="DeleteByCheckBox()" class="dropdown-item">@L["Activities.Remove"]</a>
+                                        @*<a class="dropdown-item" href="#">Ocultar descripciones</a>*@
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <!-- accordion-ordered-list -->
+                        <div class="accordion-ordered-list container-scrollbar">
+                            <ol id="selectedList"></ol>
+                        </div>
+                        <!-- accordion-ordered-list -->
+
+                    </div>
+                </div>
+                @if (!Model.MoveHidden)
+                {   
+                    <div class="card mt-5">
+                        <div class="card-header bg-secondary py-1">
+                            <p class="card-title text-white">Descripción</p>
+                        </div>
+                        <div class="form-group bmd-form-group">
+                            <div class="input-group">
+                                <textarea rows="6" class="form-control ps-child" id="summernoteBox" maxlength="300"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    var locationRemove = '@L["Activities.Remove"]';
+
+
+    function GetIndexPage() {
+        return '@Model.IndexPage';
+    }
+    function GetMoveHiddenValue() {
+        return @(Model.MoveHidden ? "true" : "false" );
+    }
+
+    function OpenCloseChaptersBehaviour(spinnerId, buttonId, fieldId) {
+        let spinner = document.getElementById(spinnerId);
+        let toggleBtn = document.getElementById(buttonId);
+        let currentAction = '';
+
+        toggleBtn.hidden = true;
+        spinner.hidden = false;
+
+        if (toggleBtn.classList.contains('fa-minus')) {
+            toggleBtn.className = '';
+            toggleBtn.className = 'fas fa-plus';
+            currentAction = 'close';
+        } else {
+            toggleBtn.className = '';
+            toggleBtn.className = 'fas fa-minus';
+            currentAction = 'open'
+        }
+
+        runOpenClose(fieldId, currentAction).then(v => {
+            spinner.hidden = true;
+            toggleBtn.hidden = false;
+        });
+
+    }
+
+    async function runOpenClose(fieldId, currentAction) {
+
+        let activitiesDiv = document.getElementById(fieldId);
+        let anchords = activitiesDiv.querySelectorAll('a.accordion-toggle');
+
+        for (var anchord of anchords) {
+            if (currentAction === 'open') {
+                if (!anchord.parentElement.nextElementSibling.classList.contains('show')) {
+                    anchord.click();
+                }
+            } else {
+                if (anchord.parentElement.nextElementSibling.classList.contains('show')) {
+                    anchord.click();
+                }
+            }
+            await sleep(8);
+        }
+
+    }
+
+    function sleep(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+</script>
+<script src="~/assets/js/ActivitiesComponent.js" asp-append-version="true"></script>
+
+

@@ -1,0 +1,163 @@
+﻿@page "/MeasureManagement"
+@model Segurplan.Web.Pages.Models.Administration.PreventiveMeasures.PreventiveMeasureManagementModel
+@using Segurplan.Core.Actions.Administration
+
+@inject SharedLocalizer L
+
+@{
+    ViewData["Title"] = "Preventive measures";
+
+    bool editEnabled = Model.CurrentOperation != AdministrationActionType.Read;
+
+    string fieldState = editEnabled ? string.Empty : "disabled";
+
+}
+<form id="EditMeasureForm" enctype="multipart/form-data" method="post">
+
+    <div class="container formularioDetalle">
+        @Html.HiddenFor(model => model.Measure.Id)
+        @Html.HiddenFor(model => model.CurrentOperation)
+
+
+        <div class="row">
+            <div class="form-group bmd-form-group col-4 disabled">
+                <div class="input-group">
+                    <label for="code" class="bmd-label-floating">@L["Administration.User.Code"]</label>
+
+                    @Html.TextBoxFor(model => model.Measure.Code, new { @class = "form-control" })
+
+                </div>
+
+            </div>
+            <div class="col-8"></div>
+
+        </div>
+
+
+
+        <div class="row">
+            @{
+                if (Model.CurrentOperation != AdministrationActionType.Create)
+                {
+                    <div class="form-group bmd-form-group col-4 disabled">
+                        <div class="input-group">
+
+                            <label for="CreationDate" class="bmd-label-floating">@L["DetallePlan.DatGen.FechaCreacion"]</label>
+
+                            @Html.TextBoxFor(model => model.Measure.CreationDate, new { @class = "form-control" })
+
+                        </div>
+                    </div>
+                    <div class="form-group bmd-form-group col-4 disabled">
+                        <div class="input-group ">
+                            <label for="ModifiedDate" class="bmd-label-floating">@L["DetallePlan.DatGen.FechaModificacion"]</label>
+
+
+
+                            @Html.TextBoxFor(model => model.Measure.ModifiedDate, new { @class = "form-control" })
+
+                        </div>
+                    </div>
+                    <div class="form-group bmd-form-group col-4 disabled">
+                        <div class="input-group ">
+                            <label for="User" class="bmd-label-floating">@L["Administration.Measure.name"]</label>
+
+
+
+                            @Html.TextBoxFor(model => model.Measure.CompleteName, new { @class = "form-control" })
+
+                        </div>
+                    </div>
+                }
+                <div class="col-12">
+
+                    @{
+
+                        var readOnly = (Model.CurrentOperation == AdministrationActionType.Create ||
+                                        Model.CurrentOperation == AdministrationActionType.Update)
+                                      ?
+                                      false
+                                      :
+                                      true;
+
+                        if (readOnly)
+                        {
+                            <div class="form-group bmd-form-group col-12 disabled">
+                                <div class="input-group">
+                                    <label for="Measure" class="bmd-label-floating">@L["Administration.Measures.Measure"]</label>
+                                    @Html.TextAreaFor(model => model.Measure.Desciption, new { @class = "form-control disabled summernote ", @readonly = "readonly", style = "height:350px;width:100%;margin-top:10px;padding:5px;", @cols = 200, @rows = 15 })
+                                </div>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="form-group bmd-form-group col-12">
+                                <div class="input-group">
+                                    <label for="Measure" class="bmd-label-floating">@L["Administration.Measures.Measure"]</label>
+                                    @Html.TextAreaFor(model => model.Measure.Desciption, new { @class = "form-control summernote", style = "width:100%;margin-top:10px;padding:5px;", @cols = 200, @rows = 15 })
+                                </div>
+                            </div>
+                        }
+
+
+                    }
+
+                </div>
+            }
+        </div>
+        <div class="row" style="margin-top:3%;">
+            @{
+                if (editEnabled)
+                {
+                    <div class="col-8"></div>
+                    <div class="bmd-form-group">
+                        <div class="btn-group dropup">
+                            <div class="col-1"></div>
+                            <button class="btn " onclick="back();">
+                                @L["Administration.User.Cancel"]
+                            </button>
+                            <div class="col-1"></div>
+                            @{
+                                if (editEnabled)
+                                {
+                                    <button type="submit" asp-page-handler="SaveMeasure" class="btn btn-primary">
+                                        @L["General.Boton.Guardar"]
+                                    </button>
+                                }
+                            }
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <div class="bmd-form-group">
+
+                        <div class="btn-group dropup">
+                            <div class="col-1"></div>
+                            <button class="btn btn-primary" onclick="back();">
+                                Volver
+                            </button>
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+    </div>
+
+
+</form>
+
+<script>
+
+
+
+    function back() {
+        event.preventDefault();
+        location.href = '/PreventiveMeasureList';
+    }
+    //expand menu
+    document.getElementById("adminCaret").setAttribute("aria-expanded", "true");
+    document.getElementById("pagesAdmin").classList.add("show");
+
+
+</script>

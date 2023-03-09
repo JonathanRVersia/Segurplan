@@ -1,0 +1,296 @@
+﻿@page "/RisksAndPreventiveMeasures"
+@using System.Text.RegularExpressions
+@inject SharedLocalizer L
+
+@model Segurplan.Web.Pages.Models.RisksEvaluation.AllocationOfRisksAndPreventiveMeasures.List.IndexModel
+@{
+    ViewData["Title"] = @L["PreventiveMeasuresList.Titulo"];
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<div class="content no-tabs">
+    <form id="search" asp-page-handler="Search" method="post">
+        <div class="container-fluid p-0">
+            <div class="row buscadorRelativoContent ml-2">
+                <div class="row">
+                    <div class="col-11">
+                        <div class="row">
+                            <div class="form-group bmd-form-group col-4">
+                                <div class="input-group ">
+                                    <input id="selectedChapterNumber" asp-for="Search.ChapterNumber" type="hidden" />
+                                    <label for="capitulo">@L["PreventiveMeasuresList.Search.Chapter"]</label>
+                                    <select asp-for="Search.ChapterId" asp-items="@Model.SearchDropdowns?.Chapter?.Select(n => new SelectListItem { Text = $"{n.Number} : {n.Title}", Value = n.Id.ToString() })"
+                                            onchange="ChangeDependantData(this,'selectedChapterNumber' ,'currentSubChapter', 'subcapitulo','actividad')" data-none-results-text="@L["Common.NoResults"]" data-live-search-placeholder="@L["Common.SelectSearch"]" title="@L["Common.Select"]" class="form-control selectpicker" data-style="select-with-transition" id="capitulo" data-live-search="true">
+                                        <option>@L["Common.Select"]</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group bmd-form-group col-4">
+                                <div class="input-group">
+                                    <input id="selectedSubChapterNumber" asp-for="Search.SubChapterNumber" type="hidden" />
+                                    <label for="subcapitulo">@L["PreventiveMeasuresList.Search.SubChapter"]</label>
+                                    <select asp-for="Search.SubChapterId" asp-items="@Model.SearchDropdowns?.SubChapterCurrent?.Select(n => new SelectListItem { Text = $"{n.Number} : {n.Title}", Value = n.IdSubchapter.ToString() })"
+                                            onchange="ChangeDependantData(this,'selectedSubChapterNumber', 'actividad' , 'actividad' )" data-none-results-text="@L["Common.NoResults"]" data-live-search-placeholder="@L["Common.SelectSearch"]" title="@L["Common.Select"]" class="form-control selectpicker" data-style="select-with-transition" id="subcapitulo" data-live-search="true">
+                                        <option>@L["Common.Select"]</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group bmd-form-group col-4">
+                                <div class="input-group">
+                                    <input id="activityNumber" asp-for="Search.ActivityNumber" type="hidden" />
+                                    <label for="actividad">@L["PreventiveMeasuresList.Search.Activities"]</label>
+                                    <select asp-for="Search.ActivityId" asp-items="@Model.SearchDropdowns?.ActivityCurrent?.Select(n => new SelectListItem { Text = $"{n.Number} : {n.Title}", Value = n.Id.ToString() })"
+                                            onchange="ChangeDependantData(this, 'activityNumber', 'medida', 'medida')" class="form-control selectpicker" data-none-results-text="@L["Common.NoResults"]" data-live-search-placeholder="@L["Common.SelectSearch"]" title="@L["Common.Select"]" data-style="select-with-transition" id="actividad" data-live-search="true">
+                                        <option>@L["Common.Select"]</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group bmd-form-group col-4 pt-2">
+                                <div class="input-group">
+                                    <input id="riskNumber" asp-for="Search.RiskCode" type="hidden" />
+                                    <label for="riesgo">@L["PreventiveMeasuresList.Search.Risk"]</label>
+                                    <select asp-for="Search.RiskId" asp-items="@Model.SearchDropdowns?.Risk?.Select(n => new SelectListItem { Text = $"{n.Code} : {n.Name}", Value = n.Id.ToString() })"
+                                            onchange="SetNumberValue(this,'riskNumber')" class="form-control selectpicker" data-style="select-with-transition" data-live-search-placeholder="@L["Common.SelectSearch"]" title="@L["Common.Select"]" data-none-results-text="@L["Common.NoResults"]" id="riesgo" data-live-search="true">
+                                        <option>@L["Common.Select"]</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group bmd-form-group col-8 pt-2">
+                                <div class="input-group">
+                                    <input id="measureCode" asp-for="Search.MeasureCode" type="hidden" />
+                                    <label for="medida">@L["PreventiveMeasuresList.Search.Preventive_Measure"]</label>
+                                    <select asp-for="Search.MeasureDescription" asp-items="@Model.SearchDropdowns?.Measure?.Select(n => new SelectListItem { Text = $"{n.Code} : " + Regex.Replace(n.Description, "<.*?>", String.Empty), Value = n.Description})"
+                                            onchange="SetNumberValue(this,'measureCode')" class="form-control selectpicker" data-style="select-with-transition" id="medida" data-live-search="true" title="@L["Common.Select"]" data-live-search-placeholder="@L["Common.SelectSearch"]"  data-none-results-text="@L["Common.NoResults"]">
+                                                <option value="">@L["Common.Select"]</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            @{var style = Model.Search?.ChapterId != null ? "visible" : "hidden";}
+                            <div class="form-check ml-3 pl-1" style="visibility: @style" id="borradorCheckbox">
+                                <label class="form-check-label">
+                                    @L["PreventiveMeasuresList.Search.BorradorCheck"]
+                                    <input class="form-check-input" type="checkbox" asp-for="Search.IsBorrador" value="true">
+                                    <span class="form-check-sign">
+                                        <span class="check"></span>
+                                    </span>
+                                </label>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div class=""></div>
+                    <div class="col-1 acciones_buscador">
+                        <button class="btn btn-just-icon btn-white">
+                            <i class="material-icons cerrarBuscador">close</i>
+                        </button>
+
+                        <button class="btn btn-white buscar">
+                            @L["NavBar.Search"]
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="row tags">
+                <div class="col-12 px-0">
+                    <!--<ul>
+                    <li>
+                        Capítulo: <span>Capítulo 1</span>
+                        <button class="btn btn-just-icon btn-white">
+                    <i class="material-icons">close</i>
+                </button>
+                    </li>
+                    <li>
+                        Título: <span>Título 1</span>
+                        <button class="btn btn-just-icon btn-white">
+                    <i class="material-icons">close</i>
+                </button>
+                    </li>
+                </ul>-->
+                </div>
+            </div>
+            <div class="content planes">
+                <div class="container-fluid pr-0">
+                    @{ if (Model.RisksAndPreventiveMeasuresListModel.IsSearch)
+                        {
+                            @if (Model.Search != null)
+                            {
+                                if (
+                                    Model.Search.ChapterId != null ||
+                                    Model.Search.SubChapterId != null ||
+                                    Model.Search.ActivityId != null ||
+                                    Model.Search.RiskId != null ||
+                                   !string.IsNullOrEmpty(Model.Search.MeasureDescription)
+                                    //Model.Search.MeasureDescription != null
+                                    )
+                                {
+                                    <input type="hidden" asp-for="RisksAndPreventiveMeasuresListModel.IsSearch" />
+                                    <div class="row tags">
+                                        <div class="col-12">
+                                            <ul>
+                                                <li>
+                                                    <span>@L["PreventiveMeasuresList.Search.DeleteAllTags"]</span>
+                                                    <button class="btn btn-just-icon btn-white deleteSearch" onclick="DeleteSearchTab('delete-all')">
+                                                        <i class="material-icons">close</i>
+                                                    </button>
+                                                </li>
+
+                                                @{
+                                                    if (Model.Search.ChapterId != null)
+                                                    {
+                                                        <li>
+                                                            @L["PreventiveMeasuresList.Search.Chapter"]: <span>@Model.Search.ChapterNumber</span>
+                                                            <button value="@Model.Search.ChapterId" onclick="DeleteSearchTab('chapter-delete')"
+                                                                    class="btn btn-just-icon btn-white deleteSearch">
+                                                                <i class="material-icons">close</i>
+                                                            </button>
+                                                        </li>
+                                                    }
+
+                                                    if (Model.Search.SubChapterId != null)
+                                                    {
+                                                        <li>
+                                                            @L["PreventiveMeasuresList.Search.SubChapter"]: <span>@Model.Search.SubChapterNumber</span>
+                                                            <button value="@Model.Search.SubChapterId" class="btn btn-just-icon btn-white deleteSearch"
+                                                                    onclick="DeleteSearchTab('Sub-chapter-delete')">
+                                                                <i class="material-icons">close</i>
+                                                            </button>
+                                                        </li>
+                                                    }
+
+                                                    if (Model.Search.ActivityId != null)
+                                                    {
+                                                        <li>
+                                                            @L["PreventiveMeasuresList.Search.Activities"]: <span>@Model.Search.ActivityNumber</span>
+                                                            <button value="@Model.Search.ActivityId" class="btn btn-just-icon btn-white deleteSearch"
+                                                                    onclick="DeleteSearchTab('activities-delete')">
+                                                                <i class="material-icons">close</i>
+                                                            </button>
+                                                        </li>
+                                                    }
+                                                    if (Model.Search.RiskId != null)
+                                                    {
+                                                        <li>
+                                                            @L["PreventiveMeasuresList.Search.Risk"]: <span>@Model.Search.RiskCode</span>
+                                                            <button value="@Model.Search.RiskId" class="btn btn-just-icon btn-white deleteSearch"
+                                                                    onclick="DeleteSearchTab('risk-delete')">
+                                                                <i class="material-icons">close</i>
+                                                            </button>
+                                                        </li>
+                                                    }
+
+                                                    @*if (Model.Search.MeasureId != null)
+                                                    {
+                                                        <li>
+                                                            @L["PreventiveMeasuresList.Search.Preventive_Measure"]: <span>@Model.Search.MeasureId</span>
+                                                            <button value="@Model.Search.MeasureId" class="btn btn-just-icon btn-white deleteSearch"
+                                                                    onclick="DeleteSearchTab('measure-delete')">
+                                                                <i class="material-icons">close</i>
+                                                            </button>
+                                                        </li>
+                                                    }*@
+
+                                                    if (!string.IsNullOrEmpty(Model.Search.MeasureDescription))
+                                                    {
+                                                        <li>
+                                                            @L["PreventiveMeasuresList.Search.Preventive_Measure"]: <span>@Model.Search.MeasureCode</span>
+                                                            <button value="@Model.Search.MeasureDescription" class="btn btn-just-icon btn-white deleteSearch"
+                                                                    onclick="DeleteSearchTab('measure-delete')">
+                                                                <i class="material-icons">close</i>
+                                                            </button>
+                                                        </li>
+
+                                                    }
+                                                }
+                                            </ul>
+                                        </div>
+                                    </div>
+                                }
+                            }
+                        }
+                    }
+
+                    @*@await Component.InvokeAsync("RisksAndPreventiveMeasuresTable", Model.RisksAndPreventiveMeasuresModel)*@
+                    @await Component.InvokeAsync("RisksAndPreventiveMeasuresList", new { Model.RisksAndPreventiveMeasuresListModel })
+                    @*add btn*@
+                    <a asp-page="@IndexModel.DetailsRoute" asp-page-handler="@IndexModel.DetailsRoute" asp-route-id="0" asp-route-indexPage="@IndexModel.IndexPage" asp-route-SearchValues="@Model.SearchValues"
+                       class="elec-btn-plus btn btn-fab btn-round" asp-route-isEdit="true"> <i class="fas fa-plus"></i> </a>
+
+                    @*footer*@
+                    <div class="footer-table ">
+                        <div class="container">
+                            <div class="row">
+                                <div class="col-2 ml-auto text-left">
+                                    <div class="row">
+                                        <label class="col-8 col-form-label">@L["Planes.Table.Registros"]</label>
+                                        <div class="col-4">
+                                            <div class="dropdown bootstrap-select show-tick">
+                                                <select class="selectpicker" asp-for="PageSize" onchange="PageNumberChange()" data-style="select-with-transition" title="Registros" data-size="4" tabindex="-98">
+                                                    <option value="15" selected>15 </option>
+                                                    <option value="25">25</option>
+                                                    <option value="50">50</option>
+                                                    <option value="100">100</option>
+                                                </select>
+                                                <button type="button" class="btn dropdown-toggle" data-toggle="dropdown" role="button" title="Registros">
+                                                    <div class="filter-option">
+                                                        <div class="filter-option-inner">
+                                                            <div class="filter-option-inner-inner">Registros</div>
+                                                        </div>
+                                                    </div>
+                                                </button>
+                                                <div class="dropdown-menu " role="combobox">
+                                                    <div class="inner show" role="listbox" aria-expanded="false" tabindex="-1">
+                                                        <ul class="dropdown-menu inner show">
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-4 ">
+                                    <div class="row">
+                                        <div class="col-4 paginacion text-right">
+                                            @{
+                                                if (Model.RisksAndPreventiveMeasuresListModel != null)
+                                                {
+                                                    @Model.RisksAndPreventiveMeasuresListModel.PageNumber @:- @Model.RisksAndPreventiveMeasuresListModel.PageSize @L["Common.De"] @Model.RisksAndPreventiveMeasuresListModel.TotalCount
+                                                }
+                                                else
+                                                {
+                                                    @: 0 - 0 - 0
+                                                }
+
+                                            }
+                                        </div>
+                                        <div class="col-8 text-right">
+                                            <button class="btn " onclick="ChangePage('previous',event)"> <i class="fas fa-chevron-left"></i> </button>
+                                            <button class="btn " onclick="ChangePage('next',event)"> <i class="fas fa-chevron-right"></i> </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <input id="Pagination-page-number" type="hidden" asp-for="PageNumber" />
+        @if (Model.RisksAndPreventiveMeasuresListModel != null)
+        {
+            <input id="TotalCount" type="hidden" value="@Model.RisksAndPreventiveMeasuresListModel?.TotalCount" />
+            <input id="Rows-per-page" type="hidden" value="@Model.RisksAndPreventiveMeasuresListModel?.PageSize" />
+        }
+    </form>
+</div>
+<script src="~/assets/js/RiskAndPreventiveMeasureSearch.js" asp-append-version="true"></script>
+<script>
+      function antiForgeryGen() {
+        var token = '@Html.AntiForgeryToken()';
+        token = $(token).val();
+        return token;
+    }
+    
+</script>

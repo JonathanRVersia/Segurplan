@@ -1,0 +1,89 @@
+﻿@page "/RiskManagement"
+@model Segurplan.Web.Pages.Models.Administration.Risks.RiskManagementModel
+@using Segurplan.Core.Actions.Administration
+
+@inject SharedLocalizer L
+
+@{
+    ViewData["Title"] = "Riesgos";
+
+    bool editEnabled = Model.CurrentOperation != AdministrationActionType.Read;
+
+    string fieldState = editEnabled ? string.Empty : "disabled";
+
+}
+<form id="EditRiskForm" enctype="multipart/form-data" method="post">
+    <div class="content planes">
+        <div class="container formularioDetalle">
+            @Html.HiddenFor(model => model.Risk.Id)
+            @Html.HiddenFor(model => model.CurrentOperation)
+            <div>
+            @{
+                if(Model.CurrentOperation!= AdministrationActionType.Create)
+                {
+                    <div class="row">
+                        <div class="form-group bmd-form-group col-12">
+                            <div class="input-group">
+                                <label class="bmd-label-floating">@L["Administration.Risk.Code"]</label>
+                                <input asp-for="Risk.Code" value="@Model.Risk.Code" class="form-control
+                                 disabled"/>
+                            </div>
+                        </div>  
+                    </div>
+                }
+                <div class="row">
+                    <div class="form-group bmd-form-group col-12">
+                        <div class="input-group">
+                            <label class="bmd-label-floating">@L["Administration.Risk.Name"]</label>
+                            <input asp-for="Risk.Name" value="@Model.Risk.Name"  class="form-control
+                            @(Model.ManagementAction == ManagementAction.View?"disabled":"")" />
+                        </div> 
+                    </div>  
+                </div>
+            }                        
+            </div>
+        </div>
+    </div>
+    <div class="footer-formularioDetalle">
+        <div class="container-fluid">
+            <div class="row px-4 align-items-center">
+                <div class="col-auto ml-auto">
+                    @{
+                        if (editEnabled)
+                        {
+                            <ul class="list-inline">
+                                <li class="list-inline-item">
+                                    <button class="btn btn-default" onclick="back();">
+                                        @L["Administration.User.Cancel"]
+                                    </button>
+                                </li>
+                                <li class="list-inline-item">
+                                    <button type="submit" asp-page-handler="SaveRisk" class="btn btn-primary">
+                                        @L["General.Boton.Guardar"]
+                                    </button>
+                                </li>
+                            </ul>
+                        }
+                        else
+                        {
+                            <button class="btn btn-primary" onclick="back();">
+                                Volver
+                            </button>
+
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+<script>
+    function back() {
+        event.preventDefault();
+        location.href = '/RiskList';
+    }
+    //expand menu
+    document.getElementById("adminCaret").setAttribute("aria-expanded", "true");
+    document.getElementById("pagesAdmin").classList.add("show");
+</script>

@@ -1,0 +1,37 @@
+﻿@page
+@model Segurplan.Web.Pages.Models.Account.LoginAccessDenied
+
+@inject SharedLocalizer L
+@{
+    Layout = "_AccountLayout";
+    ViewData["Title"] = "AccessDenied";
+    ViewBag.BodyClass = "pageadvice";
+}
+
+<div class="wrapper">
+    <div class="page-header">
+        <div class="container">
+            <div class="d-flex align-content-center flex-wrap h-100">
+                <div class="w-100">
+                    <div class="col-md-5 col-xs-10 ml-auto mr-auto">
+                        <div class="text-center">
+                            <img src="~/assets/img/logo-g-segur.jpg">
+                        </div>
+                        <div class="card">
+                            <div class="card-header  text-center">
+                                <i class="fa fa-exclamation-circle" aria-hidden="true"></i>
+                                <h1 class="card-title">@L["Identity.Login.AccessDenied.Title"]</h1>
+                            </div>
+                            <div class="card-body ">
+                                <p class="text-center">@L["Identity.Login.AccessDenied.Message"]</p>
+                                <p class="text-center">
+                                    <a asp-page="/Models/Account/Login" class="btn-enlace btn-primary">@L["Identity.Login.AccessDenied.Again"]</a>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

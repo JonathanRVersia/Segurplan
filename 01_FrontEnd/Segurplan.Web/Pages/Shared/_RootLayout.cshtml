@@ -1,0 +1,164 @@
+﻿@inject SharedLocalizer L
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, shrink-to-fit=no' name='viewport' />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <title>@ViewData["Title"] - Segurplan</title>
+
+    <environment>
+        <link rel="apple-touch-icon" sizes="76x76" href="~/assets/img/apple-icon.png">
+        <link rel="icon" type="image/png" href="~/assets/img/favicon.png">
+        <link href="~/assets/css/segurplan.css" rel="stylesheet" type="text/css" asp-append-version="true"/>
+        <link href="~/assets/css/dropzone.css" rel="stylesheet" type="text/css" />
+        <link href="~/assets/css/estilos.css" rel="stylesheet" type="text/css" asp-append-version="true"/>
+    </environment>
+
+    @RenderSection("Styles", required: false)
+</head>
+<body>
+    @*<vc:cookie-consent></vc:cookie-consent>*@
+
+    <div class="wrapper">
+        @RenderBody()
+    </div>
+
+    <environment>
+
+        <!-- Core JS Files   -->
+        <script src="~/assets/js/core/jquery.min.js"></script>
+        <script src="~/assets/js/core/popper.min.js"></script>
+        <script src="~/assets/js/core/bootstrap-material-design.min.js"></script>
+        <!-- Scrollbar -->
+        <script src="~/assets/js/plugins/perfect-scrollbar.jquery.min.js"></script>
+        <script src="~/assets/js/plugins/perfect-scrollbar.min.js"></script>
+        <!-- Plugin for the momentJs  -->
+        <script src="~/assets/js/plugins/moment.min.js"></script>
+        <script src="~/assets/js/plugins/locale.js"></script>
+        <!-- Plugin for Sweet Alert -->
+        <script src="~/assets/js/plugins/sweetalert2.js"></script>
+        <!-- Forms Validations Plugin -->
+        <script src="~/assets/js/plugins/jquery.validate.min.js" asp-append-version="true"></script>
+        <!-- Mensajes validacion -->
+        <script src="~/assets/js/plugins/mensajesValidacion.js"></script>
+        <!-- Plugin for Select, full documentation here: http://silviomoreto.github.io/bootstrap-select -->
+        <script src="~/assets/js/plugins/bootstrap-selectpicker.js"></script>
+        <!-- Plugin for the DateTimePicker, full documentation here: https://eonasdan.github.io/bootstrap-datetimepicker/ -->
+        <script src="~/assets/js/plugins/bootstrap-datetimepicker.min.js"></script>
+        <!-- Tags,  resultados de búsqueda https://bootstrap-tagsinput.github.io/bootstrap-tagsinput/examples/  -->
+        <script src="~/assets/js/plugins/bootstrap-tagsinput.js"></script>
+        <!-- Full Calendar Plugin, full documentation here: https://github.com/fullcalendar/fullcalendar    -->
+        <script src="~/assets//js/plugins/fullcalendar.min.js"></script>
+        <!-- Control Center for Material Dashboard: parallax effects, scripts -->
+        <script src="~/assets/js/material-dashboard.js?v=2.1.0" type="text/javascript"></script>
+        <!-- Bootstrap sortable plugin que permite realizar funciones para reordenar y organizar elementos usando drag and drop   -->
+        <script src="~/assets/js/plugins/bootstrap-sortable.js"></script>
+        <!-- Plugin include html5-->
+        <script src="~/assets/js/plugins/w3data.js"></script>
+        <!-- Editor textarea con opciones de editor -->
+        <script src="~/assets/js/plugins/summernote-bs4.js"></script>
+        <!-- Funciones de filtrado usuarios -->
+        <script type="text/javascript" src="~/assets//js/plugins/lodash.js"></script>
+
+        <script src="~/lib/jquery-validate/jquery.validate.min.js" asp-append-version="true"></script>
+        <!-- Funciones Elecnor demo html-->
+        <script src="~/assets/js/funciones.js" asp-append-version="true"></script>
+        <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+        <script src="~/lib/jquery-ajax-unobtrusive/dist/jquery.unobtrusive-ajax.js"></script>
+        <script src="~/assets/js/DecimalNumberFix.js" asp-append-version="true"></script>
+        <script>
+
+
+        // summernote config
+        $('.summernote').summernote({
+        toolbar: [
+                ['font', ['bold', 'italic', 'underline', /*'superscript', 'subscript',*/ 'clear', 'strikethrough']],
+                //['fontname', ['fontname']],
+                //['fontsize', ['fontsize']],
+                ['color', ['color']],
+                ['para', ['ul', 'ol', 'paragraph']],
+                ['table', ['table']],
+                ['insert', ['hr', /*'link',*/ 'picture']],
+                ['view', ['fullscreen', 'codeview', /*'help'*/]],
+        ],
+        placeholder: '@L["Common.WriteHere"]',
+        tabsize: 2,
+        height: 100
+        // disableDragAndDrop: true
+        });
+
+        url = $(location).attr('pathname');
+        //tenemos pagina dasboard??
+        if (url == '/Dashboard') {
+        $('.wrapper').addClass('Segurinicio');
+        }
+
+        /*Fixed headers  table*/
+        var $th = $('.tableFixHead').find('thead');
+        var $tr = $('.tableFixHead tbody tr');
+        $('.main-panel').on('scroll', function () {
+        $('.tableFixHead tbody tr').each(function () {
+        //console.log(isVisible($(this), ".main-panel") == true ? this : false);
+
+        if (isVisible($(this), ".main-panel")) {
+        //console.log('visible');
+        $(this).find('td .btn-group').css('visibility', 'visible');
+        } else {
+        // console.log('no visible');
+        $(this).find('td .btn-group').css('visibility', 'hidden');
+        }
+        });
+
+        if (this.scrollTop == 0) {
+
+        $th.css('transform', '');
+
+        } else {
+        if ($('.buscadorRelativoContent').is(':visible')) {
+
+        if (this.scrollTop >= 370) {
+        $th.css('transform', 'translateY(' + (this.scrollTop - 380) + 'px)');
+
+        } else {
+        $th.css('transform', '');
+        }
+
+        } else {
+
+        $th.css('transform', 'translateY(' + (this.scrollTop - 40) + 'px)');
+        if ($('.row.tags ul li').length) {
+        $th.css('transform', 'translateY(' + (this.scrollTop - 110) + 'px)');
+        }
+
+        }
+
+        }
+
+
+        });
+
+
+        function isVisible(row, container) {
+
+        var elementTop = $(row).offset().top,
+        elementHeight = $(row).height(),
+        containerTop = ($(container).offset().top) + 100,
+        containerHeight = $(container).height();
+
+        return ((((elementTop - containerTop) + elementHeight) > 0) && ((elementTop - containerTop) < containerHeight));
+        }
+
+        </script>
+    </environment>
+
+    <script type="text/javascript">
+            moment.locale('@System.Threading.Thread.CurrentThread.CurrentCulture.TwoLetterISOLanguageName.ToLowerInvariant()');
+    </script>
+
+    @RenderSection("Scripts", required: false)
+    <!-- Sidebar toggle behaviour   -->
+    <script src="~/assets/js/SideBarToggle.js" asp-append-version="true"></script>
+    @*<script src="~/assets/js/SummernoteExtensions.js"></script>*@
+</body>
+</html>

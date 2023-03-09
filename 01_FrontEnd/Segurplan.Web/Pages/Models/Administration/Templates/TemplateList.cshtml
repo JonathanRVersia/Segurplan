@@ -1,0 +1,411 @@
+﻿
+@page "/TemplateList"
+@using Segurplan.Web.Utils
+@using Segurplan.Core.Actions.Administration.Templates
+@inject SharedLocalizer L
+@model Segurplan.Web.TemplateListModel
+@{
+    ViewData["Title"] = L["SideBar.Templates"];
+
+}
+<form id="templateList" method="post" enctype="multipart/form-data">
+    @Html.AntiForgeryToken()    
+
+    <div class="content listado no-tabs">
+        <div class="container-fluid p-0">
+            <!-- Buscador -->
+            <div class="row buscadorRelativoContent ml-2" id="filterZone">
+                <div class="row">
+                    <div class="col-11">
+                        <div class="row">
+                            <div class="form-group bmd-form-group col-4">
+                                <div class="input-group">
+                                    <label for="code" class="bmd-label-floating">@L["Administration.Templates.Id"]</label>
+                                    <input type="text" asp-for="@Model.IdFilter" class="form-control" value="@Model.IdFilter">
+                                </div>
+                            </div>
+                            <div class="form-group bmd-form-group col-8">
+                                <div class="input-group">
+                                    <label for="template" class="bmd-label-floating">@L["Administration.Templates.Template"]</label>
+                                    <input type="text" asp-for="@Model.NameFilter" class="form-control" value="@Model.NameFilter">
+                                </div>
+                            </div>
+                            <div class="form-group bmd-form-group col-4">
+                                <div class="input-group">
+                                    <label for="template" class="bmd-label-floating">@L["Administration.Templates.Notes"]</label>
+                                    <input type="text" asp-for="@Model.NotesFilter" class="form-control" value="@Model.NotesFilter">
+                                </div>
+                            </div>
+                            <div class="form-group bmd-form-group col-4">
+                                <div class="input-group">
+                                    <label for="template" class="bmd-label-floating">@L["Administration.Templates.CreatedBy"]</label>
+                                    <input type="text" asp-for="@Model.CreatedByFilter" class="form-control" value="@Model.CreatedByFilter">
+                                </div>
+                            </div>
+                            <div class="form-group bmd-form-group col-4">
+                                <div class="input-group">
+                                    <label for="template" class="bmd-label-floating">@L["Administration.Templates.ModifiedDate"]</label>
+                                    <input type="text" asp-for="@Model.ModifiedDateFilter" class="form-control" value="@Model.ModifiedDateFilter">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class=""></div>
+                    <div class="col-1 acciones_buscador">
+                        <button class="btn btn-just-icon btn-white">
+                            <i class="material-icons cerrarBuscador" id="searchClose" style="display:block">close</i>
+                            <div class="ripple-container"></div>
+                        </button>
+
+                        <button type="submit" asp-page-handler="DeleteFilter" class="btn btn-white buscar" id="SearchButton">
+                            @L["Planes.Filtros.Search"]
+                        </button>
+                    </div>
+
+                </div>
+            </div>
+            <div class="row tags">
+                <div class="col-12 px-0">
+                    <ul>
+                        @{
+                            if (!string.IsNullOrWhiteSpace(Model.IdFilter))
+                            {
+
+                                <li>
+                                    @L[$"Administration.Templates.Id"]
+                                    <span><label asp-for="@Model.IdFilter">@Model.IdFilter</label></span>
+                                    <button asp-page-handler="DeleteFilter" asp-route-filterIndex="@TemplateListModel.FilterIndex.Id" type="submit" class="btn btn-just-icon btn-white">
+                                        <i class="material-icons">close</i>
+                                    </button>
+                                </li>
+                            }
+
+                            if (!string.IsNullOrWhiteSpace(Model.NameFilter))
+                            {
+                                <li>
+                                    @L[$"Administration.Templates.Template"]
+                                    <span><label asp-for="@Model.NameFilter">@Model.NameFilter</label></span>
+                                    <button asp-page-handler="DeleteFilter" asp-route-filterIndex="@TemplateListModel.FilterIndex.Name" type="submit" class="btn btn-just-icon btn-white">
+                                        <i class="material-icons">close</i>
+                                    </button>
+                                </li>
+                            }
+
+                            if (!string.IsNullOrWhiteSpace(Model.NotesFilter))
+                            {
+                                <li>
+                                    @L[$"Administration.Templates.Notes"]
+                                    <span><label asp-for="@Model.NotesFilter">@Model.NotesFilter</label></span>
+                                    <button asp-page-handler="DeleteFilter" asp-route-filterIndex="@TemplateListModel.FilterIndex.Notes" type="submit" class="btn btn-just-icon btn-white">
+                                        <i class="material-icons">close</i>
+                                    </button>
+                                </li>
+                            }
+
+                            if (!string.IsNullOrWhiteSpace(Model.CreatedByFilter))
+                            {
+                                <li>
+                                    @L[$"Administration.Templates.CreatedBy"]
+                                    <span><label asp-for="@Model.CreatedByFilter">@Model.CreatedByFilter</label></span>
+                                    <button asp-page-handler="DeleteFilter" asp-route-filterIndex="@TemplateListModel.FilterIndex.CreatedBy" type="submit" class="btn btn-just-icon btn-white">
+                                        <i class="material-icons">close</i>
+                                    </button>
+                                </li>
+                            }
+
+                            if (!string.IsNullOrWhiteSpace(Model.ModifiedDateFilter))
+                            {
+                                <li>
+                                    @L[$"Administration.Templates.ModifiedDate"]
+                                    <span><label asp-for="@Model.ModifiedDateFilter">@Model.ModifiedDateFilter</label></span>
+                                    <button asp-page-handler="DeleteFilter" asp-route-filterIndex="@TemplateListModel.FilterIndex.ModifiedDate" type="submit" class="btn btn-just-icon btn-white">
+                                        <i class="material-icons">close</i>
+                                    </button>
+                                </li>
+                            }
+                        }
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="content planes" id="tableContainer">
+            <div class="">
+
+                <table class="table table-bordered table-striped table-shortable table-hover tableFixHead" id="PlanTable">
+                    <thead>
+                        <tr>
+                            <th width="10%">
+                                @{
+                                    var codeSortClass = !string.IsNullOrWhiteSpace(Model.IdSort)
+                                        ? Model.IdSort.Contains("Asc")
+                                            ? "order_asc"
+                                            : Model.IdSort.Contains("Desc")
+                                                ? "order_desc"
+                                                : "order_default"
+                                        : "order_default";
+                                }
+                                <a asp-page-handler="ApplySort"
+                                   asp-route-code="@Model.IdFilter"
+                                   asp-route-template="@Model.NameFilter"
+                                   asp-route-notes="@Model.NotesFilter"
+                                   asp-route-createdBy="@Model.CreatedByFilter"
+                                   asp-route-modifiedDate="@Model.ModifiedDateFilter"
+                                   asp-route-rows="@Model.TableState.PageRows"
+                                   asp-route-sortOrder="@Model.IdSort">@L["Administration.Templates.Id"]<span class="@codeSortClass"></span></a>
+                            </th>
+
+                            <th width="20%">
+                                @{
+                                    var teamplteSortClass = !string.IsNullOrWhiteSpace(Model.NameSort)
+                                        ? Model.NameSort.Contains("Asc")
+                                            ? "order_asc"
+                                            : Model.NameSort.Contains("Desc")
+                                                ? "order_desc"
+                                                : "order_default"
+                                        : "order_default";
+                                }
+                                <a asp-page-handler="ApplySort"
+                                   asp-route-code="@Model.IdFilter"
+                                   asp-route-template="@Model.NameFilter"
+                                   asp-route-notes="@Model.NotesFilter"
+                                   asp-route-createdBy="@Model.CreatedByFilter"
+                                   asp-route-modifiedDate="@Model.ModifiedDateFilter"
+                                   asp-route-rows="@Model.TableState.PageRows"
+                                   asp-route-sortOrder="@Model.NameSort">@L["Administration.Templates.Template"]<span class="@teamplteSortClass"></span></a>
+                            </th>
+
+                            <th width="20%">
+                                @{
+                                    var descriptionSortClass = !string.IsNullOrWhiteSpace(Model.NotesSort)
+                                        ? Model.NotesSort.Contains("Asc")
+                                            ? "order_asc"
+                                            : Model.NotesSort.Contains("Desc")
+                                                ? "order_desc"
+                                                : "order_default"
+                                        : "order_default";
+                                }
+                                <a asp-page-handler="ApplySort"
+                                   asp-route-code="@Model.IdFilter"
+                                   asp-route-template="@Model.NameFilter"
+                                   asp-route-notes="@Model.NotesFilter"
+                                   asp-route-createdBy="@Model.CreatedByFilter"
+                                   asp-route-modifiedDate="@Model.ModifiedDateFilter"
+                                   asp-route-rows="@Model.TableState.PageRows"
+                                   asp-route-sortOrder="@Model.NotesSort">@L["Administration.Templates.Notes"]<span class="@descriptionSortClass"></span></a>
+                            </th>
+
+                            <th width="10%">
+                                @{
+                                    var createdBySortClass = !string.IsNullOrWhiteSpace(Model.CreatedBySort)
+                                        ? Model.CreatedBySort.Contains("Asc")
+                                            ? "order_asc"
+                                            : Model.CreatedBySort.Contains("Desc")
+                                                ? "order_desc"
+                                                : "order_default"
+                                        : "order_default";
+                                }
+                                <a asp-page-handler="ApplySort"
+                                   asp-route-code="@Model.IdFilter"
+                                   asp-route-template="@Model.NameFilter"
+                                   asp-route-notes="@Model.NotesFilter"
+                                   asp-route-createdBy="@Model.CreatedByFilter"
+                                   asp-route-modifiedDate="@Model.ModifiedDateFilter"
+                                   asp-route-rows="@Model.TableState.PageRows"
+                                   asp-route-sortOrder="@Model.CreatedBySort">@L["Administration.Templates.CreatedBy"]<span class="@createdBySortClass"></span></a>
+                            </th>
+
+                            <th width="10%">
+                                @{
+                                    var modifiedDateSortClass = !string.IsNullOrWhiteSpace(Model.ModifiedDateSort)
+                                        ? Model.ModifiedDateSort.Contains("Asc")
+                                            ? "order_asc"
+                                            : Model.ModifiedDateSort.Contains("Desc")
+                                                ? "order_desc"
+                                                : "order_default"
+                                        : "order_default";
+                                }
+                                <a asp-page-handler="ApplySort"
+                                   asp-route-code="@Model.IdFilter"
+                                   asp-route-template="@Model.NameFilter"
+                                   asp-route-notes="@Model.NotesFilter"
+                                   asp-route-createdBy="@Model.CreatedByFilter"
+                                   asp-route-modifiedDate="@Model.ModifiedDateFilter"
+                                   asp-route-rows="@Model.TableState.PageRows"
+                                   asp-route-sortOrder="@Model.ModifiedDateSort">@L["Administration.Templates.ModifiedDate"]<span class="@modifiedDateSortClass"></span></a>
+                            </th>
+
+                            <th width="7%">@L["Planes.TablePlan.Acciones"] </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{
+                            if (Model.TemplateList != null)
+                            {
+                                string rowName = string.Empty;
+                                string dupliId = string.Empty;
+                                string dpDown = string.Empty;
+                                foreach (var template in Model.TemplateList)
+                                {
+                                    rowName = "row" + @template.Id;
+                                    dpDown = "dp" + @template.Id;
+                                    dupliId = "dup" + @template.Id;
+                                    <tr id="@rowName">
+                                        <td title="@L["General.Table.Visualize"]" onclick="viewTemplate('@template.Id');">@template.Id</td>
+                                        <td title="@L["General.Table.Visualize"]" onclick="viewTemplate('@template.Id');"><p>@Html.Raw(template.Name)</p></td>
+                                        <td title="@L["General.Table.Visualize"]" onclick="viewTemplate('@template.Id');"><p>@Html.Raw(template.Notes)</p></td>
+                                        <td title="@L["General.Table.Visualize"]" onclick="viewTemplate('@template.Id');"><p>@Html.Raw(template.CreatorName)</p></td>
+                                        <td title="@L["General.Table.Visualize"]" onclick="viewTemplate('@template.Id');"><p>@Html.Raw(template.ModifiedDate)</p></td>
+
+                                        <td class="text-center">
+                                            <div class="btn-group">
+                                                <a class="nav-link" href="#" id="@dpDown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                    <i class="fas fa-ellipsis-v"></i>
+                                                    <p class="d-lg-none d-md-block"> Account </p>
+                                                </a>
+                                                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownUserRole">
+                                                    <a class="dropdown-item" href="/TemplateManagement?handler=ViewTemplate&templateId=@template.Id">@L["General.Table.Visualize"]</a>
+                                                    <a class="dropdown-item" href="/TemplateManagement?handler=EditTemplate&templateId=@template.Id">@L["Planes.OpcionTable.Editar"]</a>
+                                                    <div class="dropdown-divider"></div>
+                                                    <a class="dropdown-item" href="#" onclick="deleteTemplate('@template.Id','@template.Id');">@L["Planes.OpcionTable.Eliminar"]</a>
+
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                        }
+                    </tbody>
+                </table>
+
+                <button type="submit" class="nuevo btn btn-fab btn-round" asp-page-handler="NewTemplate"> <i class="fas fa-plus"></i> </button>
+
+                <div class="footer-table ">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-2 ml-auto text-left">
+                                <div class="row">
+                                    <label class="col-8 col-form-label">@L["Planes.Table.Registros"]</label>
+                                    <div class="col-4">
+                                        <div class="dropdown bootstrap-select show-tick">
+                                            <select asp-for="PageRows" class="selectpicker"
+                                                    data-style="select-with-transition" id="rowsChanger"
+                                                    data-size="4" tabindex="-98" onchange="$('#SearchButton').trigger('click');">
+                                                @{
+                                                    foreach (int rowNum in Model.TableState.PageRowList)
+                                                    {
+                                                        if (rowNum == Model.TableState.PageRows)
+                                                        {
+                                                            <option value="@rowNum" selected>@rowNum </option>
+                                                        }
+                                                        else
+                                                        {
+                                                            <option value="@rowNum">@rowNum </option>
+                                                        }
+                                                    }
+                                                }
+
+                                            </select>
+
+                                            <button type="button" class="btn dropdown-toggle" data-toggle="dropdown" role="button" title="Registros">
+                                                <div class="filter-option">
+                                                    <div class="filter-option-inner">
+                                                        <div class="filter-option-inner-inner">Registros</div>
+                                                    </div>
+                                                </div>
+                                                <div class="ripple-container"></div>
+                                            </button>
+
+                                            <div class="dropdown-menu " role="combobox">
+                                                <div class="inner show" role="listbox" aria-expanded="false" tabindex="-1">
+                                                    <ul class="dropdown-menu inner show">
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-4 ">
+                                <div class="row">
+                                    <div class="col-4 paginacion text-right">
+                                        @{
+                                            var startRecord = Model.TableState.PageRows > 0
+                                                ? ((Model.TableState.IndexPage * Model.TableState.PageRows) + 1)
+                                                : 0;
+
+                                            var results = ((Model.TableState.IndexPage * Model.TableState.PageRows) + Model.TableState.PageRows);
+                                        }
+                                        <span id="startRecord">@startRecord - </span><span id="nResults">@results</span> de <span id="total">@Model.TotalRows</span>
+                                    </div>
+                                    <div class="col-8 text-right">
+                                        @{
+                                            var backEnabled = Model.TableState.IndexPage > 0 ? "" : "disabled";
+                                            var nextEnabled = Model.TableState.IndexPage < Model.TotalPages ? "" : "disabled";
+                                        }
+                                        @Html.HiddenFor(m => m.TableState.IndexPage)
+                                        @Html.HiddenFor(m => m.TableState.OrderBy)
+                                        @Html.HiddenFor(m => m.TableState.OrderModeDesc)
+                                        @Html.HiddenFor(m => m.TableState.PageRows)
+                                        @Html.HiddenFor(m => m.CurrentOrder)
+                                        <button class="btn @backEnabled" type="submit" asp-page-handler="PreviousPage" asp-route-index="@Model.TableState.IndexPage"> <i class="fas fa-chevron-left"></i> </button>
+                                        <button class="btn @nextEnabled" type="submit" asp-page-handler="NextPage" asp-route-index="@Model.TableState.IndexPage"> <i class="fas fa-chevron-right"></i> </button>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+</form>
+
+<!-- /Modal DELETE TEMPLATE -->
+<div class="modal notificacion fade" id="deleteTemplate" tabindex="-1" role="dialog" aria-labelledby="delete record" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title error" id="exampleModalLabel">@L["Administration.Template.DeleteTitle"]</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar"> <span aria-hidden="true">&times;</span> </button>
+            </div>
+            <div class="modal-body">
+                <p class="text-center">@L["Administration.Template.DeleteMsg1"]<span id="deleteTemplateMsg" style="color:red;margin-left:5px;margin-right:5px;"></span>@L["Administration.Template.DeleteMsg2"]</p>
+                <form id="deleteTemplate" method="post" action="/TemplateManagement?handler=DeleteTemplate">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" id="deleteTemplateId" name="deleteTemplateId" value="-1" />
+
+                    <div class="row mt-4">
+                        <div class="col-6"><button class="btn btn-default btn-lg col-12" data-dismiss="modal">@L["General.Radio.No"]<div class="ripple-container"></div></button></div>
+                        <div class="col-6"><button type="submit" id="btnDelete" onclick="this.classList.add('disabled');" class="btn btn-primary btn-lg col-12">@L["General.Radio.Si"]<div class="ripple - container"></div></button></div>
+                    </div>
+
+                </form>
+
+            </div>
+        </div>
+    </div>
+    <!-- /Modal DELETE TEMPLATE -->
+
+</div>
+
+<script>
+    //expand menu
+    document.getElementById("adminCaret").setAttribute("aria-expanded", "true");
+    document.getElementById("pagesAdmin").classList.add("show");
+
+    function deleteTemplate(templateId, name) {
+        elementSet('deleteTemplateId', templateId);
+        elementInner('deleteTemplateMsg', name)
+        $('#deleteTemplate').modal('show').fadeIn("slow");
+    }
+
+    function viewTemplate(id) {
+        location.href = "/TemplateManagement?handler=ViewTemplate&templateId=" + id;
+    }
+    
+</script>

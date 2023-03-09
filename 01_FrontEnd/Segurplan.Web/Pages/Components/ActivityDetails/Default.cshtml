@@ -1,0 +1,477 @@
+﻿@using Segurplan.Web.Pages.Models.Administration.ChaptersAndActivities.ChapterDetails;
+
+@model Segurplan.Web.Pages.Models.Administration.ChaptersAndActivities.ActivityDetails.IndexModel
+@inject SharedLocalizer L
+
+<form enctype="multipart/form-data" method="post">
+    <input type="hidden" asp-for="ActivityVersion.IdActivity" />
+    <input type="hidden" asp-for="ActivityVersion.Id" />
+    <input type="hidden" asp-for="ActivityVersion.IdActivityNavigation.SubChapterId" />
+    <input type="hidden" asp-for="ActivityVersion.IdSubChapterVersion" />
+    <input type="hidden" asp-for="ActivityVersion.Number" />
+    <input type="hidden" asp-for="ActivityVersion.RelationsId" />
+    <div class="content tabs elec-content-layout">
+        <div class="container-fluid">
+            <div class="card card-nav-tabs">
+                <div class="card-header">
+                    <div class="elec-content-title">
+                        <div class="row mx-0 py-2 align-items-center">
+                            <div class="col">
+                                @if (Model.ActivityVersion.Id != 0)
+                                {
+                                    <h1>@L["ActivityDetails.Header.Title", Model.ActivityVersion.Number, Model.ActivityVersion.Description]</h1>
+                                }
+                                else
+                                {
+                                    <h1>@L["ActivityDetails.New"]</h1>
+                                }
+                            </div>
+                            <div class="col-auto">
+                                <!--button class="btn btn-link btn-dark p-2"> <i class="fas fa-file-word"></i> Generar plan </button>
+                                <button class="btn btn-link btn-dark p-2"> <i class="fas fa-file-excel"></i> Generar presupuesto </button>-->
+                            </div>
+                        </div>
+                    </div>
+                    <div class="nav-tabs-navigation px-3">
+                        <div class="nav-tabs-wrapper">
+                            <ul class="nav nav-tabs" data-tabs="tabs">
+                                <li class="nav-item">
+                                    <a class="nav-link active" href="#datos-generales" data-toggle="tab">
+                                        @L["ChapterDetails.GeneralData"]
+                                        <div class="ripple-container"></div>
+                                    </a>
+                                </li>
+
+                                <li class="nav-item"> <a class="nav-link" href="#contenidos-adicionales" data-toggle="tab">@L["ChapterDetails.OtherData"]</a> </li>
+
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body bg-white pt-3">
+                    <div class="tab-content">
+                        <!-- TAB DATOS GENARLES -->
+                        <div class="tab-pane active" id="datos-generales">
+                            <div class="container formularioDetalle">
+
+                                <div class="row">
+                                    <div class="form-group bmd-form-group col-4 col-sm-4 col-md-3 col-lg-2 disabled">
+                                        <div class="input-group">
+                                            <label asp-for="ActivityVersion.CreateDate" class="bmd-label-floating">@L["ActivityDetails.CreationDate"]</label>
+                                            <input type="text" asp-for="ActivityVersion.CreateDate" class="form-control" id="fechaCreacion" />
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group bmd-form-group col-4 col-sm-4 col-md-3 col-lg-2 disabled">
+                                        <div class="input-group">
+                                            <label asp-for="ActivityVersion.UpdateDate" class="bmd-label-floating">@L["ActivityDetails.UpdateDate"]</label>
+                                            <input type="text" asp-for="ActivityVersion.UpdateDate" class="form-control" id="fechaModificacion" />
+                                        </div>
+                                    </div>
+                                    <div class="form-group bmd-form-group col-2 col-lg-1 disabled dark">
+                                        <div class="input-group">
+                                            <label asp-for="ActivityVersion.IdActivityNavigation.SubChapter.IdChapterNavigation.Number" class="bmd-label-floating">@L["ActivityDetails.Chapter"]</label>
+                                            <input asp-for="ActivityVersion.IdActivityNavigation.SubChapter.IdChapterNavigation.Number" class="form-control @(Model.IsEditMode?"":"disabled")" id="capitulo" />
+                                        </div>
+                                    </div>
+                                    <div class="form-group bmd-form-group  col-lg-7 disabled dark">
+                                        <div class="input-group">
+                                            <label asp-for="ActivityVersion.IdActivityNavigation.SubChapter.IdChapterNavigation.Title" class="bmd-label-floating">@L["ActivityDetails.Title"]</label>
+                                            <input asp-for="ActivityVersion.IdActivityNavigation.SubChapter.IdChapterNavigation.Title" class="form-control @(Model.IsEditMode?"":"disabled")" id="titulo_capitulo" />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="form-group bmd-form-group col-2 disabled dark">
+                                        <div class="input-group">
+                                            <label asp-for="ActivityVersion.IdActivityNavigation.SubChapter.Number" class="bmd-label-floating">@L["ActivityDetails.SubChapter"]</label>
+                                            <input asp-for="ActivityVersion.IdActivityNavigation.SubChapter.Number" class="form-control @(Model.IsEditMode?"":"disabled")" id="subcapitulo" />
+                                        </div>
+                                    </div>
+                                    <div class="form-group bmd-form-group col-8 disabled dark">
+                                        <div class="input-group">
+                                            <label asp-for="ActivityVersion.IdActivityNavigation.SubChapter.Title" class="bmd-label-floating">@L["ActivityDetails.Title"]</label>
+                                            <input asp-for="ActivityVersion.IdActivityNavigation.SubChapter.Title" class="form-control @(Model.IsEditMode?"":"disabled")" id="titulo_subcapitulo" />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    @if (Model.ActivityVersion.Id != 0)
+                                    {
+                                        <div class="form-group bmd-form-group col-2 disabled">
+                                            <div class="input-group">
+                                                <label asp-for="ActivityVersion.IdActivityNavigation.Number" class="bmd-label-floating">@L["ActivityDetails.Activity"]</label>
+                                                <input asp-for="ActivityVersion.IdActivityNavigation.Number" class="form-control disabled" id="actividad" disabled required />
+                                            </div>
+                                        </div>
+                                    }
+                                    <div class="form-group bmd-form-group col-8 @(Model.IsEditMode?"":"disabled")">
+                                        <div class="input-group">
+                                            <label asp-for="ActivityVersion.Description" class="bmd-label-floating">@L["ActivityDetails.Description"]</label>
+                                            <input asp-for="ActivityVersion.Description" class="form-control @(Model.IsEditMode?"":"disabled")" id="titulo" required />
+                                        </div>
+                                        <span asp-validation-for="ActivityVersion.Description" class="error"></span>
+                                    </div>
+                                </div>
+
+
+                            </div>
+                            <!--Parte de relacionar actividades-->
+                            <div class="col-11">
+                                <div class="container-picklist mt-4">
+                                    <div class="row">
+                                        <div class="col-5 pr-5">
+                                            <div class="card card-picklist">
+                                                <div class="card-header">
+                                                    <p class="card-title">@L["DetallePlan.Actividades.Disponibles.Titulo"]</p>
+                                                </div>
+                                                <div class="card-body p-0">
+                                                    <div class="row card-body-top mx-0">
+                                                        <div class="activities-actions col-1">
+                                                            <div class="form-check">
+                                                                <label>
+                                                                    @*<input class="form-check-input" type="checkbox" value="">*@
+                                                                    <input id="Set-all-available-btn" class="form-check-input" onclick="setAllChecked('availableList', this)" type="checkbox" value="" />
+                                                                    <span class="form-check-sign"><span class="check"></span></span>
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                        <div class="activities-actions col-1" onclick="OpenCloseChaptersBehaviour('avaiableList-Spinner' ,'toggleAllavailableList','availableList')">
+                                                            <span id="toggleAllavailableList" class="fas fa-plus"></span>
+                                                            <span id="avaiableList-Spinner" hidden><i class="fas fa-spinner fa-spin"></i></span>
+                                                        </div>
+                                                        <div class="col-8 pl-2">
+                                                            <div class="search-filter input-group">
+                                                                <input id="available-filter" type="text" value="" class="form-control" placeholder="@L["Common.filter.Placeholder"]" onkeyup="FilterActivitiesEventHandler(this.value, 'AvailabeActivities')">
+                                                            </div>
+                                                        </div>
+                                                        @*<div class="activities-actions col-2 pr-2">
+                                                                <span class="fas fa-sort"></span>
+                                                                <span onclick="OrderByBehaviour(false)" class="fas fa-sort"></span>
+                                                            </div>*@
+                                                    </div>
+
+                                                    <!-- accordion-ordered-list -->
+                                                    <div class="accordion-ordered-list container-scrollbar">
+                                                        <ol id="availableList">
+                                                        </ol>
+                                                    </div>
+                                                </div>
+                                                <span class="fas fa-chevron fa-chevron-right" onclick="SetAdded()"></span>
+                                            </div>
+                                        </div>
+                                        <div class="col-7">
+                                            <div class="card card-picklist seleccionadas">
+                                                <div class="card-header">
+                                                    <p class="card-title">@L["DetalleActividades.ActividadesRelacionadas.Titulo"]</p>
+                                                    @*<button class="btn">+ Crear actividad</button>*@
+                                                </div>
+                                                <div class="card-body p-0">
+                                                    <div class="row card-body-top mx-0">
+                                                        <div class="activities-actions col-1">
+                                                            <div class="form-check">
+                                                                <label>
+                                                                    @*<input class="form-check-input" type="checkbox" value="">*@
+                                                                    <input id="Set-all-selected-btn" class="form-check-input" onclick="setAllChecked('selectedList', this)" type="checkbox" value="" />
+                                                                    <span class="form-check-sign"><span class="check"></span></span>
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                        <div class="activities-actions col-1" onclick="OpenCloseChaptersBehaviour('selList-Spinner' ,'toggleSelectedList','selectedList')">
+                                                            <span id="toggleSelectedList" class="fas fa-plus"></span>
+                                                            <span id="selList-Spinner" hidden><i class="fas fa-spinner fa-spin"></i></span>
+                                                        </div>
+                                                        <div class="col-7 pl-2">
+                                                            <div class="search-filter input-group">
+                                                                <input id="selected-filter" type="text" value="" class="form-control" placeholder="@L["Common.filter.Placeholder"]" onkeyup="FilterActivitiesEventHandler(this.value, 'SelectedActivities')">
+                                                            </div>
+                                                        </div>
+                                                        @*<div class="activities-actions col-1 pr-2">
+                                                                <span class="fas fa-sort ml-0"></span>
+                                                                <span onclick="OrderByBehaviour(true)" class="fas fa-sort ml-0"></span>
+                                                            </div>*@
+                                                        <div class="activities-actions col-2 align-right">
+                                                            <small id="selected-short-status" class="text-gray pr-2">Desc.</small>
+                                                            <div class="dropdown ml-1">
+                                                                <button class="dropdown-toggle btn btn-just-icon btn-link btn-round btn-sm pl-2" type="button" id="dropdownMenuButton2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <span class="fas fa-ellipsis-v"></span> </button>
+                                                                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton2" x-placement="bottom-start">
+                                                                    <a onclick="DeleteByCheckBox()" class="dropdown-item">@L["Activities.Remove"]</a>
+                                                                    @*<a class="dropdown-item" href="#">Ocultar descripciones</a>*@
+                                                                </div>
+                                                            </div>
+
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- accordion-ordered-list -->
+                                                    <div class="accordion-ordered-list container-scrollbar">
+                                                        <ol id="selectedList"></ol>
+                                                    </div>
+                                                    <!-- accordion-ordered-list -->
+
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!---->
+                        </div>
+
+
+
+                        <!-- TAB CONTENIDOS ADICIONALES -->
+                        <div class="tab-pane" id="contenidos-adicionales">
+                            <div class="container formularioDetalle">
+                                <div class="row ">
+                                    <div class="form-group bmd-form-group col-12 m-0 @(Model.IsEditMode?"":"disabled")">
+                                        <div class="input-group ">
+                                            <label asp-for="ActivityVersion.WorkDetails">@L["ActivityDetails.WorkDescription"]</label>
+                                            @*class="summernote"*@
+                                            <textarea asp-for="ActivityVersion.WorkDetails" class="form-control summernote"></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                                <div class="row ">
+                                    <div class="form-group bmd-form-group col-12 m-0 @(Model.IsEditMode?"":"disabled")">
+                                        <div class="input-group ">
+                                            <label asp-for="ActivityVersion.WorkOrganization">@L["ActivityDetails.WorkOrganization"]</label>
+                                            @*class="summernote"*@
+                                            <textarea asp-for="ActivityVersion.WorkOrganization" class="form-control summernote"></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                @*<div class="row">
+                                        <div class="col-12">
+                                            <div class="form-group bmd-form-group">
+                                                <div class="input-group ">
+                                                    <label class="bmd-label-floating">Detalles asociados</label>
+                                                </div>
+                                            </div>
+                                             Upload Finished
+                                            <div class="js-upload-finished">
+                                                <ul class="filenames" id="filenames">
+                                                </ul>
+                                            </div>
+                                            <div class="card documentacion">
+                                                <div class="card-body" onClick="document.getElementById('inputFile').click()">
+                                                    <div class="upload-drop-zone" id="drop-zone"> <i class="fas fa-cloud-upload-alt"></i> Arrastrar archivos o clic para añadir </div>
+                                                </div>
+                                            </div>
+                                            <div class="form-group file">
+                                                <label class="sr-only" for="inputFile">Adjuntar documentación</label>
+                                                <input type="file" id="inputFile" accept="*" data-title="Drag and drop a file" multiple>
+                                            </div>
+                                        </div>
+                                    </div>*@
+                                <div class="row ">
+                                    <div class="form-group bmd-form-group col-12 m-0 @(Model.IsEditMode?"":"disabled")">
+                                        <div class="input-group ">
+                                            <label asp-for="ActivityVersion.MachineTool">@L["ActivityDetails.MachineTool"]</label>
+                                            @*class="summernote"*@
+                                            <textarea asp-for="ActivityVersion.MachineTool" class="form-control summernote"></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row ">
+                                    <div class="form-group bmd-form-group col-12 m-0 @(Model.IsEditMode?"":"disabled")">
+                                        <div class="input-group ">
+                                            <label asp-for="ActivityVersion.WordDescription">@L["ActivityDetails.Text"]</label>
+                                            @*class="summernote"*@
+                                            <textarea asp-for="ActivityVersion.WordDescription" class="form-control summernote"></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        @*<a href="#back-top" class="elec-btn-scrollup btn btn-fab btn-round"><span class="fas fa-angle-up"></span></a>*@
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="footer-formularioDetalle">
+        <div class="container-fluid">
+            <div class="row px-4 align-items-center">
+                <div class="col-auto">
+                    <ul class="list-inline">
+                        @if (Model.IsEditMode)
+                        {
+                            <li class="list-inline-item">
+                                <button class="btn btn-link btn-dark p-2" asp-page-handler="DeleteActivity" name="activityToRemoveId" value="@Model.ActivityVersion.IdActivityNavigation.Id">
+                                    <span class="fas fa-trash-alt"></span> @L["General.Boton.Eliminar"]
+                                    <div class="ripple-container"></div>
+                                </button>
+                            </li>
+                        }
+                    </ul>
+                </div>
+                <div class="col-auto ml-auto">
+                    <ul class="list-inline">
+                        <li class="list-inline-item">
+                            <a class="btn btn-default" asp-page="/Models/Administration/ChaptersAndActivities/SubChapterDetails/Index"
+                               asp-route-subChapterVersionId="@Model.ActivityVersion.IdSubChapterVersion" asp-route-isEditMode="true">
+                                @L["General.Boton.Cerrar"]
+                            </a>
+                        </li>
+                        @if (Model.IsEditMode)
+                        {
+                            <li class="list-inline-item">
+                                <div class="btn-group">
+                                    <button class="btn btn-primary" onclick="SaveActivityDetails()" asp-route-saveMode="@nameof(SaveMode.Save)">
+                                        @L["General.Boton.Guardar"]
+
+                                    </button>
+                                </div>
+                            </li>
+                            @*SaveAndNewSaveAndClose*@
+                            @*<li class="list-inline-item">
+                                    <div class="btn-group">
+                                        <button class="btn btn-primary" asp-route-saveMode="@nameof(SaveMode.Save)">
+                                            @L["General.Boton.Guardar"]
+                                        </button>
+                                        <button type="button" class="btn btn-primary dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            <span class="sr-only">Toggle Dropdown</span>
+                                        </button>
+                                        <div class="dropdown-menu">
+                                            <button class="dropdown-item" asp-route-saveMode="@nameof(SaveMode.SaveAndClose)">@L["General.Boton.GuardarYCerrar"]</button>
+                                            <button class="dropdown-item" type="button" data-target="#saveAndNewModal" data-toggle="modal">@L["General.Boton.GuardarYNuevo"]</button>
+                                        </div>
+                                    </div>
+                                </li>*@
+                        }
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Save and New-->
+    @*<div class="modal notificacion fade" id="saveAndNewModal" tabindex="-1" role="dialog" aria-labelledby="saveAndNewModal" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title error">@L["SubChapterDetails.NewActivityDescription"]</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar"> <span aria-hidden="true">&times;</span> </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <input asp-for="CreateActivityTitle" value="" maxlength="250" class="form-control justify-content-center" required />
+                        </div>
+                        <div class="row mt-4">
+                            <div class="col-6">
+                                <button class="btn btn-default btn-lg col-12" data-dismiss="modal">
+                                    @L["Common.Cancel"]
+                                    <div class="ripple-container"></div>
+                                </button>
+                            </div>
+                            <div class="col-6">
+                                <button class="btn btn-primary btn-lg col-12" asp-route-saveMode="@nameof(SaveMode.SaveAndNew)">
+                                    @L["Common.Create"]
+                                    <div class="ripple-container"></div>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>*@
+    <!-- Modal Save and New-->
+
+</form>
+<script>
+    var locationRemove = '@L["Activities.Remove"]';
+
+    function GetIndexPage() {
+        return "/Models/Administration/ChaptersAndActivities/ActivityDetails";
+    }
+    function MoveHiddenValue() {
+        return "true";
+    }
+    function OpenCloseChaptersBehaviour(spinnerId, buttonId, fieldId) {
+        let spinner = document.getElementById(spinnerId);
+        let toggleBtn = document.getElementById(buttonId);
+        let currentAction = '';
+
+        toggleBtn.hidden = true;
+        spinner.hidden = false;
+
+        if (toggleBtn.classList.contains('fa-minus')) {
+            toggleBtn.className = '';
+            toggleBtn.className = 'fas fa-plus';
+            currentAction = 'close';
+        } else {
+            toggleBtn.className = '';
+            toggleBtn.className = 'fas fa-minus';
+            currentAction = 'open'
+        }
+
+        runOpenClose(fieldId, currentAction).then(v => {
+            spinner.hidden = true;
+            toggleBtn.hidden = false;
+        });
+
+    }
+    function SaveActivityDetails(data) {
+        var data = [];
+        
+        for (var chapter of SelectedActivities) {
+            for (var subChapter of chapter.subChapter) {
+                for (var activities of subChapter.activities) {
+                    var chap = parseInt(chapter.id);
+                    var subchap = parseInt(subChapter.id)
+                    var act = parseInt(activities.id)
+                    data.push({ IdChapterRelation: chap, IdSubChapterRelation: subchap, IdActivityRelation: act })
+                }
+            }
+
+
+        }
+        $.ajax({
+            type: 'POST',
+            url: "/Models/Administration/ChaptersAndActivities/ActivityDetails?handler=SaveActivityDetails"
+            , data: {
+                selectedData: data
+            },
+            headers: {"RequestVerificationToken":$('input[name="__RequestVerificationToken"]').val()},
+        error: function (e) {
+            console.log(e);
+        }
+        })
+    }
+
+    async function runOpenClose(fieldId, currentAction) {
+
+        let activitiesDiv = document.getElementById(fieldId);
+        let anchords = activitiesDiv.querySelectorAll('a.accordion-toggle');
+
+        for (var anchord of anchords) {
+            if (currentAction === 'open') {
+                if (!anchord.parentElement.nextElementSibling.classList.contains('show')) {
+                    anchord.click();
+                }
+            } else {
+                if (anchord.parentElement.nextElementSibling.classList.contains('show')) {
+                    anchord.click();
+                }
+            }
+            await sleep(8);
+        }
+
+    }
+
+    function sleep(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+</script>
+<script src="~/assets/js/ActivitiesComponent.js" asp-append-version="true"></script>

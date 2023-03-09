@@ -1,0 +1,383 @@
+﻿@using Segurplan.Web.Pages.Models.Administration.ChaptersAndActivities.ChapterDetails;
+
+@model Segurplan.Web.Pages.Models.Administration.ChaptersAndActivities.SubChapterDetails.IndexModel
+@inject SharedLocalizer L
+
+
+<form enctype="multipart/form-data" method="post">
+    <input type="hidden" asp-for="SubChapterVersion.Id" />
+    <input type="hidden" asp-for="SubChapterVersion.IdChapterVersion" />
+    <input type="hidden" asp-for="SubChapterVersion.Number" />
+    <input type="hidden" asp-for="SubChapterVersion.ChapterId" />
+    <input type="hidden" asp-for="SubChapterVersion.IdSubChapterNavigation.Id" />
+    <input type="hidden" asp-for="SubChapterVersion.RemoveActivitiesIds" id="removeActivityIds" />
+    <div class="content tabs elec-content-layout">
+        <div class="container-fluid">
+            <div class="card card-nav-tabs">
+                <div class="card-header">
+                    <div class="elec-content-title">
+                        <div class="row mx-0 py-2 align-items-center">
+                            <div class="col">
+                                @if (Model.SubChapterVersion.Id != 0)
+                                {
+                                    <h3>@L["SubChapterDetails.Header.Title", Model.SubChapterVersion.IdSubChapterNavigation.Number, Model.SubChapterVersion.Title]</h3>
+                                }
+                                else
+                                {
+                                    <h3>@L["SubChapterDetails.New"]</h3>
+                                }
+                            </div>
+                            <div class="col-auto">
+                                <!--button class="btn btn-link btn-dark p-2"> <i class="fas fa-file-word"></i> Generar plan </button>
+                                <button class="btn btn-link btn-dark p-2"> <i class="fas fa-file-excel"></i> Generar presupuesto </button>-->
+                            </div>
+                        </div>
+                    </div>
+                    <div class="nav-tabs-navigation px-3">
+                        <div class="nav-tabs-wrapper">
+                            <ul class="nav nav-tabs" data-tabs="tabs">
+                                <li class="nav-item">
+                                    <a class="nav-link active" href="#datos-generales" data-toggle="tab">
+                                        @L["ChapterDetails.GeneralData"]
+                                    </a>
+                                </li>
+
+                                <li class="nav-item"> <a class="nav-link" href="#contenidos-adicionales" data-toggle="tab">@L["ChapterDetails.OtherData"]</a> </li>
+
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body bg-white pt-3">
+                    <div class="tab-content">
+                        <!-- TAB DATOS GENARLES -->
+                        <div class="tab-pane active" id="datos-generales">
+                            <div class="container formularioDetalle">
+
+                                <div class="row">
+                                    <div class="form-group bmd-form-group col-4 col-sm-4 col-md-3 col-lg-2 disabled">
+                                        <div class="input-group">
+                                            <label for="fechaCreacion" class="bmd-label-floating">@L["SubChapterDetails.CreationDate"]</label>
+                                            <input type="text" asp-for="SubChapterVersion.CreateDate" class="form-control @(Model.IsEditMode?"":"disabled")" />
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group bmd-form-group col-4 col-sm-4 col-md-3 col-lg-2 disabled">
+                                        <div class="input-group">
+                                            <label for="fechaModificacion" class="bmd-label-floating">@L["SubChapterDetails.UpdateDate"]</label>
+                                            <input type="text" asp-for="SubChapterVersion.UpdateDate" class="form-control @(Model.IsEditMode?"":"disabled")" />
+                                        </div>
+                                    </div>
+                                    <div class="form-group bmd-form-group col-2 col-lg-1 disabled dark">
+                                        <div class="input-group">
+                                            <label for="capitulo" class="bmd-label-floating">@L["SubChapterDetails.Chapter"]</label>
+                                            <input asp-for="SubChapterVersion.IdSubChapterNavigation.IdChapterNavigation.Number" type="text" class="form-control disabled" />
+                                        </div>
+                                    </div>
+                                    <div class="form-group bmd-form-group  col-lg-7 disabled dark">
+                                        <div class="input-group">
+                                            <label for="titulo" class="bmd-label-floating">@L["SubChapterDetails.Title"]</label>
+                                            <input asp-for="SubChapterVersion.IdSubChapterNavigation.IdChapterNavigation.Title" class="form-control @(Model.IsEditMode?"":"disabled")" />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    @if (Model.SubChapterVersion.Id != 0)
+                                    {
+                                        <div class="form-group bmd-form-group col-2 disabled">
+                                            <div class="input-group">
+                                                <label for="subcapitulo" class="bmd-label-floating">@L["SubChapterDetails.SubChapter"]</label>
+                                                <input asp-for="SubChapterVersion.IdSubChapterNavigation.Number" type="text" class="form-control disabled" />
+                                            </div>
+                                        </div>
+                                    }
+                                    <div class="form-group bmd-form-group col-8 @(Model.IsEditMode?"":"disabled")">
+                                        <div class="input-group">
+                                            <label for="titulo_subcapitulo" class="bmd-label-floating">@L["SubChapterDetails.Title"]</label>
+                                            <input asp-for="SubChapterVersion.Title" class="form-control @(Model.IsEditMode?"":"disabled")" required />
+                                        </div>
+                                        <span asp-validation-for="SubChapterVersion.Title" class="error"></span>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-12">
+
+                                        <table class="table table-bordered table-striped sortable table-hover" id="activitiesTable">
+                                            <caption>@L["SubChapterDetails.Activities"]</caption>
+                                            <thead>
+                                                <tr>
+                                                    <th>@L["SubChapterDetails.Activity"] <i class="icon sort"></i></th>
+                                                    <th>@L["SubChapterDetails.ActivityDescription"] <i class="icon sort"></i></th>
+                                                    <th class="text-center">@L["Common.Actions"]</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @if (Model.SubChapterVersion?.ActivityVersion != null)
+                                                {
+                                                    foreach (var activityVersion in Model.SubChapterVersion?.ActivityVersion)
+                                                    {
+                                                        <tr class="table-row" id="activityTr_@activityVersion.Number">
+                                                            @*<td onclick="location.href='@Url.Page("/Models/Administration/ChaptersAndActivities/ActivityDetails/Index",new { ActivityVersionId = activityVersion.Id })'">@activityVersion.IdActivity</td>*@
+                                                            <td onclick="location.href='@Url.Page("/Models/Administration/ChaptersAndActivities/ActivityDetails/Index",new { ActivityVersionId = activityVersion.Id })'">@activityVersion.Number</td>
+                                                            <td onclick="location.href='@Url.Page("/Models/Administration/ChaptersAndActivities/ActivityDetails/Index",new { ActivityVersionId = activityVersion.Id })'">@activityVersion.Description</td>
+                                                            <td class="text-center">
+                                                                <a class="nav-link @(Model.IsEditMode? "" :"disabled") " href="#" id="navbarDropdownProfile2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                                    <span class="fas fa-ellipsis-v"></span>
+
+                                                                </a>
+                                                                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownProfile2">
+                                                                    <a class="dropdown-item" asp-page="/Models/Administration/ChaptersAndActivities/ActivityDetails/Index" asp-route-activityVersionId="@activityVersion.Id" asp-route-isEditMode="true">@L["General.Table.Edit"]</a>
+                                                                    @if (Model.IsEditMode)
+                                                                    {
+                                                                        <div class="dropdown-divider"></div>
+                                                                        <a class="dropdown-item" onclick="fillRemoveActivitiesInput(@activityVersion.IdActivity,'activityTr_@activityVersion.Number')">@L["General.Boton.Eliminar"]</a>
+                                                                    }
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+
+                                                    }
+                                                }
+
+                                            </tbody>
+                                        </table>
+                                        @if (Model.IsEditMode)
+                                        {
+                                            <p class="mt-4 mb-5"><button class="btn anadir centro" asp-route-saveMode="@nameof(SaveMode.AddActivity)"><span class="fas fa-plus "></span>@L["SubChapterDetails.AddActivity"]</button></p>
+                                        }
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+
+
+
+                        <!-- TAB CONTENIDOS ADICIONALES -->
+                        <div class="tab-pane" id="contenidos-adicionales">
+
+                            <div class="container formularioDetalle">
+
+                                <div class="row ">
+                                    <div class="form-group bmd-form-group col-12 m-0 @(Model.IsEditMode?"":"disabled")">
+                                        <div class="input-group ">
+                                            <label asp-for="SubChapterVersion.WorkDetails">@L["SubChapterDetails.WorkDescription"]</label>
+                                            @*class="summernote"*@
+                                            <textarea class="form-control summernote" asp-for="SubChapterVersion.WorkDetails"></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row ">
+                                    <div class="form-group bmd-form-group col-12 m-0 @(Model.IsEditMode?"":"disabled")">
+                                        <div class="input-group ">
+                                            <label asp-for="SubChapterVersion.WorkOrganization">@L["SubChapterDetails.WorkOrganization"]</label>
+                                            @*class="summernote"*@
+                                            <textarea class="form-control summernote" asp-for="SubChapterVersion.WorkOrganization"></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                @*<div class="row">
+                                        <div class="col-12">
+                                            <div class="form-group bmd-form-group">
+                                                <div class="input-group ">
+                                                    <label class="bmd-label-floating">Detalles asociados</label>
+                                                </div>
+                                            </div>
+                                             Upload Finished
+                                            <div class="js-upload-finished">
+                                                <ul class="filenames" id="filenames">
+                                                </ul>
+                                            </div>
+                                            <div class="card documentacion">
+                                                <div class="card-body" onClick="document.getElementById('inputFile').click()">
+                                                    <div class="upload-drop-zone" id="drop-zone"> <i class="fas fa-cloud-upload-alt"></i> Arrastrar archivos o clic para añadir </div>
+                                                </div>
+                                            </div>
+                                            <div class="form-group file">
+                                                <label class="sr-only" for="inputFile">Adjuntar documentación</label>
+                                                <input type="file" id="inputFile" accept="*" data-title="Drag and drop a file" multiple>
+                                            </div>
+                                        </div>
+                                    </div>*@
+                                <div class="row ">
+                                    <div class="form-group bmd-form-group col-12 m-0 @(Model.IsEditMode?"":"disabled")">
+                                        <div class="input-group ">
+                                            <label asp-for="SubChapterVersion.MachineTool">@L["SubChapterDetails.MachineTool"]</label>
+                                            @*class="summernote"*@
+                                            <textarea class="form-control summernote" asp-for="SubChapterVersion.MachineTool"></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row ">
+                                    <div class="form-group bmd-form-group col-12 m-0 @(Model.IsEditMode?"":"disabled")">
+                                        <div class="input-group ">
+                                            <label asp-for="SubChapterVersion.Description">@L["SubChapterDetails.Text"]</label>
+                                            @*<div class="summernote "></div>*@
+                                            @*class="summernote"*@
+                                            <textarea class="form-control summernote" asp-for="SubChapterVersion.Description"></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        @*<a href="#back-top" class="elec-btn-scrollup btn btn-fab btn-round"><span class="fas fa-angle-up"></span></a>*@
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer-formularioDetalle">
+        <div class="container-fluid">
+            <div class="row px-4 align-items-center">
+                <div class="col-auto">
+                    <ul class="list-inline">
+                        @if (Model.IsEditMode)
+                        {
+                            <li class="list-inline-item">
+                                <button class="btn btn-link btn-dark p-2" asp-page-handler="DeleteSubChapter" name="subChapterToRemoveId" value="@Model.SubChapterVersion.IdSubChapterNavigation.Id">
+                                    <span class="fas fa-trash-alt"></span>@L["General.Boton.Eliminar"]
+                                    <div class="ripple-container"></div>
+                                </button>
+                            </li>
+                        }
+                    </ul>
+                </div>
+                <div class="col-auto ml-auto">
+                    <ul class="list-inline">
+                        <li class="list-inline-item">
+                            <a class="btn btn-default" id="Subchapter_Btn_Close" asp-page="/Models/Administration/ChaptersAndActivities/ChapterDetails/Index"
+                               asp-route-chapterVersionId="@Model.SubChapterVersion.IdChapterVersion" asp-route-isEditMode="true">
+                                @L["General.Boton.Cerrar"]
+                            </a>
+                        </li>
+                        @if (Model.IsEditMode)
+                        {
+                            <li class="list-inline-item">
+                                <div class="btn-group">
+                                    <button class="btn btn-primary" asp-route-saveMode="@nameof(SaveMode.Save)">
+                                        @L["General.Boton.Guardar"]
+                                    </button>
+                                    @*<button type="button" class="btn btn-primary dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            <span class="sr-only">Toggle Dropdown</span>
+                                        </button>
+                                        <div class="dropdown-menu">
+                                            <button class="dropdown-item" asp-route-saveMode="@nameof(SaveMode.SaveAndClose)">@L["General.Boton.GuardarYCerrar"]</button>
+                                            <button class="dropdown-item" type="button" data-target="#saveAndNewModal" data-toggle="modal">@L["General.Boton.GuardarYNuevo"]</button>
+                                        </div>*@
+                                </div>
+                            </li>
+
+                            @*SaveAndNewSaveAndClose*@
+                            @*<li class="list-inline-item">
+                                    <div class="btn-group">
+                                        <button class="btn btn-primary" asp-route-saveMode="@nameof(SaveMode.Save)">
+                                            @L["General.Boton.Guardar"]
+                                        </button>
+                                        <button type="button" class="btn btn-primary dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            <span class="sr-only">Toggle Dropdown</span>
+                                        </button>
+                                        <div class="dropdown-menu">
+                                            <button class="dropdown-item" asp-route-saveMode="@nameof(SaveMode.SaveAndClose)">@L["General.Boton.GuardarYCerrar"]</button>
+                                            <button class="dropdown-item" type="button" data-target="#saveAndNewModal" data-toggle="modal">@L["General.Boton.GuardarYNuevo"]</button>
+                                        </div>
+                                    </div>
+                                </li>*@
+                        }
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Save and New-->
+    @*<div class="modal notificacion fade" id="saveAndNewModal" tabindex="-1" role="dialog" aria-labelledby="saveAndNewModal" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title error">@L["SubChapterDetails.NewSubChapterTitle"]</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar"> <span aria-hidden="true">&times;</span> </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <input asp-for="CreateSubChapterTitle" value="" maxlength="250" class="form-control justify-content-center" required />
+                        </div>
+                        <div class="row mt-4">
+                            <div class="col-6">
+                                <button class="btn btn-default btn-lg col-12" data-dismiss="modal">
+                                    @L["Common.Cancel"]
+                                <div class="ripple-container"></div>
+                                </button>
+                            </div>
+                            <div class="col-6">
+                                <button class="btn btn-primary btn-lg col-12" asp-route-saveMode="@nameof(SaveMode.SaveAndNew)">
+                                    @L["Common.Create"]
+                                    <div class="ripple-container"></div>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>*@
+    <!-- Modal Save and New-->
+
+</form>
+
+
+<!-- Modal Create Activity-->
+@*<form asp-page="/Models/Administration/ChaptersAndActivities/ActivityDetails/Index" method="get">
+        <div class="modal notificacion fade" id="createActivity" tabindex="-1" role="dialog" aria-labelledby="createSubChapter" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title error">@L["SubChapterDetails.NewActivityDescription"]</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar"> <span aria-hidden="true">&times;</span> </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <input name="createActivityTitle" type="text" maxlength="250" class="form-control justify-content-center" required />
+                            <input type="hidden" name="subChapterId" value="@Model.SubChapterVersion.IdSubChapterNavigation.Id" />
+                            <input type="hidden" name="subChapterVersionId" value="@Model.SubChapterVersion.Id" />
+                        </div>
+                        <div class="row mt-4">
+                            <div class="col-6">
+                                <button class="btn btn-default btn-lg col-12" data-dismiss="modal">
+                                    @L["Common.Cancel"]
+                                    <div class="ripple-container"></div>
+                                </button>
+                            </div>
+                            <div class="col-6">
+                                <button class="btn btn-primary btn-lg col-12">
+                                    @L["Common.Create"]
+                                    <div class="ripple-container"></div>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>*@
+<!-- /Modal Create Activity-->
+
+
+<script asp-append-version="true">
+    const removeActivitiesInput = document.getElementById("removeActivityIds");
+    const activitiesTable = document.getElementById("activitiesTable");
+    function fillRemoveActivitiesInput(id, rowId) {
+
+        if (removeActivitiesInput.value === "") {
+            removeActivitiesInput.value = id;
+        } else {
+            removeActivitiesInput.value += "," + id;
+        }
+
+        activitiesTable.deleteRow(document.getElementById(rowId).rowIndex);
+    }
+</script>

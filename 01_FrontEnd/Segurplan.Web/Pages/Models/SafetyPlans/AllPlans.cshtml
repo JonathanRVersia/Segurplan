@@ -1,0 +1,7 @@
+﻿@page "~/AllPlans"
+@model Segurplan.Web.Pages.Models.SafetyPlans.AllPlans
+@inject SharedLocalizer L
+@{
+    ViewData["Title"] = L["Plans.Title.AllPlans"];
+}
+@await Component.InvokeAsync("PlansTable")

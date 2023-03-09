@@ -1,0 +1,9 @@
+﻿@charset "utf-8";
+/* CSS Document */
+
+@import url("fonts.css");
+@import url("all.min.css"); /* Font-awesome */
+@import url("material-dashboard.css?v=2.1.0");
+@import url("summernote-bs4.min.css");
+@import url("dataTables.bootstrap4.css");
+@import url("perfect-scrollbar.css");

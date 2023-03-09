@@ -1,0 +1,412 @@
+﻿@page "/ArticlesList"
+@model Segurplan.Web.ArticlesListModel
+@using Segurplan.Core.Actions.Administration
+@inject SharedLocalizer L
+@{
+    ViewData["Title"] = L["SideBar.Articles"];
+}
+
+<form id="articlesList" method="post" enctype="multipart/form-data">
+    @Html.AntiForgeryToken()
+
+    <div class="content listado no-tabs">
+        <div class="container-fluid p-0">
+            <!-- Buscador -->
+            <div class="row buscadorRelativoContent ml-2" id="filterZone">
+                <div class="row">
+                    <div class="col-11">
+                        <div class="row">
+                            <div class="form-group bmd-form-group col-4">
+                                <div class="input-group">
+                                    <label for="Name" class="bmd-label-floating">@L["Administration.Articles.Name"]</label>
+                                    <input type="text" asp-for="@Model.NameFilter" class="form-control" value="@Model.NameFilter">
+                                </div>
+                            </div>
+
+                            <div class="form-group bmd-form-group col-8">
+                                <div class="input-group">
+                                    <label for="Family" class="bmd-label-floating">@L["Administration.Articles.Family"]</label>
+                                    <input type="text" asp-for="@Model.FamilyFilter" class="form-control" value="@Model.FamilyFilter">
+                                </div>
+                            </div>
+                        </div>
+                        <div class=""></div>
+                    </div>
+                    <div class="col-1 acciones_buscador">
+
+                        <button class="btn btn-just-icon btn-white">
+                            <i class="material-icons cerrarBuscador" id="searchClose" style="display:block">close</i>
+                            <div class="ripple-container"></div>
+                        </button>
+
+                        <button type="submit" asp-page-handler="DeleteFilter" class="btn btn-white buscar" id="SearchButton">
+                            @L["Planes.Filtros.Search"]
+                        </button>
+
+                    </div>
+                </div>
+            </div>
+            <div class="row tags">
+                <div class="col-12 px-0">
+                    <ul>
+                        @{
+                            if (!string.IsNullOrWhiteSpace(Model.NameFilter))
+                            {
+                                <li>
+                                    @L[$"Administration.Articles.Name"]
+                                    <span><label asp-for="@Model.NameFilter">@Model.NameFilter</label></span>
+                                    <button asp-page-handler="DeleteFilter" asp-route-filterIndex="@ArticlesListModel.FilterIndex.Name" type="submit" class="btn btn-just-icon btn-white">
+                                        <i class="material-icons">close</i>
+                                    </button>
+                                </li>
+                            }
+                            if (!string.IsNullOrWhiteSpace(Model.FamilyFilter))
+                            {
+                                <li>
+                                    @L[$"Administration.Articles.Family"]
+                                    <span><label asp-for="@Model.FamilyFilter">@Model.FamilyFilter</label></span>
+                                    <button asp-page-handler="DeleteFilter" asp-route-filterIndex="@ArticlesListModel.FilterIndex.Family" type="submit" class="btn btn-just-icon btn-white">
+                                        <i class="material-icons">close</i>
+                                    </button>
+                                </li>
+                            }
+                        }
+                    </ul>
+                </div>
+            </div>
+            <!-- TABLA ARTICULOS-->
+            <div class="content planes" id="tableContainer">
+                <div class="">
+                    @{
+                        if (Model.DeleteErrors)
+                        {
+                            @await Component.InvokeAsync("Warning", Model.WarningDTO);
+                        }
+                    }
+                    <table class="table table-bordered table-striped table-shortable table-hover tableFixHead" id="PlanTable">
+                        <thead>
+                            <tr>
+
+                                <th title="@L["Administration.Articles.Id"]" width="5%">
+                                    @{
+                                        var idSortClass = !string.IsNullOrWhiteSpace(Model.IdSort)
+                                        ? Model.IdSort.Contains("Asc")
+                                        ? "order_asc"
+                                        : Model.IdSort.Contains("Desc")
+                                        ? "order_desc"
+                                        : "order_default"
+                                        : "order_default";
+                                    }
+                                    <a asp-page-handler="ApplySort"
+                                       asp-route-name="@Model.NameFilter"
+                                       asp-route-family="@Model.FamilyFilter"
+                                       asp-route-rows="@Model.TableState.PageRows"
+                                       asp-route-sortOrder="@Model.IdSort">@L["Administration.Articles.Id"]<span class="@idSortClass"></span></a>
+
+                                </th>
+
+                                <th title="@L["Administration.Articles.Name"]" width="35%">
+                                    @{
+                                        var nameSortClass = !string.IsNullOrWhiteSpace(Model.NameSort)
+                                        ? Model.NameSort.Contains("Asc")
+                                        ? "order_asc"
+                                        : Model.NameSort.Contains("Desc")
+                                        ? "order_desc"
+                                        : "order_default"
+                                        : "order_default";
+                                    }
+                                    <a asp-page-handler="ApplySort"
+                                       asp-route-name="@Model.NameFilter"
+                                       asp-route-family="@Model.FamilyFilter"
+                                       asp-route-rows="@Model.TableState.PageRows"
+                                       asp-route-sortOrder="@Model.NameSort">@L["Administration.Articles.Name"]<span class="@nameSortClass"></span></a>
+                                </th>
+
+                                <th title="@L["Administration.Articles.Family"]" width="17%">
+                                    @{
+                                        var familySortClass = !string.IsNullOrWhiteSpace(Model.FamilySort)
+                                        ? Model.FamilySort.Contains("Asc")
+                                        ? "order_asc"
+                                        : Model.FamilySort.Contains("Desc")
+                                        ? "order_desc"
+                                        : "order_default"
+                                        : "order_default";
+                                    }
+                                    <a asp-page-handler="ApplySort"
+                                       asp-route-name="@Model.NameFilter"
+                                       asp-route-family="@Model.FamilyFilter"
+                                       asp-route-rows="@Model.TableState.PageRows"
+                                       asp-route-sortOrder="@Model.FamilySort">@L["Administration.Articles.Family"]<span class="@familySortClass"></span></a>
+                                </th>
+
+                                <th title="@L["Administration.Articles.Percentage"]" width="8%">
+                                    @{
+                                        var percentageSortClass = !string.IsNullOrWhiteSpace(Model.PercentageSort)
+                                        ? Model.PercentageSort.Contains("Asc")
+                                        ? "order_asc"
+                                        : Model.PercentageSort.Contains("Desc")
+                                        ? "order_desc"
+                                        : "order_default"
+                                        : "order_default";
+                                    }
+                                    <a asp-page-handler="ApplySort"
+                                       asp-route-name="@Model.NameFilter"
+                                       asp-route-family="@Model.FamilyFilter"
+                                       asp-route-rows="@Model.TableState.PageRows"
+                                       asp-route-sortOrder="@Model.PercentageSort">@L["Administration.Articles.Percentage"]<span class="@percentageSortClass"></span></a>
+                                </th>
+
+                                <th title="@L["Administration.Articles.TimeOfWork"]" width="10%">
+                                    @{
+                                        var timeOfWorkSortClass = !string.IsNullOrWhiteSpace(Model.TimeOfWorkSort)
+                                        ? Model.TimeOfWorkSort.Contains("Asc")
+                                        ? "order_asc"
+                                        : Model.TimeOfWorkSort.Contains("Desc")
+                                        ? "order_desc"
+                                        : "order_default"
+                                        : "order_default";
+                                    }
+                                    <a asp-page-handler="ApplySort"
+                                       asp-route-name="@Model.NameFilter"
+                                       asp-route-family="@Model.FamilyFilter"
+                                       asp-route-rows="@Model.TableState.PageRows"
+                                       asp-route-sortOrder="@Model.TimeOfWorkSort">@L["Administration.Articles.TimeOfWork"]<span class="@timeOfWorkSortClass"></span></a>
+                                </th>
+
+                                <th title="@L["Administration.Articles.AmortizationTime"]" width="10%">
+                                    @{
+                                        var amortizationTimeSortClass = !string.IsNullOrWhiteSpace(Model.AmortizationTimeSort)
+                                        ? Model.AmortizationTimeSort.Contains("Asc")
+                                        ? "order_asc"
+                                        : Model.AmortizationTimeSort.Contains("Desc")
+                                        ? "order_desc"
+                                        : "order_default"
+                                        : "order_default";
+                                    }
+                                    <a asp-page-handler="ApplySort"
+                                       asp-route-name="@Model.NameFilter"
+                                       asp-route-family="@Model.FamilyFilter"
+                                       asp-route-rows="@Model.TableState.PageRows"
+                                       asp-route-sortOrder="@Model.AmortizationTimeSort">@L["Administration.Articles.AmortizationTime"]<span class="@amortizationTimeSortClass"></span></a>
+                                </th>
+
+                                <th title="@L["Administration.Articles.MinimumUnit"]" width="8%">
+                                    @{
+                                        var minimumUnitSortClass = !string.IsNullOrWhiteSpace(Model.MinimumUnitSort)
+                                        ? Model.MinimumUnitSort.Contains("Asc")
+                                        ? "order_asc"
+                                        : Model.MinimumUnitSort.Contains("Desc")
+                                        ? "order_desc"
+                                        : "order_default"
+                                        : "order_default";
+                                    }
+                                    <a asp-page-handler="ApplySort"
+                                       asp-route-name="@Model.NameFilter"
+                                       asp-route-family="@Model.FamilyFilter"
+                                       asp-route-rows="@Model.TableState.PageRows"
+                                       asp-route-sortOrder="@Model.MinimumUnitSort">@L["Administration.Articles.MinimumUnit"]<span class="@minimumUnitSortClass"></span></a>
+
+                                </th>
+
+                                <th title="@L["Administration.Articles.Price"]" width="8%">
+                                    @{
+                                        var priceSortClass = !string.IsNullOrWhiteSpace(Model.PriceSort)
+                                        ? Model.PriceSort.Contains("Asc")
+                                        ? "order_asc"
+                                        : Model.PriceSort.Contains("Desc")
+                                        ? "order_desc"
+                                        : "order_default"
+                                        : "order_default";
+                                    }
+                                    <a asp-page-handler="ApplySort"
+                                       asp-route-name="@Model.NameFilter"
+                                       asp-route-family="@Model.FamilyFilter"
+                                       asp-route-rows="@Model.TableState.PageRows"
+                                       asp-route-sortOrder="@Model.PriceSort">@L["Administration.Articles.Price"]<span class="@priceSortClass"></span></a>
+
+                                </th>
+
+                                <th title="acciones" class="text-center" width="7%">@L["Planes.TablePlan.Acciones"] </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @{
+                                if (Model.ArticlesList != null)
+                                {
+                                    string rowName = string.Empty;
+                                    string dupliId = string.Empty;
+                                    string dpDown = string.Empty;
+
+                                    foreach (var article in Model.ArticlesList)
+                                    {
+                                        rowName = "row" + article.Id;
+                                        dpDown = "dp" + article.Id;
+
+                                        <tr id="@rowName">
+                                            <td title="@L["General.Table.Visualize"]" onclick="viewArticle('@article.Id');">@article.Id</td>
+                                            <td title="@L["General.Table.Visualize"]" onclick="viewArticle('@article.Id');">@article.Name</td>
+                                            <td title="@L["General.Table.Visualize"]" onclick="viewArticle('@article.Id');">@article.FamilyName</td>
+                                            <td title="@L["General.Table.Visualize"]" onclick="viewArticle('@article.Id');">@article.Percentage %</td>
+                                            <td title="@L["General.Table.Visualize"]" onclick="viewArticle('@article.Id');">@article.TimeOfWork</td>
+                                            <td title="@L["General.Table.Visualize"]" onclick="viewArticle('@article.Id');">@article.AmortizationTime</td>
+                                            <td title="@L["General.Table.Visualize"]" onclick="viewArticle('@article.Id');">@article.MinimumUnit</td>
+                                            <td title="@L["General.Table.Visualize"]" onclick="viewArticle('@article.Id');">@article.Price €</td>
+
+
+                                            <td class="text-center">
+                                                <div class="btn-group">
+                                                    <a class="nav-link" href="#" id="@dpDown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                        <i class="fas fa-ellipsis-v"></i>
+                                                        <p class="d-lg-none d-md-block"> Account </p>
+                                                    </a>
+                                                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownArticle">
+
+                                                        <a class="dropdown-item"
+                                                           asp-page="./ArticleManagement"
+                                                           asp-page-handler="ManageArticle"
+                                                           asp-route-currentOperation="@AdministrationActionType.Read"
+                                                           asp-route-articleId="@article.Id">@L["General.Table.Visualize"]</a>
+
+                                                        <a class="dropdown-item"
+                                                           asp-page="./ArticleManagement"
+                                                           asp-page-handler="ManageArticle"
+                                                           asp-route-currentOperation="@AdministrationActionType.Update"
+                                                           asp-route-articleId="@article.Id">@L["Planes.OpcionTable.Editar"]</a>
+
+                                                        <div class="dropdown-divider"></div>
+
+                                                        <a class="dropdown-item" href="#" onclick="deleteArticle('@article.Id')">@L["Planes.OpcionTable.Eliminar"]</a>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                            }
+                        </tbody>
+                    </table>
+                    <button type="submit" class="nuevo btn btn-fab btn-round" asp-page-handler="NewArticle"> <i class="fas fa-plus"></i> </button>
+                    <div class="footer-table ">
+                        <div class="container">
+                            <div class="row">
+                                <div class="col-2 ml-auto text-left">
+                                    <div class="row">
+                                        <label class="col-8 col-form-label">@L["Planes.Table.Registros"]</label>
+                                        <div class="col-4">
+                                            <div class="dropdown bootstrap-select show-tick">
+                                                <select asp-for="PageRows" class="selectpicker"
+                                                        data-style="select-with-transition" id="rowsChanger"
+                                                        data-size="4" tabindex="-98" onchange="$('#SearchButton').trigger('click');">
+                                                    @{
+                                                        foreach (int rowNum in Model.TableState.PageRowList)
+                                                        {
+                                                            if (rowNum == Model.TableState.PageRows)
+                                                            {
+                                                                <option value="@rowNum" selected>@rowNum </option>
+                                                            }
+                                                            else
+                                                            {
+                                                                <option value="@rowNum">@rowNum </option>
+                                                            }
+                                                        }
+                                                    }
+
+                                                </select>
+
+                                                <button type="button" class="btn dropdown-toggle" data-toggle="dropdown" role="button" title="Registros">
+                                                    <div class="filter-option">
+                                                        <div class="filter-option-inner">
+                                                            <div class="filter-option-inner-inner">Registros</div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="ripple-container"></div>
+                                                </button>
+
+                                                <div class="dropdown-menu " role="combobox">
+                                                    <div class="inner show" role="listbox" aria-expanded="false" tabindex="-1">
+                                                        <ul class="dropdown-menu inner show">
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-4 ">
+                                    <div class="row">
+                                        <div class="col-4 paginacion text-right">
+                                            @{
+                                                var startRecord = Model.TableState.PageRows > 0
+                                                   ? ((Model.TableState.IndexPage * Model.TableState.PageRows) + 1)
+                                                   : 0;
+
+                                                var results = ((Model.TableState.IndexPage * Model.TableState.PageRows) + Model.TableState.PageRows);
+                                            }
+                                            <span id="startRecord">@startRecord - </span><span id="nResults">@results</span> de <span id="total">@Model.TotalRows</span>
+                                        </div>
+                                        <div class="col-8 text-right">
+                                            @{
+                                                var backEnabled = Model.TableState.IndexPage > 0 ? "" : "disabled";
+                                                var nextEnabled = Model.TableState.IndexPage < Model.TotalPages ? "" : "disabled";
+                                            }
+                                            @Html.HiddenFor(m => m.TableState.IndexPage)
+                                            @Html.HiddenFor(m => m.TableState.OrderBy)
+                                            @Html.HiddenFor(m => m.TableState.OrderModeDesc)
+                                            @Html.HiddenFor(m => m.TableState.PageRows)
+                                            @Html.HiddenFor(m => m.CurrentOrder)
+                                            <button class="btn @backEnabled" type="submit" asp-page-handler="PreviousPage" asp-route-index="@Model.TableState.IndexPage"> <i class="fas fa-chevron-left"></i> </button>
+                                            <button class="btn @nextEnabled" type="submit" asp-page-handler="NextPage" asp-route-index="@Model.TableState.IndexPage"> <i class="fas fa-chevron-right"></i> </button>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+<!--MODAL DELETE ARTICLE-->
+<div class="modal notificacion fade" id="deleteArticle" tabindex="-1" role="dialog" aria-labelledby="delete record" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title error" id="exampleModalLabel">@L["Administration.Articles.DeleteTitle"]</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar"> <span aria-hidden="true">&times;</span> </button>
+            </div>
+            <div class="modal-body">
+                <p class="text-center">@L["Administration.Articles.DeleteMsg1"]<span id="deleteArticleMsg" style="color:red;margin-left:5px;margin-right:5px;"></span>@L["Administration.Articles.DeleteMsg2"]</p>
+                <form id="deleteArticle" method="post" action="/ArticleManagement?handler=DeleteArticle">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" id="deleteArticleId" name="deleteArticleId" value="-1" />
+
+                    <div class="row mt-4">
+                        <div class="col-6"><button class="btn btn-default btn-lg col-12" data-dismiss="modal">@L["General.Radio.No"]<div class="ripple-container"></div></button></div>
+                        <div class="col-6"><button type="submit" id="btnDelete" onclick="this.classList.add('disabled');" class="btn btn-primary btn-lg col-12">@L["General.Radio.Si"]<div class="ripple - container"></div></button></div>
+                    </div>
+
+                </form>
+
+            </div>
+        </div>
+    </div>
+    <!-- MODAL DELETE ARTICLE -->
+
+
+</div>
+<script>
+    document.getElementById("adminCaret").setAttribute("aria-expanded", "true");
+    document.getElementById("pagesAdmin").classList.add("show");
+    function deleteArticle(articleId) {
+
+        elementSet('deleteArticleId', articleId);
+        elementInner('deleteArticleMsg', articleId);
+        $('#deleteArticle').modal('show').fadeIn("slow");
+    }
+
+    function viewArticle(id) {
+        location.href = "/ArticleManagement?handler=ManageArticle&currentOperation=Read&ArticleId=" + id;
+    }
+</script>

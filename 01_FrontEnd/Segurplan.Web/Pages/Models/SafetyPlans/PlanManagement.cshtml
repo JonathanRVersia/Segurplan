@@ -1,0 +1,1836 @@
+﻿@page "/PlanManagement"
+@model Segurplan.Web.Pages.Models.SafetyPlans.PlanManagementModel
+@using Segurplan.Web.Utils
+@using Segurplan.Core.BusinessObjects
+@using Segurplan.Core.Actions.Plans
+@using Segurplan.Core.Actions.Plans.PlanManagement.DefaultValues
+@using Segurplan.Web.Pages.Components.PlanActivityCustomModals
+
+
+@inject SharedLocalizer L
+@{
+    Layout = "_Layout";
+    ViewData["Title"] = @L["DetallePlan.Titulo"];
+
+    string fieldState = Model.editEnabled ? string.Empty : "disabled";
+    string labelClass = Model.editEnabled ? string.Empty : "class=bmd-label-floating";
+    string textBoxClass = Model.editEnabled ? "form-group bmd-form-group" : "form-group bmd-form-group disabled";
+
+    string listFileHtml = string.Empty;
+    int newFileId = 0;
+
+    var evaluationChecked = Model.Plan.GeneralData.IsEvaluation ? "checked" : "";
+    var riskChecked = !Model.Plan.GeneralData.IsEvaluation ? "checked" : "";
+
+    var affectedServicesChecked = Model.Plan.AdditionalData.AffectedServices ? "checked" : "";
+    var noAffectedServicesChecked = !Model.Plan.AdditionalData.AffectedServices ? "checked" : "";
+
+    var shortEmergencyPlanTypeChecked = Model.Plan.AdditionalData.IdEmergencyPlanType == 1 ? "checked" : "";
+    var mediumEmergencyPlanTypeChecked = Model.Plan.AdditionalData.IdEmergencyPlanType == 2 ? "checked" : "";
+    var longEmergencyPlanTypeChecked = Model.Plan.AdditionalData.IdEmergencyPlanType == 3 ? "checked" : "";
+}
+
+<form id="main" enctype="multipart/form-data" method="post" onsubmit="checkIfFormIsValid()">
+    @Html.AntiForgeryToken()
+    <input id="tab-location" type="hidden" asp-for="CurrentTab" />
+    <input type="hidden" asp-for="PrevPage" />
+
+    <div class="planDetalle" id="planDetail">
+        <a name="back-top"></a>
+        @*contenido de la página*@
+        <div class="content tabs elec-content-layout">
+            <div class="container-fluid misPlanes">
+                <div class="card card-nav-tabs">
+                    <div class="card-header">
+                        <div class="elec-content-title">
+                            <div class="row mx-0 align-items-center">
+                                <div class="col">
+                                    <h3>Plan @Model.Plan.Id : @Model.Plan.GeneralData.PlanTitle</h3>
+                                </div>
+                                <div class="col-auto">
+                                    <button id="generateTemplateBtn" type="button" form="FormCreateDocument" onclick="DownloadFile()" class="btn btn-link btn-dark p-2 disabled"> <i class="fas fa-file-word"></i> @L["Planes.TablePlan.GeneratePlan"] </button>
+                                    @*<button id="GenerateBudget" class="btn btn-link btn-dark p-2"> <i class="fas fa-file-excel"></i> @L["Planes.TablePlan.GenerateBudget"] </button>*@
+                                </div>
+                            </div>
+                        </div>
+
+                        @if (Model.NotCurrentChapterNumbers.Any())
+                        {
+                            <div class="alert alert-warning alert-dismissible fade show alert-with-icon" role="alert">
+                                <span class="material-icons" data-notify="icon">error_outline</span>
+                                Debe actualizar la versión no vigente de los siguientes Capítulos:
+                                @for (int i = 0; i < Model.NotCurrentChapterNumbers.Count(); i++)
+                                {
+                                    if (i != 0)
+                                    {
+                                        @:,
+                                    }
+                                    @:@Model.NotCurrentChapterNumbers[i]
+                                }
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                        }
+
+                        <div class="nav-tabs-navigation px-3  mb-3">
+                            <div class="nav-tabs-wrapper">
+                                <ul class="nav nav-tabs" data-tabs="tabs">
+                                    <li class="nav-item">
+                                        @*onclick="document.getElementById('backTopBtn').click()"*@
+                                        <span id="generalDataErrorMsg" class="badge badge-pill badge-primary" style="float:left; background-color:red; margin-bottom:-1px; margin-right:5px; display: none"></span>
+                                        <a class="nav-link @(Model.CurrentTab == nameof(PlanTab.GeneralData) ? "active" : "")" id="pestanaGeneralData" onclick="changeActiveTab('@nameof(PlanTab.GeneralData)')" id="datos-generales-anchor" href="#datos-generales" data-toggle="tab">
+                                            @L["DetallePlan.NavTabs.Generales"]
+                                            <div class="ripple-container"></div>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item option">
+                                        @*onclick="document.getElementById('backTopBtn').click()"*@
+                                        <a class="nav-link @(Model.CurrentTab == nameof(PlanTab.Activities) ? "active" : "")" href="#actividades" onclick="changeActiveTab('@nameof(PlanTab.Activities)')" id="@PlanTab.Activities" data-toggle="tab"> @L["DetallePlan.NavTabs.Actividades"] </a>
+                                    </li>
+                                    <li class="nav-item option">
+                                        @*onclick="document.getElementById('backTopBtn').click()"*@
+                                        <span id="additionalContentErrorMsg" class="badge badge-pill badge-primary" style="float:left; background-color:red; margin-bottom:-1px; margin-right:5px; display: none"></span>
+                                        <a class="nav-link @(Model.CurrentTab == nameof(PlanTab.AdditionalData) ? "active" : "")" id="pestanaAdditionalContent" href="#contenidos-adicionales" onclick="changeActiveTab('@nameof(PlanTab.AdditionalData)')" id="@PlanTab.AdditionalData" data-toggle="tab"> @L["DetallePlan.NavTabs.Adicional"] </a>
+                                    </li>
+                                    <li class="nav-item option">
+                                        @*onclick="document.getElementById('backTopBtn').click()"*@
+                                        <a class="nav-link @(Model.CurrentTab == nameof(PlanTab.Budget) ? "active" : "")" href="#presupuesto" onclick="changeActiveTab('@nameof(PlanTab.Budget)'), UpdatePresupuestoValue() " id="@PlanTab.Budget" data-toggle="tab"> @L["DetallePlan.NavTabs.Presupuesto"] </a>
+                                    </li>
+                                    <li class="nav-item option">
+                                        @*onclick="document.getElementById('backTopBtn').click()"*@
+                                        <a class="nav-link @(Model.CurrentTab == nameof(PlanTab.OtherDocuments) ? "active" : "")" href="#planos-documentos" onclick="changeActiveTab('@nameof(PlanTab.OtherDocuments)')" id="@PlanTab.OtherDocuments" data-toggle="tab"> @L["DetallePlan.NavTabs.OtrosDocumentos"] </a>
+                                    </li>
+                                    <li>
+                                        <div id="loading" class="form-group"></div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body bg-white">
+                        <div class="tab-content">
+                            <!-- TAB DATOS GENARLES -->
+                            <div class="tab-pane @(Model.CurrentTab == nameof(PlanTab.GeneralData) ? "active" : "")" id="datos-generales">
+                                <div class="container formularioDetalle">
+
+                                    <div class="row">
+                                        @{
+                                            @Html.HiddenFor(model => model.Plan.Id);
+                                            if (Model.editEnabled)
+                                            {
+                                                <div class="form-group bmd-form-group col-3">
+                                                    <div class="input-group ">
+                                                        <label for="peticionario">@L["DetallePlan.DatGen.Direccion"] *</label>
+                                                        <select onchange="ChangeDependantData(this); " class="form-control selectpicker" asp-for="Plan.GeneralData.IdBusinessAddress"
+                                                                data-style="select-with-transition" id="businessAddress" required>
+                                                            <option id="0" value="">@L["Select.empty.option"]</option>
+                                                            @{
+                                                                bool found = false;
+                                                                foreach (var address in Model.BusinessAddressList)
+                                                                {
+                                                                    if (!found && address.Id == Model.Plan.GeneralData.IdBusinessAddress)
+                                                                    {
+                                                                        <option id="@address.Id" value="@address.Id" selected>@address.Name</option>
+                                                                        found = true;
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        <option id="@address.Id" value="@address.Id">@address.Name</option>
+                                                                    }
+
+                                                                }
+                                                            }
+                                                        </select>
+                                                        @{
+                                                            if (Model.BackValidationResultMsg?.Errors.Any(x => x.PropertyName == "PlanInformation.GeneralData.IdBusinessAddress") ?? false)
+                                                            {
+                                                                <span class="text-danger">@Model.BackValidationResultMsg.Errors.First(res => res.PropertyName == "PlanInformation.GeneralData.IdBusinessAddress").ErrorMessage</span>
+                                                            }
+
+                                                        }
+                                                        @*<span class="error" asp-validation-for="Plan.GeneralData.IdBusinessAddress"></span>*@
+                                                    </div>
+                                                </div>
+                                                <div class="form-group bmd-form-group col-3">
+                                                    <div class="input-group ">
+                                                        <label for="Plan_GeneralData_IdDelegation" @labelClass>@L["DetallePlan.DatGen.Delegacion"] *</label>
+                                                        <select class="form-control selectpicker" asp-for="Plan.GeneralData.IdDelegation" data-style="select-with-transition" id="delegationList" required>
+                                                            <option id="0" value="">@L["Select.empty.option"]</option>
+                                                            @{
+                                                                bool delFound = false;
+                                                                foreach (var opt in Model.DelegationList)
+                                                                {
+                                                                    if (!delFound && opt.Id == Model.Plan.GeneralData.IdDelegation)
+                                                                    {
+                                                                        <option id="@opt.Id" value="@opt.Id" selected>@opt.Name</option>
+                                                                        delFound = true;
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        <option id="@opt.Id" value="@opt.Id">@opt.Name</option>
+                                                                    }
+
+                                                                }
+                                                            }
+                                                        </select>
+                                                        @{
+                                                            if (Model.BackValidationResultMsg?.Errors.Any(x => x.PropertyName == "PlanInformation.GeneralData.IdDelegation") ?? false)
+                                                            {
+                                                                <span class="text-danger">@Model.BackValidationResultMsg.Errors.First(res => res.PropertyName == "PlanInformation.GeneralData.IdDelegation").ErrorMessage</span>
+                                                            }
+
+                                                        }
+                                                        @*<span class="error" asp-validation-for="Plan.GeneralData.IdDelegation"></span>*@
+
+
+                                                    </div>
+                                                </div>
+                                                <div class="form-group bmd-form-group col-3 is-filled">
+                                                    <div class="input-group ">
+                                                        <label for="tipo" @labelClass>@L["DetallePlan.DatGen.Empresa"] *</label>
+                                                        <select class="form-control selectpicker" asp-for="Plan.GeneralData.AffiliatedId" data-style="select-with-transition" id="tipo" required>
+                                                            <option id="0" value="">@L["Select.empty.option"]</option>
+                                                            @{
+                                                                bool afcFound = false;
+                                                                for (int afIndex = 0; afIndex < Model.AffiliatedList.Count; afIndex++)
+                                                                {
+                                                                    var opt = Model.AffiliatedList[afIndex];
+
+                                                                    if (!afcFound && opt.Id == Model.Plan.GeneralData.AffiliatedId)
+                                                                    {
+                                                                        <option id="@opt.Id" name="[@afIndex].@opt.Id" value="@opt.Id" selected>@opt.Name</option>
+                                                                        afcFound = true;
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        <option id="@opt.Id" name="[@afIndex].@opt.Id" value="@opt.Id">@opt.Name</option>
+                                                                    }
+                                                                }
+                                                            }
+                                                        </select>
+                                                        @{
+                                                            if (Model.BackValidationResultMsg?.Errors.Any(x => x.PropertyName == "PlanInformation.GeneralData.AffiliatedId") ?? false)
+                                                            {
+                                                                <span class="text-danger">@Model.BackValidationResultMsg.Errors.First(res => res.PropertyName == "PlanInformation.GeneralData.AffiliatedId").ErrorMessage</span>
+                                                            }
+
+                                                        }
+
+                                                    </div>
+                                                </div>
+                                                <div class="form-group bmd-form-group col-3">
+                                                    <div class="input-group ">
+                                                        <label for="ute" class="bmd-label-floating">@L["DetallePlan.DatGen.UTE"]</label>
+                                                        @Html.TextBoxFor(model => model.Plan.GeneralData.AffiliatedName, new { @class = "form-control" })
+                                                        @{
+                                                            if (Model.BackValidationResultMsg?.Errors.Any(x => x.PropertyName == "PlanInformation.GeneralData.AffiliatedName") ?? false)
+                                                            {
+                                                                <span class="text-danger">@Model.BackValidationResultMsg.Errors.First(res => res.PropertyName == "PlanInformation.GeneralData.AffiliatedName").ErrorMessage</span>
+                                                            }
+
+                                                        }
+                                                    </div>
+                                                </div>
+                                            }
+                                            else
+                                            {
+                                                <div class="form-group bmd-form-group col-3 is-filled disabled">
+                                                    <div class="input-group ">
+                                                        <label for="peticionario" class="bmd-label-floating">@L["DetallePlan.DatGen.Direccion"]</label>
+                                                        @Html.TextBoxFor(model => model.Plan.GeneralData.BusinessAddress, new { @class = "form-control" })
+                                                    </div>
+                                                </div>
+                                                <div class="form-group bmd-form-group col-3 is-filled disabled">
+                                                    <div class="input-group ">
+                                                        <label for="delegacion" @labelClass>@L["DetallePlan.DatGen.Delegacion"]</label>
+                                                        @Html.TextBoxFor(model => model.Plan.GeneralData.DelegationName, new { @class = "form-control" })
+                                                    </div>
+                                                </div>
+                                                <div class="form-group bmd-form-group col-3 is-filled disabled">
+                                                    <div class="input-group ">
+                                                        <label for="tipo" @labelClass>@L["DetallePlan.DatGen.Empresa"]</label>
+                                                        @Html.TextBoxFor(model => model.Plan.GeneralData.AffiliatedName, new { @class = "form-control" })
+                                                    </div>
+                                                </div>
+                                                <div class="form-group bmd-form-group col-3 is-filled disabled">
+                                                    <div class="input-group ">
+                                                        <label for="ute" class="bmd-label-floating">@L["DetallePlan.DatGen.UTE"]</label>
+                                                        @Html.TextBoxFor(model => model.Plan.GeneralData.AffiliatedName, new { @class = "form-control" })
+                                                    </div>
+                                                </div>
+                                            }
+                                        }
+                                    </div>
+                                    <div class="row">
+                                        <div class="@textBoxClass col-7">
+                                            <div class="input-group ">
+                                                <label for="proyecto" class="bmd-label-floating">@L["DetallePlan.DatGen.Proyecto.Nombre"] *</label>
+                                                @Html.TextBoxFor(model => model.Plan.GeneralData.PlanTitle, new { @maxlength = "250", @class = "form-control", @required = "required" })
+                                                @{
+                                                    if (Model.BackValidationResultMsg?.Errors.Any(x => x.PropertyName == "PlanInformation.GeneralData.PlanTitle") ?? false)
+                                                    {
+                                                        <span class="text-danger">@Model.BackValidationResultMsg.Errors.First(res => res.PropertyName == "PlanInformation.GeneralData.PlanTitle").ErrorMessage</span>
+                                                    }
+
+                                                }
+                                            </div>
+                                        </div>
+                                        <div class="form-group bmd-form-group col-5 @fieldState">
+                                            <div class="input-group ">
+                                                <label for="actividad_generica" @labelClass>@L["DetallePlan.DatGen.Proyecto.Actividad"] *</label>
+                                                @{
+                                                    if (Model.editEnabled)
+                                                    {
+                                                        <select class="form-control selectpicker" asp-for="Plan.GeneralData.IdGeneralActivity" data-style="select-with-transition" id="actividad_generica" required>
+
+                                                            <option id="0" value="">@L["Select.empty.option"]</option>
+                                                            @{
+
+                                                                bool isFound = false;
+                                                                foreach (var genAct in Model.GeneralActivityList)
+                                                                {
+                                                                    if (!isFound && genAct.Id == Model.Plan.GeneralData.IdGeneralActivity)
+                                                                    {
+                                                                        isFound = true;
+                                                                        <option id="@genAct.Id" value="@genAct.Id" selected>@genAct.Name</option>
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        <option id="@genAct.Id" value="@genAct.Id">@genAct.Name</option>
+                                                                    }
+                                                                }
+                                                            }
+                                                        </select>
+
+                                                        if (Model.BackValidationResultMsg?.Errors.Any(x => x.PropertyName == "PlanInformation.GeneralData.IdGeneralActivity") ?? false)
+                                                        {
+                                                            <span class="text-danger">@Model.BackValidationResultMsg.Errors.First(res => res.PropertyName == "PlanInformation.GeneralData.IdGeneralActivity").ErrorMessage</span>
+                                                        }
+
+
+                                                    }
+                                                    else
+                                                    {
+                                                        @Html.TextBoxFor(model => model.Plan.GeneralData.GeneralActivityName, new { @class = "form-control" });
+                                                    }
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="form-group bmd-form-group col-4 @fieldState">
+                                            <div class="input-group ">
+                                                <label for="cliente" @labelClass>@L["DetallePlan.DatGen.Cliente"] *</label>
+                                                @{
+                                                    if (Model.editEnabled)
+                                                    {
+                                                        <select class="form-control selectpicker" asp-for="Plan.GeneralData.IdCustomer" data-style="select-with-transition" id="cliente" required>
+                                                            <option id="0" value="">@L["Select.empty.option"]</option>
+                                                            @{
+                                                                bool custFound = false;
+                                                                foreach (var customer in Model.CustomerList)
+                                                                {
+                                                                    if (!custFound && customer.Id == Model.Plan.GeneralData.IdCustomer)
+                                                                    {
+                                                                        custFound = true;
+                                                                        <option id="@customer.Id" value="@customer.Id" selected>@customer.Name</option>
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        <option id="@customer.Id" value="@customer.Id">@customer.Name</option>
+                                                                    }
+                                                                }
+
+                                                            }
+                                                        </select>
+
+                                                        if (Model.BackValidationResultMsg?.Errors.Any(x => x.PropertyName == "PlanInformation.GeneralData.IdCustomer") ?? false)
+                                                        {
+                                                            <span class="text-danger">@Model.BackValidationResultMsg.Errors.First(res => res.PropertyName == "PlanInformation.GeneralData.IdCustomer").ErrorMessage</span>
+                                                        }
+
+                                                    }
+                                                    else
+                                                    {
+                                                        @Html.TextBoxFor(model => model.Plan.GeneralData.CustomerName, new { @class = "form-control" });
+                                                    }
+                                                }
+                                            </div>
+                                        </div>
+                                        @{
+                                            if (Model.editEnabled)
+                                            {
+                                                <div class="form-group bmd-form-group col-8 @fieldState">
+                                                    <div class="input-group ">
+                                                        <label for="nombre_cliente" class="bmd-label-floating">@L["DetallePlan.DatGen.Cliente.Nombre"]</label>
+                                                        @Html.TextBoxFor(model => model.Plan.GeneralData.CustomerDescription, new { @maxlength = "250", @class = "form-control" })
+                                                        @{
+                                                            if (Model.BackValidationResultMsg?.Errors.Any(x => x.PropertyName == "PlanInformation.GeneralData.CustomerDescription") ?? false)
+                                                            {
+                                                                <span class="text-danger">@Model.BackValidationResultMsg.Errors.First(res => res.PropertyName == "PlanInformation.GeneralData.CustomerDescription").ErrorMessage</span>
+                                                            }
+                                                        }
+                                                    </div>
+                                                </div>
+                                            }
+                                            else
+                                            {
+                                                <div class="form-group bmd-form-group col-8 @fieldState">
+                                                    <div class="input-group ">
+                                                        <label for="nombre_cliente" class="bmd-label-floating">@L["DetallePlan.DatGen.Cliente.Nombre"]</label>
+                                                        @Html.TextBoxFor(model => model.Plan.GeneralData.CustomerDescription, new { @class = "form-control" })
+                                                    </div>
+                                                </div>
+                                            }
+                                        }
+                                    </div>
+                                    <div class="row">
+                                        <div class="@textBoxClass col-7">
+                                            <div class="input-group ">
+                                                <label for="autor" class="bmd-label-floating">@L["DetallePlan.DatGen.PersonaElaboracion"] *</label>
+                                                @Html.TextBoxFor(model => model.Plan.GeneralData.CreatorName, new { @class = "form-control", @required = "required" })
+                                                @{
+                                                    if (Model.BackValidationResultMsg?.Errors.Any(x => x.PropertyName == "PlanInformation.GeneralData.CreatorName") ?? false)
+                                                    {
+                                                        <span class="text-danger">@Model.BackValidationResultMsg.Errors.First(res => res.PropertyName == "PlanInformation.GeneralData.CreatorName").ErrorMessage</span>
+                                                    }
+                                                }
+                                            </div>
+                                        </div>
+                                        <div class="form-group bmd-form-group col-5 @fieldState">
+                                            <div class="input-group ">
+                                                <label for="cargo" @labelClass>@L["DetallePlan.DatGen.PersonaElaboracion.Cargo"] *</label>
+                                                @{
+                                                    if (Model.editEnabled)
+                                                    {
+                                                        <select asp-for="Plan.GeneralData.CreatorCategoryId" class="form-control selectpicker" data-style="select-with-transition" id="cargo" required>
+                                                            @{
+                                                                <option id="0" value="">@L["Select.empty.option"]</option>
+
+                                                                bool profileFound = false;
+                                                                foreach (var profile in Model.ProfileList)
+                                                                {
+                                                                    if (!profileFound && profile.Id == Model.Plan.GeneralData.CreatorCategoryId)
+                                                                    {
+                                                                        profileFound = true;
+                                                                        <option id="@profile.Id" value="@profile.Id" selected>@profile.Name</option>
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        <option id="@profile.Id" value="@profile.Id">@profile.Name</option>
+                                                                    }
+                                                                }
+                                                            }
+                                                        </select>
+
+                                                        if (Model.BackValidationResultMsg?.Errors.Any(x => x.PropertyName == "PlanInformation.GeneralData.CreatorCategoryId") ?? false)
+                                                        {
+                                                            <span class="text-danger">@Model.BackValidationResultMsg.Errors.First(res => res.PropertyName == "PlanInformation.GeneralData.CreatorCategoryId").ErrorMessage</span>
+                                                        }
+
+                                                    }
+                                                    else
+                                                    {
+                                                        @Html.TextBoxFor(model => model.Plan.GeneralData.CreatorCategoryName, new { @class = "form-control" });
+                                                    }
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <input hidden asp-for="Plan.GeneralData.IdReviewer" value="@Model.Plan.GeneralData.IdReviewer">
+                                    <div class="row">
+                                        <div class="form-group bmd-form-group col-5 @fieldState">
+                                            <div class="input-group ">
+                                                <label for="tecnico" @labelClass>@L["DetallePlan.DatGen.PersonaRevision"] *</label>
+                                                @{
+                                                    if (Model.editEnabled)
+                                                    {
+                                                        @*<select asp-for="Plan.GeneralData.IdReviewer" class="form-control selectpicker" data-style="select-with-transition" id="tecnico" required>
+                                                                @{
+
+                                                                    <option id="0" value="">@L["Select.empty.option"]</option>
+                                                                    bool userFound = false;
+                                                                    foreach (var user in Model.UserList)
+                                                                    {
+                                                                        if (!userFound && user.Id == Model.Plan.GeneralData.IdReviewer)
+                                                                        {
+                                                                            userFound = true;
+                                                                            <option id="@user.Id" value="@user.Id" selected>@user.CompleteName</option>
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            <option id="@user.Id" value="@user.Id">@user.CompleteName</option>
+                                                                        }
+                                                                    }
+                                                                }
+                                                            </select>*@
+                                                        <input asp-for="Plan.GeneralData.ApproverName" type="text" class="form-control" id="tecnico" value="@Model.Plan.GeneralData.ApproverName" required>
+
+                                                        if (Model.BackValidationResultMsg?.Errors.Any(x => x.PropertyName == "PlanInformation.GeneralData.IdReviewer") ?? false)
+                                                        {
+                                                            <span class="text-danger">@Model.BackValidationResultMsg.Errors.First(res => res.PropertyName == "PlanInformation.GeneralData.IdReviewer").ErrorMessage</span>
+                                                        }
+                                                    }
+                                                    else
+                                                    {
+                                                        @Html.TextBoxFor(model => model.Plan.GeneralData.ApproverName, new { @class = "form-control" });
+                                                    }
+                                                }
+                                            </div>
+                                        </div>
+                                        @{
+                                            if (Model.CurrentOperation != PlanActionType.Create)
+                                            {
+                                                <div class="form-group bmd-form-group  col-3 disabled">
+                                                    <div class="input-group ">
+                                                        <label for="fechaEnvio" class="bmd-label-floating">@L["DetallePlan.DatGen.FechaCreacion"]</label>
+                                                        @Html.TextBoxFor(model => model.Plan.CreationDate, new { @class = "form-control datepicker", @id = "createdDate" })
+                                                    </div>
+                                                </div>
+
+                                                <div class="form-group bmd-form-group  col-3 disabled">
+                                                    <div class="input-group ">
+                                                        <label for="fechaEnvio" class="bmd-label-floating">@L["DetallePlan.DatGen.FechaModificacion"]</label>
+                                                        @Html.TextBoxFor(model => model.Plan.ModifiedDate, new { @class = "form-control datepicker", @id = "modifiedDate" })
+                                                    </div>
+                                                </div>
+                                            }
+                                        }
+                                    </div>
+
+                                    <div id="accordion" role="tablist" class="accordion">
+                                        <div class="card card-collapse">
+                                            <div class="card-header" role="tab" id="headingOne">
+                                                <a data-toggle="collapse" href="#documentacion" aria-expanded="false" class="collapse" aria-controls="documentacion">
+                                                    <i class="material-icons">keyboard_arrow_down</i> @L["DetallePlan.DatGen.DocSeguridad.Titulo"]
+                                                </a>
+                                            </div>
+                                            <div id="documentacion" class="collapse" role="tabpanel" aria-labelledby="headingOne" data-parent="#accordion">
+                                                <div class="card-body">
+                                                    <div class="row">
+                                                        <fieldset class="col-5 @fieldState">
+                                                            @Html.HiddenFor(model => model.Plan.GeneralData.IsEvaluation)
+                                                            <legend>@L["DetallePlan.DatGen.DocSeguridad.Tipo"]</legend>
+                                                            <div class="form-check form-check-radio form-check-inline">
+                                                                <label for="planTypeEvaluation" class="form-check-label">
+                                                                    <input class="form-check-input" @evaluationChecked name="IsEvaluation"
+                                                                           type="radio" id="planTypeEvaluation"
+                                                                           value="@Model.Plan.GeneralData.IsEvaluation"
+                                                                           onchange="elementSet('Plan_GeneralData_IsEvaluation', true);">
+                                                                    @L["DetallePlan.DatGen.DocSeguridad.Tipo.Radio.T1"] <span class="circle"><span class="check"></span></span>
+                                                                </label>
+                                                            </div>
+                                                            <div class="form-check form-check-radio form-check-inline">
+                                                                <label for="planTypeRiskMap" class="form-check-label">
+                                                                    <input class="form-check-input" name="IsEvaluation" @riskChecked
+                                                                           type="radio" id="planTypeRiskMap"
+                                                                           onchange="elementSet('Plan_GeneralData_IsEvaluation', false);">
+                                                                    @L["DetallePlan.DatGen.DocSeguridad.Tipo.Radio.T2"] <span class="circle"><span class="check"></span></span>
+                                                                </label>
+                                                            </div>
+                                                        </fieldset>
+                                                        @{
+                                                            if (Model.editEnabled)
+                                                            {
+
+                                                                <div class="form-group bmd-form-group col-4 @fieldState">
+                                                                    <div class="input-group ">
+                                                                        <label for="template" @labelClass>@L["DetallePlan.DatGen.DocSeguridad.Plantilla"]</label>
+                                                                        <select asp-for="Plan.GeneralData.IdTemplate" class="form-control selectpicker" data-style="select-with-transition" onchange="changeSelectedOpt(this)" id="template">
+                                                                            @{
+
+                                                                                bool tplFound = false;
+
+                                                                                foreach (var tpt in Model.TemplateList)
+                                                                                {
+                                                                                    if (!tplFound && tpt.Id == Model.Plan.GeneralData.IdTemplate)
+                                                                                    {
+                                                                                        <option id="@tpt.Id" value="@tpt.Id" selected>@tpt.Name</option>
+                                                                                        tplFound = true;
+                                                                                    }
+                                                                                    else
+                                                                                    {
+                                                                                        <option id="@tpt.Id" value="@tpt.Id">@tpt.Name</option>
+                                                                                    }
+                                                                                }
+                                                                            }
+                                                                            }
+                                                                        </select>
+                                                                    </div>
+                                                                </div>
+                                                            }
+                                                            else
+                                                            {
+                                                                <div class="form-group bmd-form-group col-4 @fieldState">
+                                                                    <div class="input-group ">
+                                                                        <label for="template" @labelClass>@L["DetallePlan.DatGen.DocSeguridad.Plantilla"]</label>
+                                                                        @Html.TextBoxFor(model => model.Plan.GeneralData.TemplateName, new { @class = "form-control" })
+                                                                    </div>
+                                                                </div>
+                                                            }
+                                                        }
+
+
+                                                        @*<div class="form-group bmd-form-group col-3 @fieldState">
+                                                                <div class="input-group ">
+                                                                    <label for="coordinador" class="bmd-label-floating">@L["DetallePlan.DatGen.DocSeguridad.PersonaAprobacion"]</label>
+                                                                    <input asp-for="Plan.GeneralData.ApproverName" type="text" class="form-control" id="coordinador" value="@Model.Plan.GeneralData.ApproverName">
+                                                                </div>
+                                                            </div>*@
+                                                    </div>
+                                                    <div class="row mt-2">
+                                                        <div class="col-12 bmd-form-group">
+                                                            <label for="planFiles" @labelClass>@L["Plan.Anagram"]</label>
+                                                            <input type="hidden" asp-for="Plan.GeneralData.DeleteExistingFileIdsCsv" id="RemoveExisitngAnagramFile" />
+                                                            @await Component.InvokeAsync("FileUploader", new { files = @Model.Plan.GeneralData.Anagrams, inputid = "planFiles", enabled = @Model.editEnabled, planId = Model.Plan.Id, destination = "./PlanManagement" })
+                                                            <div class="form-group">
+                                                                <input id="planFiles" class="form-control"
+                                                                       type="file"
+                                                                       asp-for="Plan.GeneralData.AnagramUploadFiles"
+                                                                       accept="image/jpg,image/jpeg,image/png,image/tif,image/tiff,image/bmp,image/gif"
+                                                                       data-title="Drag and drop a file"
+                                                                       onclick="onClickFile(this)"
+                                                                       oninput="onInputFile(this)"
+                                                                       multiple />
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                            <!-- TAB ACTIVIDADES -->
+                            <div class="tab-pane @(Model.CurrentTab == nameof(PlanTab.Activities) ? "active" : "")" id="actividades">
+                                <div class="formularioDetalle container-picklist">
+
+                                    <div class="row">
+                                        <div class="col-5 pr-5">
+                                            <div class="card card-picklist">
+                                                <div class="card-header">
+                                                    <p class="card-title">@L["DetallePlan.Actividades.Disponibles.Titulo"]</p>
+                                                </div>
+                                                <div class="card-body p-0">
+                                                    <div class="row card-body-top mx-0">
+                                                        <div class="activities-actions col-1">
+                                                            <div class="form-check">
+                                                                <label>
+                                                                    <input id="selectAllLeft" onclick="setAllCheckboxes('avaiableActivities', this)" id="select-all" class="form-check-input" type="checkbox" value="">
+                                                                    <span class="form-check-sign"><span class="check"></span></span>
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                        <div class="activities-actions col-1" onclick="OpenCloseChaptersBehaviour('avaiable-Spinner' ,'toggleAllavailable','avaiableActivities')">
+                                                            <span id="toggleAllavailable" class="fas fa-plus"></span>
+                                                            <span id="avaiable-Spinner" hidden><i class="fas fa-spinner fa-spin"></i></span>
+                                                        </div>
+
+                                                        <div class="col-8 pl-2">
+                                                            <div class="search-filter input-group">
+                                                                <input id="inputAvaiableFilterList" onkeyup="FilterActivityListEventHandler(this, 'avaiableActivities')" asp-for="AvaiableActivitiesFilter" type="text" value="" class="form-control" placeholder="Filtrar">
+                                                            </div>
+                                                        </div>
+                                                        @*<div class="activities-actions col-1 pr-2"> <span class="fas fa-sort"></span> </div>*@
+                                                    </div>
+                                                    <div class="accordion-ordered-list container-scrollbar" id="avaiableActivities">
+                                                        @* Contenido de las actividades disponibles *@
+                                                    </div>
+                                                </div>
+                                                @{
+                                                    if (Model.editEnabled)
+                                                    {
+                                                        <span class="fas fa-chevron fa-chevron-right" onclick="moveItemsToTheRight()"></span>
+                                                        <span class="fas fa-chevron fa-chevron-left" onclick="moveItemsToTheLeft()"></span>
+
+                                                        @*<i class="fas fa-chevron-right" onclick="moveItemsToTheRight()"></i>
+                                                            <i class="fas fa-chevron-left" onclick="moveItemsToTheLeft()"></i>*@
+                                                    }
+                                                }
+                                            </div>
+                                        </div>
+                                        <div class="col-7">
+                                            <div class="card card-picklist seleccionadas">
+                                                <div class="card-header">
+                                                    <p class="card-title">@L["DetallePlan.Actividades.Seleccionadas.Titulo"]</p>
+                                                    @if (Model.editEnabled)
+                                                    {
+                                                        <button class="btn" type="button" onclick="CreateCustomChapter('@nameof(ActivityModalDestinationEnum.ChapterModal)')">@L["DetallePlan.Actividades.Seleccionadas.Boton.Nuevo"]</button>
+                                                    }
+                                                </div>
+                                                <div class="card-body p-0">
+                                                    <div class="row card-body-top mx-0">
+                                                        <div class="activities-actions col-1">
+                                                            <div class="form-check">
+                                                                <label>
+                                                                    <input id="selectAllRight" onclick="setAllCheckboxes('selectedActivities', this)" class="form-check-input" type="checkbox" value="">
+                                                                    <span class="form-check-sign"><span class="check"></span></span>
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                        <div class="activities-actions col-1" onclick="OpenCloseChaptersBehaviour('selected-Spinner' , 'toggleSelected','selectedActivities')">
+                                                            <span id="toggleSelected" class="fas fa-plus"></span>
+                                                            <span id="selected-Spinner" hidden><i class="fas fa-spinner fa-spin"></i></span>
+                                                        </div>
+                                                        <div class="col-8 pl-2">
+                                                            <div class="search-filter input-group">
+                                                                <input id="inputSelectedFilterList" onkeyup="FilterActivityListEventHandler(this, 'selectedActivities')" asp-for="SelectedActivitiesFilter" type="text" value="" class="form-control" placeholder="Filtrar">
+                                                            </div>
+                                                        </div>
+                                                        <div class="activities-actions col-1 pr-2"> @*<span class="fas fa-sort ml-0"></span>*@ </div>
+                                                        @*<div class="activities-actions col-1 align-right">
+                                                                <small class="text-gray pr-2">Desc.</small>
+                                                                <div class="dropdown ml-1">
+                                                                    <button class="dropdown-toggle btn btn-just-icon btn-link btn-round btn-sm pl-2" type="button" id="dropdownMenuButton2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <span class="fas fa-ellipsis-v"></span> </button>
+                                                                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton2" x-placement="bottom-start"> <a class="dropdown-item" href="#">Borrar</a> <a class="dropdown-item" href="#">Descripciones</a> </div>
+                                                                </div>
+
+                                                            </div>*@
+                                                    </div>
+
+                                                    <div class="accordion-ordered-list" id="selectedActivities">
+                                                        @* Contenido de las actividades seleccionadas *@
+                                                    </div>
+
+
+                                                </div>
+                                            </div>
+                                            <div class="card mt-5">
+                                                <div class="card-header bg-secondary py-1">
+                                                    <p class="card-title text-white">@L["DetallePlan.Actividades.Descripcion"]</p>
+                                                </div>
+                                                <div class="card-body p-0">
+                                                    <div id="summernoteBox" class="summernote">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- TAB CONTENIDOS ADICIONALES -->
+                            <div class="tab-pane @(Model.CurrentTab == nameof(PlanTab.AdditionalData) ? "active" : "")" id="contenidos-adicionales">
+
+                                <div class="container formularioDetalle">
+
+                                    <div class="row">
+                                        <div class="form-group bmd-form-group col-4 @fieldState">
+                                            <div class="input-group">
+                                                <label for="empresa_estudio" class="bmd-label-floating">
+                                                    @L["DetallePlan.ContAdic.Empresa"] *
+                                                </label>
+                                                <input type="text" asp-for="Plan.AdditionalData.CompanyName" class="form-control" id="empresa_estudio" value="@Model.Plan.AdditionalData.CompanyName" required>
+                                            </div>
+                                            <span class="error" asp-validation-for="Plan.AdditionalData.CompanyName"></span>
+                                        </div>
+                                        <div class="form-group bmd-form-group col-4 @fieldState">
+                                            <div class="input-group">
+                                                <label for="promotor" class="bmd-label-floating">@L["DetallePlan.ContAdic.Promotor"] *</label>
+                                                <input type="text" asp-for="Plan.AdditionalData.Promoter" class="form-control" id="promotor" value="@Model.Plan.AdditionalData.Promoter" required>
+
+                                            </div>
+                                        </div>
+                                        <div class="form-group bmd-form-group col-4 @fieldState">
+                                            <div class="input-group">
+                                                <label for="localizacion" class="bmd-label-floating">@L["DetallePlan.ContAdic.Localizacion"] *</label>
+                                                <input type="text" asp-for="Plan.AdditionalData.Localization" class="form-control" id="localizacion" value="@Model.Plan.AdditionalData.Localization" required>
+                                            </div>
+                                        </div>
+                                        <div class="form-group bmd-form-group col-4 @fieldState">
+                                            <div class="input-group">
+                                                <label for="municipality" class="bmd-label-floating">@L["DetallePlan.ContAdic.municipality"] *</label>
+                                                <input type="text" asp-for="Plan.AdditionalData.Municipality" class="form-control" id="municipality" value="@Model.Plan.AdditionalData.Municipality" required>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="form-group bmd-form-group col-4 @fieldState">
+                                            <div class="input-group">
+                                                <label for="presupuesto_ejecucion" class="bmd-label-floating">@L["DetallePlan.ContAdic.Presupuesto"]</label>
+                                                <input type="number" asp-for="Plan.AdditionalData.ExecutionBudget" class="form-control" id="presupuesto_ejecucion" value="@Model.Plan.AdditionalData.ExecutionBudget">
+                                            </div>
+                                        </div>
+                                        <div class="form-group bmd-form-group col-3 @fieldState">
+                                            <div class="input-group">
+                                                <label for="plazo_ejecucion_dias" class="bmd-label-floating">@L["DetallePlan.ContAdic.Plazo.Dias"]</label>
+                                                <input type="number" asp-for="Plan.AdditionalData.ExecutionTimeDays" class="form-control" id="plazo_ejecucion_dias" value="@Model.Plan.AdditionalData.ExecutionTimeDays">
+                                            </div>
+                                        </div>
+                                        <div class="form-group bmd-form-group col-3 @fieldState">
+                                            <div class="input-group">
+                                                <label for="plazo_ejecucion_meses" class="bmd-label-floating">@L["DetallePlan.ContAdic.Plazo.Meses"]</label>
+                                                <input type="number" asp-for="Plan.AdditionalData.ExecutionTimeMonths" class="form-control" id="plazo_ejecucion_meses" value="@Model.Plan.AdditionalData.ExecutionTimeMonths">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="form-group bmd-form-group col-4 @fieldState">
+                                            <div class="input-group">
+                                                <label for="presupuesto_PSS" class="bmd-label-floating">@L["DetallePlan.ContAdic.Presupuesto.PSS"]</label>
+                                                <input type="number" asp-for="Plan.AdditionalData.PSSBudget" class="form-control" id="presupuesto_PSS" value="@Model.Plan.AdditionalData.PSSBudget">
+                                            </div>
+                                        </div>
+                                        <div class="form-group bmd-form-group col-3 @fieldState">
+                                            <div class="input-group">
+                                                <label for="maximo_trabajadores" class="bmd-label-floating">@L["DetallePlan.ContAdic.Trabajadores.NumTrabajadores"]</label>
+                                                <input type="number" asp-for="Plan.AdditionalData.WorkersNumber" class="form-control" id="maximo_trabajadores" value="@Model.Plan.AdditionalData.WorkersNumber">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="form-group bmd-form-group col-12 @fieldState">
+                                            <div class="input-group ">
+                                                <label for="estructura">@L["DetallePlan.ContAdic.Estructura"] *</label>
+                                                @Html.TextAreaFor(model => model.Plan.AdditionalData.OrganizationalStructure, new { @required = "required", @class = "form-control disabled summernote ", @readonly = "readonly", style = "height:350px;width:100%;margin-top:10px;padding:5px;", @cols = 200, @rows = 15 })
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="form-group bmd-form-group col-12 @fieldState">
+                                            <div class="input-group ">
+                                                <label for="tipo">@L["DetallePlan.ContAdic.Descripcion.Obra"]</label>
+                                                @Html.TextAreaFor(model => model.Plan.AdditionalData.SituationDescription, new { @class = "form-control disabled summernote ", @readonly = "readonly", style = "height:350px;width:100%;margin-top:10px;padding:5px;", @cols = 200, @rows = 15 })
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="form-group bmd-form-group col-12 @fieldState">
+                                            <div class="input-group ">
+                                                <label for="tipo">@L["DetallePlan.ContAdic.Descripcion.Actividades"] *</label>
+                                                @Html.TextAreaFor(model => model.Plan.AdditionalData.ActivityDescription, new { @required = "required", @class = "form-control disabled summernote ", @readonly = "readonly", style = "height:350px;width:100%;margin-top:10px;padding:5px;", @cols = 200, @rows = 15 })
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <fieldset class="col-12 @fieldState">
+                                            @Html.HiddenFor(model => model.Plan.AdditionalData.AffectedServices)
+                                            <legend>@L["DetallePlan.ContAdic.Descripcion.Servicios"]</legend>
+                                            <div class="form-check form-check-radio form-check-inline">
+                                                <label for="interferencias1" class="form-check-label">
+                                                    <input class="form-check-input" type="radio" name="affServices" value="@Model.Plan.AdditionalData.AffectedServices" id="interferencias1"
+                                                           onchange="elementSet('Plan_AdditionalData_AffectedServices', true);changeDefaultValue('@DefaultValuePropNameList.AffectedServicesTrue.ToString()','affectedServicesDescriptionSummernote','afectedServicesTextArea')" required @affectedServicesChecked>
+                                                    @L["General.Radio.Si"] <span class="circle"><span class="check"></span></span>
+                                                </label>
+                                            </div>
+                                            <div class="form-check form-check-radio form-check-inline">
+                                                <label for="interferencias2" class="form-check-label">
+                                                    <input class="form-check-input" type="radio" name="affServices" id="interferencias2"
+                                                           onchange="elementSet('Plan_AdditionalData_AffectedServices', false);changeDefaultValue('@DefaultValuePropNameList.AffectedServicesFalse.ToString()', 'affectedServicesDescriptionSummernote','afectedServicesTextArea')" required @noAffectedServicesChecked>
+                                                    @L["General.Radio.No"] <span class="circle"><span class="check"></span></span>
+                                                </label>
+                                            </div>
+                                        </fieldset>
+                                        <div class="col-12 @fieldState" id="affectedServicesDescriptionSummernote">
+                                            @Html.TextAreaFor(model => model.Plan.AdditionalData.AffectedServicesDescription, new { @Id = "afectedServicesTextArea", @class = "form-control disabled summernote ", @readonly = "readonly", style = "height:350px;width:100%;margin-top:10px;padding:5px;", @cols = 200, @rows = 15 })
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="form-group bmd-form-group col-12 @fieldState">
+                                            <div class="input-group ">
+                                                <label for="tipo">@L["DetallePlan.ContAdic.Descripcion.Centros"] *</label>
+                                                @Html.TextAreaFor(model => model.Plan.AdditionalData.AssistanceCenters, new { @required = "required", @class = "form-control disabled summernote ", @readonly = "readonly", style = "height:350px;width:100%;margin-top:10px;padding:5px;", @cols = 200, @rows = 15 })
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <fieldset class="col-12 @fieldState">
+                                            @Html.HiddenFor(model => model.Plan.AdditionalData.IdEmergencyPlanType)
+                                            <legend>@L["DetallePlan.ContAdic.Descripcion.PlanEmergencia"]</legend>
+                                            <div class="form-check form-check-radio form-check-inline">
+                                                <label for="planEmergencia1" class="form-check-label">
+                                                    <input class="form-check-input" type="radio" name="emergencyType" id="planEmergencia1"
+                                                           onchange="elementSet('Plan_AdditionalData_IdEmergencyPlanType', 1);
+                                                            changeDefaultValue('@DefaultValuePropNameList.IdEmergencyPlanTypeCorto.ToString()', 'emergencyPlanDescriptionSummernote', 'affiliatedTextArea')"
+                                                           required @shortEmergencyPlanTypeChecked>
+                                                    @L["General.Radio.Plazo.Corto"]<span class="circle"><span class="check"></span></span>
+                                                </label>
+                                            </div>
+                                            <div class="form-check form-check-radio form-check-inline">
+                                                <label for="planEmergencia2" class="form-check-label">
+                                                    <input class="form-check-input" type="radio" name="emergencyType" id="planEmergencia2"
+                                                           onchange="elementSet('Plan_AdditionalData_IdEmergencyPlanType', 2);
+                                                            changeDefaultValue('@DefaultValuePropNameList.IdEmergencyPlanTypeMediano.ToString()', 'emergencyPlanDescriptionSummernote', 'affiliatedTextArea')"
+                                                           required @mediumEmergencyPlanTypeChecked>
+                                                    @L["General.Radio.Plazo.Mediano"]<span class="circle"><span class="check"></span></span>
+                                                </label>
+                                            </div>
+                                            <div class="form-check form-check-radio form-check-inline">
+                                                <label for="planEmergencia3" class="form-check-label">
+                                                    <input class="form-check-input" type="radio" name="emergencyType" id="planEmergencia3"
+                                                           onchange="elementSet('Plan_AdditionalData_IdEmergencyPlanType', 3);
+                                                            changeDefaultValue('@DefaultValuePropNameList.IdEmergencyPlanTypeLargo.ToString()', 'emergencyPlanDescriptionSummernote', 'affiliatedTextArea')"
+                                                           required @longEmergencyPlanTypeChecked>
+                                                    @L["General.Radio.Plazo.Largo"]<span class="circle"><span class="check"></span></span>
+                                                </label>
+                                            </div>
+                                        </fieldset>
+                                        <div class="col-12 @fieldState" id="emergencyPlanDescriptionSummernote">
+                                            @Html.TextAreaFor(model => model.Plan.AdditionalData.EmergencyPlanDescription, new { @id = "affiliatedTextArea", @class = "form-control disabled summernote ", @readonly = "readonly", style = "height:350px;width:100%;margin-top:10px;padding:5px;", @cols = 200, @rows = 15 })
+                                        </div>
+                                    </div>
+                                    @*<div class="row">
+                                            <div class="form-group bmd-form-group col-12 @fieldState">
+                                                <div class="input-group ">
+                                                    <label for="tipo">@L["DetallePlan.ContAdic.Descripcion.Presupuesto"]</label>
+                                                    @Html.TextAreaFor(model => model.Plan.AdditionalData.SecurityBudget, new { @class = "form-control disabled summernote ", @readonly = "readonly", style = "height:350px;width:100%;margin-top:10px;padding:5px;", @cols = 200, @rows = 15 })
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="form-group bmd-form-group col-12 @fieldState">
+                                                <div class="input-group ">
+                                                    <label for="tipo">@L["DetallePlan.ContAdic.Descripcion.Plazo"]</label>
+                                                    @Html.TextAreaFor(model => model.Plan.AdditionalData.ExecutionTime, new { @class = "form-control disabled summernote ", @readonly = "readonly", style = "height:350px;width:100%;margin-top:10px;padding:5px;", @cols = 200, @rows = 15 })
+                                                </div>
+                                            </div>
+                                        </div>*@
+
+                                </div>
+
+
+                            </div>
+
+
+                            <!-- TAB PRESUPUESTO -->
+                            <div class="tab-pane @(Model.CurrentTab == nameof(PlanTab.Budget) ? "active" : "")" id="presupuesto">
+                                <div class="row infopresupuesto">
+                                    <ul>
+                                        <li>@L["DetallePlan.Presupuesto.PresupuestoDeEjecucion"]:<span id="presupuesto_PSS_presupuesto">@Model.Plan.AdditionalData.PSSBudget</span></li>
+                                        <li>@L["DetallePlan.ContAdic.Plazo.Dias"]:<span id="presupuesto_plazo_dias">@Model.Plan.AdditionalData.ExecutionTimeDays</span></li>
+                                        <li>@L["DetallePlan.ContAdic.Trabajadores.NumTrabajadores"]:<span id="presupuesto_num_trabajadores">@Model.Plan.AdditionalData.WorkersNumber</span></li>
+                                    </ul>
+                                </div>
+                                <div class="formularioDetalle container-picklist">
+                                    <div class="row">
+                                        <div class="col-5 pr-5">
+                                            <div class="card card-picklist">
+                                                <div class="card-header">
+                                                    <p class="card-title">@L["DetallePlan.Presupuesto.Tabla.Articulos.Titulo"]</p>
+                                                </div>
+                                                <div class="card-body p-0">
+                                                    <div class="row card-body-top mx-0">
+                                                        <div class="activities-actions col-1">
+                                                            <div class="form-check">
+                                                                <label>
+                                                                    @*<input onclick="setAllCheckedTasks('tareas-genericas', this)" id="tasks-available-checkbox" class="form-check-input" type="checkbox" value="">*@
+                                                                    <input id="select-all-articles-check" class="form-check-input" type="checkbox" onclick="SetAllCheckedBudget('available-articles', this)">
+                                                                    <span class="form-check-sign"><span class="check"></span></span>
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                        <div class="activities-actions col-1" onclick="OpenCloseArticlesBehaviour('available-Spinner-Articles' ,'toggleAvailableArticles','available-articles')">
+                                                            <span id="toggleAvailableArticles" class="fas fa-plus"></span>
+                                                            <span id="available-Spinner-Articles" hidden><i class="fas fa-spinner fa-spin"></i></span>
+                                                        </div>
+                                                        <div class="col-9 pl-2">
+                                                            <div class="search-filter input-group">
+                                                                <input id="inputAvailableBudgetFilterList" type="text" value="" class="form-control" placeholder="Filtrar" onkeyup="FilterBudgetList(this, 'available-articles')" name="AvaiableBudgetFilter">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <!-- accordion-ordered-list -->
+                                                    <div id="available-articles" class="card-body p-0 accordion-ordered-list container-scrollbar">
+                                                    </div>
+
+
+                                                </div>
+                                                @{
+                                                    if (Model.editEnabled)
+                                                    {
+                                                        <span id="select_articles_btn" class="fas fa-chevron fa-chevron-right" onclick="SetAdd()"></span>
+                                                    }
+                                                }
+                                            </div>
+                                        </div>
+                                        <div class="col-7">
+                                            <div class="card card-picklist table-presupuesto">
+                                                <div class="card-header">
+                                                    <p class="card-title">@L["DetallePlan.Presupuesto.Tabla.Presupuesto.Titulo"]</p>
+                                                </div>
+                                                <div id="#unitZero" class="form-check" style="text-align:center; color: red; font-style: italic; width:100%; visibility:hidden; display:none;">
+                                                    Existen articulos seleccionados con cero unidades
+                                                </div>
+                                                <div class="card-body p-0  accordion-ordered-list container-scrollbar">
+                                                    <!-- tabla -->
+
+                                                    <table class="table sortable " id="">
+                                                        <thead>
+                                                            <tr>
+                                                                <th class="text-left">
+                                                                    <div class="form-check">
+                                                                        <label>
+                                                                            <input onclick="setAllChecked('tabla-articulos-añadidos-container', this)" id="articles-selected-checkbox" class="form-check-input" type="checkbox" value="">
+                                                                            <span class="form-check-sign"><span class="check"></span></span>
+                                                                        </label>
+                                                                    </div>
+                                                                </th>
+                                                                <th class="text-left">@L["DetallePlan.Presupuesto.Tabla.Presupuesto.Col.Articulo"] <i class="icon sort"></i></th>
+                                                                <th class="text-left">@L["DetallePlan.Presupuesto.Tabla.Presupuesto.Col.Familia"]</th>
+                                                                <th class="text-center">@L["DetallePlan.Presupuesto.Tabla.Presupuesto.Col.Unidad"]</th>
+                                                                <th class="text-center">@L["DetallePlan.Presupuesto.Tabla.Presupuesto.Col.Precio"]</th>
+                                                                <th colspan="2">@L["DetallePlan.Presupuesto.Tabla.Presupuesto.Col.Total"]</th>
+                                                                @if (Model.editEnabled)
+                                                                {
+                                                                    <th>
+                                                                        <div class="dropdown ml-1">
+                                                                            <button class="dropdown-toggle btn btn-just-icon btn-link btn-round btn-sm pl-2" type="button" id="dropdownMenuButton18" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                                                <span class="fas fa-ellipsis-v"></span>
+                                                                            </button>
+                                                                            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton18" x-placement="bottom-start">
+                                                                                <a class="dropdown-item" onclick="deleteCheckedAll(event)">@L["Planes.OpcionTable.Eliminar"]</a>
+                                                                            </div>
+                                                                        </div>
+                                                                    </th>
+                                                                }
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody id="tabla-articulos-añadidos-container">
+                                                            <tr>
+                                                                <td class="text-center"></td>
+                                                                <td class="text-center"></td>
+                                                                <td class="text-center">
+                                                                    <div class="form-check" style="color: dimgrey; font-style: italic;">
+                                                                        No hay articulos actualmente
+                                                                    </div>
+                                                                </td>
+                                                                <td></td>
+                                                                <td></td>
+                                                                <td></td>
+                                                                <td class="text-right"></td>
+                                                                <td class="text-center"></td>
+                                                            </tr>
+                                                        </tbody>
+                                                        <tfoot>
+                                                            <tr>
+                                                                <td></td>
+                                                                <td colspan="4">@L["DetallePlan.Presupuesto.Tabla.Presupuesto.Porcentaje"]</td>
+                                                                <td class="text-right"><input type="number" class="porcentaje_total" id="porcentaje_aplicable" name="porcentaje" role="textbox" value="100" style="width: 45px;" placeholder="0" onchange="UsePercentage()"></td>
+                                                                <td>%</td>
+                                                                <td></td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td></td>
+                                                                <td class="font-weight-bold" colspan="3">@L["DetallePlan.Presupuesto.Tabla.Presupuesto.Subtotal"]</td>
+                                                                <td colspan="2" class="text-right font-weight-bold" id="totalBudgetPrice">0.00 €</td>
+                                                                <td></td>
+                                                                <td></td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td></td>
+                                                                <td colspan="3">@L["DetallePlan.Presupuesto.Tabla.Presupuesto.Diferencia"]</td>
+                                                                <td colspan="2" id="diferencia_value" class="text-right">0.00 €</td>
+                                                                <td></td>
+                                                                <td></td>
+                                                            </tr>
+                                                        </tfoot>
+                                                    </table>
+
+                                                    <!-- tabla -->
+
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                            </div>
+
+                            @*pasar a un componente*@
+                            <!-- TAB PLANOS Y OTROS -->
+                            <div class="tab-pane @(Model.CurrentTab == nameof(PlanTab.OtherDocuments) ?  "active": "")" id="planos-documentos">
+
+                                <div class="formularioDetalle container-picklist">
+                                    <div class="row">
+                                        <div class="col-5 pr-5">
+                                            <div class="card card-picklist">
+                                                <div class="card-header">
+                                                    <p class="card-title">@L["DetallePlan.PlaOtrDoc.PlanGen.Titulo"]</p>
+                                                </div>
+                                                <div class="card-body p-0">
+                                                    <div class="row card-body-top mx-0">
+                                                        <div class="activities-actions col-1">
+                                                            <div class="form-check">
+                                                                <label>
+                                                                    <input onclick="setAllChecked('planos-genericos', this)" id="planes-available-checkbox" class="form-check-input" type="checkbox" value="">
+                                                                    <span class="form-check-sign"><span class="check"></span></span>
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-9 pl-2">
+                                                            <div class="search-filter input-group">
+                                                                <input id="search-box" type="text" value="" onkeyup="FilterAvailabePlanesEventHandler(this.value)" class="form-control" placeholder="Filtrar">
+                                                            </div>
+                                                        </div>
+                                                        <div class="activities-actions col-2 pr-2">
+                                                            @*Comentado temporalmente, es funcional*@
+                                                            @*<span onclick="OrderByBehaviour()" class="fas fa-sort"></span>*@
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- accordion-ordered-list -->
+                                                    <div id="planos-genericos" class="accordion-ordered-list container-scrollbar">
+
+                                                    </div>
+                                                    <!-- accordion-ordered-list -->
+
+                                                </div>
+                                                @{
+                                                    if (Model.editEnabled)
+                                                    {
+                                                        <span class="fas fa-chevron fa-chevron-right" onclick="SetAdded()"></span>
+                                                    }
+                                                }
+
+                                            </div>
+                                        </div>
+                                        <div class="col-7">
+                                            <div class="card card-picklist table-presupuesto">
+                                                <div class="card-header">
+                                                    <p class="card-title">@L["DetallePlan.PlaOtrDoc.PlanAni.Titulo"]</p>
+                                                    @*<button class="btn" onclick="AddNewPlanField(event)">@L["DetallePlan.PlaOtrDoc.PlanAni.Boton.Nuevo"]</button>*@
+                                                    @{
+                                                        if (Model.CurrentOperation != PlanActionType.Create && Model.editEnabled)
+                                                        {
+                                                            <button class="btn" data-toggle="modal" type="button" onclick="event.preventDefault()" data-target="#nuevoPlanoModal">
+                                                                @L["DetallePlan.PlaOtrDoc.PlanAni.Boton.Nuevo"]
+                                                            </button>
+                                                        }
+
+                                                    }
+
+
+                                                </div>
+                                                <div class="card-body p-0">
+                                                    <!-- tabla -->
+
+                                                    <table class="table sortable" id="">
+                                                        <thead>
+                                                            <tr>
+                                                                <th class="text-left">
+                                                                    <div class="form-check">
+                                                                        <label>
+                                                                            <input onclick="setAllChecked('tabla-planos-añadidos-container', this)" id="planes-selected-checkbox" class="form-check-input" type="checkbox" value="">
+
+                                                                            <span class="form-check-sign"><span class="check"></span></span>
+                                                                        </label>
+                                                                    </div>
+                                                                </th>
+                                                                @*@L["DetallePlan.PlaOtrDoc.PlanAni.Col.Numero"]*@
+                                                                <th class="text-center"></th>
+                                                                <th class="text-left">@L["DetallePlan.PlaOtrDoc.PlanAni.Col.Descripcion"]</th>
+                                                                <th class="text-left">@L["DetallePlan.PlaOtrDoc.PlanAni.Col.Familia"]</th>
+                                                                <th class="text-center">@L["DetallePlan.PlaOtrDoc.PlanAni.Col.Imagen"]</th>
+                                                                <th class="text-center"></th>
+                                                                @if (Model.editEnabled)
+                                                                {
+                                                                    <th>
+                                                                        <div class="dropdown ml-1">
+                                                                            <button class="dropdown-toggle btn btn-just-icon btn-link btn-round btn-sm pl-2" type="button" id="dropdownMenuButton18" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                                                <span class="fas fa-ellipsis-v"></span>
+                                                                            </button>
+                                                                            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton18" x-placement="bottom-start">
+                                                                                <a class="dropdown-item" onclick="deleteChecked(event)">@L["Planes.OpcionTable.Eliminar"]</a>
+                                                                                @*<a class="dropdown-item">Ocultar familia</a>*@
+                                                                            </div>
+                                                                        </div>
+                                                                    </th>
+                                                                }
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody id="tabla-planos-añadidos-container">
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+
+
+                            @*<a onclick="$('.card-body').scrollTop(0);" id="backTopBtn" class="elec-btn-scrollup btn btn-fab btn-round"><span class="fas fa-angle-up"></span></a>*@
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        @{
+
+            if (Model.CurrentOperation != PlanActionType.Create && Model.editEnabled)
+            {
+
+                <!-- Modal Añadir nuevo plano-->
+                <div class="modal fade nuevo_plano" id="nuevoPlanoModal" tabindex="-1" role="dialog" aria-labelledby="nuevoPlanoModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-lg" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header pt-3">
+                                <p class="modal-title text-left" id="exampleModalLabel">@L["Modal-nuevos-planos-title"]</p>
+                                <button id="addNewBlueprintModalClose" type="button" class="close" data-dismiss="modal" aria-label="Close"> <span aria-hidden="true">&times;</span> </button>
+                            </div>
+                            <div class="modal-body pt-2 px-3 pb-0">
+                                <div class="container formularioDetalle">
+                                    <div class="row">
+                                        <div class="form-group bmd-form-group col-7">
+                                            <div class="input-group ">
+                                                <label for="descripcion" class="bmd-label-floating">@L["Modal-nuevos-planos-descripcion"]</label>
+                                                <span id="blueprintDescriptionError" class="error" hidden>@L["Validation.Required"]</span>
+                                                <input type="text" class="form-control" id="descripcion" value="">
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group bmd-form-group col-5">
+                                            <div class="input-group ">
+                                                <label for="familia">@L["Modal-nuevos-planos-familia"]</label>
+                                                <select asp-items="@Model.PlaneFamilies" class="form-control selectpicker" data-style="select-with-transition" id="familia" required>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-12">
+                                            @await Component.InvokeAsync("FileUploader", new { inputid = "new-plane-file", enabled = @Model.editEnabled, planId = Model.Plan.Id, destination = "./PlanManagement" })
+                                            <div class="form-group">
+                                                <input id="new-plane-file"
+                                                       class="form-control"
+                                                       type="file"
+                                                       accept="image/jpg,image/jpeg,image/png,image/tif,image/tiff,image/bmp,image/gif"
+                                                       data-title="Drag and drop a file"
+                                                       onclick="onClickFile(this)"
+                                                       oninput="onInputFile(this)"
+                                                       multiple />
+
+                                                <ul class="list-inline text-right">
+                                                    <li class="list-inline-item">
+                                                        @*<button class="btn btn-default" onclick="CloseModal(e,'nuevoPlanoModal')" >@L["Administration.User.Cancel"]</button>*@
+                                                        <button type="button" class="btn btn-default" data-dismiss="modal" aria-label="Close">@L["Administration.User.Cancel"]</button>
+                                                    </li>
+                                                    <li class="list-inline-item">
+                                                        @*<button type="button" onclick="UploadPlanPlane()">@L["Modal-nuevos-planos-save"]</button>*@
+                                                        <button class="btn btn-primary" @*data-dismiss="modal" aria-label="Close"*@ onclick="UploadPlanPlane(event)">@L["Modal-nuevos-planos-save"]</button>
+                                                        @*<button class="btn btn-primary" data-dismiss="modal" aria-label="Close" onclick="UploadPlanPlane(event)">@L["Modal-nuevos-planos-save"]</button>*@
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- / Modal -->
+            }
+
+        }
+        <!-- Modal blueprint  -->
+        <div id="modal-blueprint" class="modal fade bd-example-modal-lg modal-planos" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg" role="document">
+
+                <div class="modal-content">
+                    <div class="modal-header">
+                        @*default modal btn do not work*@
+                        @*<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>*@
+                        @*custom modal btn*@
+                        <button onclick="CloseModal(event,'modal-blueprint')" class="close" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+
+                        <div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel">
+                            <ol id="blueprints-modal-indicator" class="carousel-indicators">
+                            </ol>
+                            @*fill dinamic*@
+                            <div id="blueprints-modal-body" class="carousel-inner">
+
+
+
+
+                            </div>
+                            <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
+                                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                <span class="sr-only">Previous</span>
+                            </a>
+                            <a class="carousel-control-next" href="#carouselExampleIndicators" role="button" data-slide="next">
+                                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                <span class="sr-only">Next</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--End Modal -->
+        <!-- Modal DUPLICATE PLAN-->
+        <div class="modal notificacion fade" id="duplicatePlan" tabindex="-1" role="dialog" aria-labelledby="duplicate plan" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title error" id="dupPlanMsg">Nombre del nuevo plan</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar"> <span aria-hidden="true">&times;</span> </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="solicitud" class="bmd-label-floating">Nuevo nombre</label>
+                            @Html.TextBoxFor(model => model.Plan.DuplicatedPlanTitle, new { @maxlength = "250", @class = "form-control justify-content-center", @required = "required" })
+                            <p class="text-danger"><small id="duplicatedName"></small></p>
+                        </div>
+
+                        <input type="hidden" id="duplicatePLanId" name="duplicatePlanId" value="-1" />
+                        <div class="row mt-4">
+                            <div class="col-6">
+                                <button class="btn btn-default btn-lg col-12" data-dismiss="modal">No<div class="ripple-container"></div></button>
+                            </div>
+                            <div class="col-6">
+                                <button id="duplicar" onclick="disableButton(this);" type="submit" asp-page-handler="DuplicatePlan"
+                                        class="btn btn-primary btn-lg col-12">
+                                    Duplicar<div class="ripple-container"></div>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- /Modal DUPLICATE PLAN-->
+        <!-- Modal CONFIRM-->
+        <div class="modal notificacion fade" id="confirmModal" tabindex="-1" role="dialog" aria-labelledby="duplicate plan" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title error" id="confirmModalTitle">Correcto</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar"> <span aria-hidden="true">&times;</span> </button>
+                    </div>
+                    <div class="modal-body">
+                        <p id="confirmModalMsg"></p>
+
+                    </div>
+                    <div class="modal-footer">
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- /Modal CONFIRM-->
+        <!-- Modal DELETE -->
+        <div class="modal notificacion fade" id="deleteRecord" tabindex="-1" role="dialog" aria-labelledby="delete record" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title error" id="exampleModalLabel"><!--<span class="material-icons">warning</span>-->Borrar plan</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar"> <span aria-hidden="true">&times;</span> </button>
+                    </div>
+                    <div class="modal-body">
+                        <p class="text-center" id="planName"></p>
+                        <input type="hidden" id="deletePLanId" name="deletePlanId" value="-1" />
+                        <div class="row mt-4">
+                            <div class="col-6">
+                                <button class="btn btn-default btn-lg col-12" data-dismiss="modal">No<div class="ripple-container"></div></button>
+                            </div>
+                            <div class="col-6">
+                                <button type="submit" onclick="disableButton(this);" asp-page-handler="DeletePlan" class="btn btn-primary btn-lg col-12">Si<div class="ripple-container"></div></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="footer-formularioDetalle">
+            <div class="container-fluid">
+                <div class="row px-4 align-items-center">
+                    @if (Model.Plan.Id != 0)
+                    {
+                        <div class="col-auto">
+                            <ul class="list-inline">
+                                <li class="list-inline-item">
+                                    <button class="btn btn-link btn-dark p-2" onclick="showDuplicateModal('@Model.Plan.Id','@Model.Plan.GeneralData.PlanTitle');">
+                                        <span class="fas fa-clone"></span> @L["General.Boton.Duplicar"]
+                                        <div class="ripple-container"></div>
+                                    </button>
+                                </li>
+                                @{
+                                    if (Model.editEnabled)
+                                    {
+                                        <li class="list-inline-item">
+                                            <button class="btn btn-link btn-dark p-2" onclick="showModal('@Model.Plan.Id','@Model.Plan.GeneralData.PlanTitle');">
+                                                <span class="fas fa-trash-alt"></span> @L["General.Boton.Eliminar"]
+                                                <div class="ripple-container"></div>
+                                            </button>
+                                        </li>
+                                    }
+                                }
+                            </ul>
+                        </div>
+                    }
+
+                    <div class="col-auto ml-auto">
+                        <ul class="list-inline">
+                            @{ if (Model.editEnabled)
+                                {
+                                    <li class="list-inline-item">
+                                        <button class="btn btn-default" asp-page-handler="ClosePlan" onClick="DisableOnCloseValidation()" id="cerrarButton" style="display:none"></button>
+                                        <a class="btn btn-default text-light" onClick="salirAlertMsg()">@L["General.Boton.Cerrar"]</a>
+                                    </li>
+
+                                    <li class="list-inline-item">
+                                        <div class="btn-group">
+                                            <button class="btn btn-primary disabled" id="saveChanges" type="submit" asp-route-saveType="Save" asp-route-idBudget="@Model.Plan.IdBudget" asp-page-handler="Save">@L["General.Boton.Guardar"]</button>
+                                            <button type="button" id="saveDropdown" class="btn btn-primary dropdown-toggle dropdown-toggle-split disabled" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                <span class="sr-only">Toggle Dropdown</span>
+                                            </button>
+                                            <div class="dropdown-menu" aria-labelledby="saveDropdown">
+                                                <button type="submit" id="upAndClose" class="dropdown-item" asp-route-saveType="SaveAndClose" asp-route-idBudget="@Model.Plan.IdBudget" asp-page-handler="Save">
+
+                                                    @L["General.Boton.GuardarYCerrar"]
+                                                </button>
+                                                <button type="submit" id="upAndNew" class="dropdown-item" asp-route-saveType="SaveAndNew" asp-route-idBudget="@Model.Plan.IdBudget" asp-page-handler="Save">
+                                                    @L["General.Boton.GuardarYNuevo"]
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </li>
+                                }
+
+                                else
+                                {
+                                    <li class="list-inline-item">
+                                        <button class="btn btn-default" asp-page-handler="ClosePlan" onClick="DisableOnCloseValidation()">@L["General.Boton.Cerrar"]</button>
+                                        @*//<button class="btn btn-default" asp-page-handler="ClosePlan" onClick="DisableOnCloseValidation()" id="cerrarButton" style="display:none"></button>
+                                            //<a class="btn btn-default text-light" onClick="salirAlertMsg()">@L["General.Boton.Cerrar"]</a>*@
+                                    </li>
+                                }
+                            }
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+<!-- Create Custom Activity Modal -->
+<form id="createActivityModal" asp-page-handler="CustomChapterModal" method="post" data-ajax="true" data-ajax-method="POST" data-ajax-update="#activityModalDiv" data-ajax-mode="replace" data-ajax-success="OnCustomActivityAjaxSuccess">
+    @*onsubmit="setRowIndexValueToNewChapter()"*@
+    @*data-ajax-success="createCustomChapterSuccess"*@
+    <input type="hidden" id="destinationModal" name="destination" />
+    <input type="hidden" id="chapterPositionModal" name="chapterPositionModal" />
+    <input type="hidden" id="subchapterPositionModal" name="subchapterPositionModal" />
+    <input type="hidden" id="activityPositionModal" name="activityPositionModal" />
+    <input type="submit" id="customChapterSubmit" style="display:none" />
+    <div id="selectedActivitiesDiv"></div>
+</form>
+<div id="activityModalDiv"></div>
+<!-- /Create Custom Activity Modal -->
+<!-- Provisional Create Custom Activity Modal -->
+<form id="createChapter" asp-page-handler="CustomChapter" method="post" data-ajax="true" data-ajax-method="POST" data-ajax-update="#selectedActivities" data-ajax-mode="after" onsubmit="setRowIndexValueToNewChapter()">
+    @*data-ajax-success="createCustomChapterSuccess"*@
+    <input type="hidden" id="rowIndexInput" name="rowIndex" />
+    @*data-ajax-begin="onAjaxBegin" data-ajax-complete="onAjaxComplete" data-ajax-failure="onAjaxFailure" data-ajax-success="onAjaxSuccess"*@
+    <div class="modal fade bd-example-modal-lg modal-planos" id="createCustomChapter" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">New Chapter</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    @*<h3>SUbTitle</h3>*@
+                    <div class="col-12">
+                        <div class="row">
+                            <div class="form-group">
+                                <div class="input-group">
+                                    <label>Enter Chapter Title</label>
+                                    <input name="chapterName" type="text" class="form-control" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="form-group">
+                                <div class="input-group">
+                                    <label>Enter Subchapter Title</label>
+                                    <input name="subchapterName" type="text" class="form-control" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="form-group">
+                                <div class="input-group">
+                                    <label>Enter Activity Title</label>
+                                    <input name="activityName" type="text" class="form-control" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 ">
+                        <div class="row justify-content-end mr-1 mb-1 mt-2">
+                            <input type="submit">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+<!-- /Provisional Create Custom Activity Modal -->
+
+<form id="FormCreateDocument" asp-page-handler="CreateDocument" asp-route-templateName="@Model.Plan.GeneralData.TemplateName" method="post">
+    <input type="hidden" id="PlanIsEvaluation" asp-for="Plan.GeneralData.IsEvaluation" />
+    <input type="hidden" id="PlanTemplateName" asp-for="Plan.GeneralData.TemplateName" />
+    <input type="hidden" asp-for="SelectedActivities" />
+    <input type="hidden" asp-for="Plan.Id" />
+</form>
+<script>
+    $(document).ready(function () {
+        $("form").validate().settings.ignore = "";
+        //     $.validator.setDefaults({
+        //         ignore: []
+        //});
+    });
+</script>
+
+
+<script src="~/assets/js/FileManager.js"></script>
+<script src="~/assets/js/Activities.js" defer asp-append-version="true"></script>
+@section Scripts{
+    <script src="~/assets/js/PlanesAndOtherDocs.js" asp-append-version="true"></script>
+    <script src="~/assets/js/Budget.js" asp-append-version="true"></script>
+}
+
+<script src="~/assets/js/PlanManagement.js" asp-append-version="true"></script>
+<script asp-append-version="true">
+    @* Llamamos por orden a las diferentes Tabs menos a la principal *@
+    window.onload = function () {
+        fillTab("@PlanTab.Activities");
+        fillTab("@PlanTab.OtherDocuments");
+        UpdatePresupuestoValue();
+    }
+
+    document.onmouseover = function () {
+        window.innerDocClick = true;
+    }
+
+    document.onmouseleave = function () {
+        window.innerDocClick = false;
+    }
+
+    //Mensaje de aviso si clicamos en el botón retroceder del browser estando en modo edición
+    window.onbeforeunload = function () {
+        var botonGuardar = document.getElementById("saveChanges");
+        if (!window.innerDocClick && botonGuardar != undefined) {
+            return "Mensaje de alerta";
+        }
+    }
+
+    function bytesToSize(bytes) {
+        var sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+        if (bytes == 0) return '0 Byte';
+        var i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)));
+        return Math.round(bytes / Math.pow(1024, i), 2) + ' ' + sizes[i];
+    }
+
+    function showDuplicateModal(planId, planName) {
+        elementSet('Plan_DuplicatedPlanTitle', '');
+
+        modalDuplicate(planId, planName);
+    }
+    function errorInvalidImage() {
+         Swal.fire({
+            title: '@L["Validation.Image.File"]',
+            type: 'error',
+            confirmButtonText: '@L["Common.Accept"]',
+            confirmButtonAriaLabel: '@L["Common.Accept"]'
+        });
+    }
+
+    function fillTab(tabID, durationWorkValue, workersNumberValue) {
+        if (!durationWorkValue) {
+            durationWorkValue = 0;
+        }
+        if (!workersNumberValue) {
+            workersNumberValue = 0;
+        }
+
+        switch (tabID) {
+            case "@PlanTab.Activities":
+                $.ajax({
+                    type: "GET",
+                    url: "/planManagement/Activities/" + @Model.Plan.Id + "/" + @Model.editEnabled.ToString().ToLower(),
+                    success:
+                        function (data) {
+                            if (data != null) {
+                                if (editEnabled) {
+                                    document.getElementById("saveChanges").classList.remove("disabled");
+                                    document.getElementById("saveDropdown").classList.remove("disabled");
+                                    document.getElementById("generateTemplateBtn").classList.remove("disabled");
+                                }
+
+                                document.getElementById('avaiableActivities').innerHTML = $(data).filter('#avaiableListOfActivities').html();
+                                document.getElementById('selectedActivities').innerHTML = $(data).filter('#selectedListOfActivities').html();
+                                runSearchers(['inputAvaiableFilterList', 'inputSelectedFilterList'], ['avaiableActivities', 'selectedActivities']);
+                            }
+                        },
+                    error:
+                        function () {
+                            console.log("Error de Actividades");
+                        }
+                });
+                break;
+
+            case "@PlanTab.Budget":
+                $("#saveChanges").prop("disabled", true);
+                $("#saveDropdown").prop("disabled", true);
+                $.ajax({
+                    type: "GET",
+                    url: "/planManagement/Budgets/" + @Model.Plan.Id + "/" + @Model.editEnabled.ToString().ToLower(),
+                    data: { planId: @Model.Plan.Id, durationWork: durationWorkValue, numberWorkers: workersNumberValue, budgetId: @Model.Plan.IdBudget},
+                    success:
+                        function (data) {
+                            if (data != null) {
+                                MapJsonBudgetToObj(data);
+                                ActivateSaveAndGenerateBtn();
+                                ActivateLoading(false);
+                                ValidateUnitZero();
+                            }
+                        },
+                    error:
+                        function () {
+                            console.log("Error de planes");
+                            ActivateSaveAndGenerateBtn();
+                            ActivateLoading(false);
+                            ValidateUnitZero();
+                        }
+                });
+                break;
+
+         case "@PlanTab.OtherDocuments":
+                $.ajax({
+                    type: "GET",
+                     //NOTE:En la url está añadido el IsEdit porque si no no llama correctamente al Handler
+            //Se piensa que esta llamando a Activities.cshtml porque esta tiene una ruta definida page "/planManagement/{handler?}/{planId}/{isEditEnabled}"
+                    url: "/planManagement/Planes/" + @Model.Plan.Id + "/" + @Model.editEnabled.ToString().ToLower(),
+                    success:
+                        function (data) {
+                            if (data != null) {
+                                MapJsonToObj(data);
+                            }
+                        },
+                    error:
+                        function () {
+                            console.log("Error de planes");
+                        }
+                });
+
+                break;
+
+          default:
+            break;
+        }
+    }
+
+    function manageActivitiesSide(activities, dir) {
+        $.ajax({
+            type: "POST",
+            //NOTE:En la url está añadido el IsEdit porque si no no llama correctamente al Handler
+            //Se piensa que esta llamando a Activities.cshtml porque esta tiene una ruta definida page "/planManagement/{handler?}/{planId}/{isEditEnabled}"
+            url: "/planManagement/ManageActivities/"+@Model.Plan.Id + "/" + @Model.editEnabled.ToString().ToLower(),
+            data: {
+                __RequestVerificationToken: antiForgeryGen(),
+                planId: @Model.Plan.Id,
+                activities: activities.join(","),
+                direction: dir
+            },
+            success:
+                function (data) {
+                    document.getElementById('avaiableActivities').innerHTML = $(data).filter('#avaiableListOfActivities').html();
+                    document.getElementById('selectedActivities').innerHTML = $(data).filter('#selectedListOfActivities').html();
+                    $('#selectAllLeft, #selectAllRight').prop('checked', false);
+                    runSearchers(['inputAvaiableFilterList', 'inputSelectedFilterList'], ['avaiableActivities', 'selectedActivities']);
+                    ActivateSaveAndGenerateBtn();
+                    ActivateLoading(false);
+                    ValidateUnitZero();
+                },
+            error:
+                function (data) {
+                    console.log("Error de Actividades");
+                    ActivateSaveAndGenerateBtn();
+                    ActivateLoading(false);
+                    ValidateUnitZero();
+                }
+        });
+
+
+    }
+
+    function GetPlanId() {
+        return @Model.Plan.Id;
+    }
+
+    function antiForgeryGen() {
+        var token = '@Html.AntiForgeryToken()';
+        token = $(token).val();
+        return token;
+    }
+
+    function CheckFormValidationStatus() {
+
+        $("form").submit(function () {
+            if (!$(this).valid()) {
+                Swal.fire({
+                    title: '@L["Common.FieldsReview"]',
+                    type: 'error',
+                    confirmButtonText: '@L["Common.Accept"]',
+                    confirmButtonAriaLabel: '@L["Common.Accept"]'
+                });
+            }
+        });
+    }
+
+    function ChangeDependantData(selectField) {
+        let selectedId = parseInt(selectField[selectField.selectedIndex].id);
+        $.ajax({
+        type: "GET",
+        //NOTE:En la url está añadido el IsEdit porque si no no llama correctamente al Handler
+        //Se piensa que esta llamando a Activities.cshtml porque esta tiene una ruta definida page "/planManagement/{handler?}/{planId}/{isEditEnabled}"
+        url: "/planManagement/DependantData/" + @Model.Plan.Id+ "/" + @Model.editEnabled.ToString().ToLower(),
+    data: {
+        __RequestVerificationToken: antiForgeryGen(),
+            businessAddressId: selectedId
+    },
+    success:
+    function (data) {
+        if (data != null) {
+            delegationField = document.getElementById("delegationList");
+            //bussinessField = document.getElementById("businessAddress");
+
+            delegationField.innerHTML = "";
+            //bussinessField.innerHTML = "";
+
+            let newData = "";
+
+            for (var delegation of data.filteredDelegations) {
+                newData += `<option id="${delegation.id}" value="${delegation.id}" selected="">${delegation.name}</option>`
+            }
+            delegationField.innerHTML = newData;
+
+            //for (var businessAddresses of data.filteredBusinessAddresses) {
+            //    newData += `<option id="${businessAddresses.id}" value="${businessAddresses.id}" selected="">${businessAddresses.name}</option>`
+            //   }
+            //bussinessField.innerHTML = newData;
+
+
+            $('.selectpicker').selectpicker('refresh');
+        }
+    },
+    error:
+    function () {
+        console.log("Error de planes");
+    }
+});
+    }
+
+    function salirAlertMsg() {
+        swal({
+            title: "¿Seguro que quiere cerrar?",
+            text: "Si cierra sin guardar perderán los cambios realizados y no será guardado en el listado de planes de seguridad.",
+            type: "warning",
+            showCancelButton: true,
+            confirmButtonClass: "btn-danger",
+            confirmButtonText: "Salir",
+            cancelButtonText: "Cancelar"
+        }).then(function (isConfirm) {//Se puede hacer con dos funciones en vez de mirar el isConfirm.value, buscar documentación
+            if (isConfirm.value===true) {
+                document.getElementById('cerrarButton').click();
+            }
+
+
+
+            })
+    }
+
+    function changeSelectedOpt(dropdown) {
+        let urlEncodedTemplateName = encodeURIComponent(document.getElementById("template").options[document.getElementById("template").selectedIndex].innerText);
+        let finalFromAction = document.getElementById("generateTemplateBtn").formAction.split("?")[0] + `?templateName=${urlEncodedTemplateName}&handler=CreateDocument`;
+
+        document.getElementById("generateTemplateBtn").formAction = finalFromAction;
+    }
+
+    function changeActiveTab(newTab) {
+        document.getElementById('tab-location').value = newTab;
+    }
+
+
+    function manageArticleSide(articles, percentage, valuesBool) {
+        DesactivateSaveAndGenerateBtn();
+
+        if (valuesBool == false) {
+            articles = [];
+        }
+        $.ajax({
+            type: "POST",
+            url: "/planManagement/ManageArticles/" +@Model.Plan.Id + "/" + @Model.editEnabled.ToString().ToLower(),
+            data: {
+                __RequestVerificationToken: antiForgeryGen(),
+                planId: @Model.Plan.Id,
+                selectedArticles: articles,
+                percentage: percentage
+            },
+            success:
+                function (data) {
+                    ActivateSaveAndGenerateBtn();
+                    ActivateLoading(false);
+                    ValidateUnitZero();
+                },
+            error:
+                function (data) {
+                    console.log("Error de Actividades");
+                    ActivateSaveAndGenerateBtn();
+                    ActivateLoading(false);
+                    ValidateUnitZero();
+                }
+        });
+    }
+
+@{
+
+        //PlanManagement locations
+        Dictionary<string, string> locations = new Dictionary<string, string>
+        {
+            { "Planes.OpcionTable.Eliminar" , L.GetString("Planes.OpcionTable.Eliminar") },
+
+        };
+
+        Dictionary<string, string> planDetailsDefaultData = new Dictionary<string, string>();
+
+        foreach (var item in Model.PlanDetailsDefaultData)
+        {
+            planDetailsDefaultData.Add(item.PropName,item.Content);
+        }
+
+}
+
+
+        var planDetailsDefaultData =@Html.Raw(Json.Serialize(planDetailsDefaultData));
+        var locations =@Html.Raw(Json.Serialize(locations));
+        var editEnabled = @(Model.editEnabled ? "true": "false");
+
+
+</script>
+
+
+

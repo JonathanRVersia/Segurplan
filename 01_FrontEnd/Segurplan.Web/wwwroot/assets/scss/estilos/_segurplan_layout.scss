@@ -1,0 +1,367 @@
+.content.tabs.elec-content-layout {
+    //margin: 0 !important;
+    padding: 0;
+    /*position: absolute;
+    top: 0px;
+    bottom: 36px;
+    left: 0;
+    right: 0;
+    min-height: auto;
+    overflow: auto;*/
+    &>.container-fluid {
+        //height: 100%;
+    }
+    .card-nav-tabs {
+        height: 100%;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        &>.card-header {
+            position: static;
+            margin: 0 !important;
+            width: 100%;
+            padding: 0;
+        }
+        &>.card-body {
+            min-height: auto;
+            padding: 0;
+            overflow-y: auto;
+        }
+    }
+    /* Para las tablas en contenidos de capitulos y actividades*/
+    .card-nav-tabs .card-body .table {
+        table-layout: auto;
+        &.table-striped {
+            thead th {}
+            tbody {
+                tr:nth-of-type(2n + 1),
+                .table-row:nth-child(4n + 3) {
+                    background-color: rgba(232, 227, 227, 0.21) !important;
+                }
+                tr:hover,
+                tr:nth-of-type(2n + 1):hover,
+                .table-row:nth-child(4n + 3):hover {
+                    background-color: rgba(252, 184, 156, 0.6) !important;
+                }
+            }
+        }
+        caption {
+            caption-side: top;
+            font-size: 12px;
+            color: #fe736c;
+            line-height: 1.1;
+            text-transform: uppercase;
+        }
+        .nosort .icon.sort {
+            background: url(../img/icons/sortdefault.svg);
+            background-size: auto;
+        }
+        .icon.sort {
+            display: inline-block;
+            vertical-align: middle;
+            cursor: pointer;
+            width: 14px !important;
+            height: 14px !important;
+            background-size: 14px 14px !important;
+        }
+        .down.sorted .icon.sort {
+            background: url(../img/icons/sortdown.svg);
+            background-size: auto;
+        }
+    }
+    /* / Para las tablas en contenidos de capitulos y actividades*/
+    a.anadir {
+        padding: 8px 12px;
+        background-color: transparent;
+        color: $orange;
+        border: 1px solid $orange;
+        font-weight: bold;
+        box-shadow: none;
+        border-radius: 0.2rem;
+        &:hover {
+            box-shadow: 0 2px 2px 0 rgba(153, 153, 153, 0.14), 0 3px 1px -2px rgba(153, 153, 153, 0.2), 0 1px 5px 0 rgba(153, 153, 153, 0.12);
+        }
+        .fas {
+            margin-left: 0;
+            color: $orange;
+        }
+    }
+	.paginacion-table{
+		.col-form-label {
+			font-size: 12px;
+			color: #666;
+			padding: 17px 5px 0 0;
+			text-align: right;
+		}
+		.bootstrap-select {
+			&.show-tick,
+			&.show-tick .dropdown {
+				width: 36px;
+				margin-top: 5px;
+			}
+			.dropdown-toggle .filter-option {
+				padding-right: 0px;
+				padding-left: 0px;
+				.filter-option-inner .filter-option-inner-inner {
+					font-size: 12px;
+					color: #666;
+				}
+			}
+		}
+
+		.paginacion {
+			font-size: 12px;
+			margin-top: 14px;
+		}
+		.btn {
+			background-color: #fff;
+			color: #666 !important;
+			-webkit-box-shadow: none;
+			box-shadow: none;
+
+			letter-spacing: 0.5px;
+			font-weight: 600;
+			.fas {
+						font-size: 22px;
+			}
+		}
+	}
+	.modal {
+		.table{
+			.btn.btn-just-icon {
+				line-height: 0px;
+			}
+		}
+    }
+    /* Modal añadir plano */
+    .modal.nuevo_plano{
+        .modal-header{
+            margin-bottom: 20px;
+            .modal-title {
+                font-size: 17px;
+                border-bottom: 1px solid #E7E7E7;
+                padding-bottom: 8px;
+                margin-right:15px;
+                color:000;
+            }
+        }
+        .filenames li{
+            width:100%;
+            .btn.ver {
+                display:none;
+            }
+        }
+    }
+
+}
+.content.planes {
+    .badge {
+        width: 16px;
+        height: 16px;
+        min-width: 16px;
+        vertical-align: top;
+        margin-left: 4px;
+        &.success {
+            background-color: $success;
+        }
+        &.warning {
+            background-color: $warning;
+        }
+        &.danger {
+            background-color: $danger;
+        }
+    }
+	.vh-total {
+		height: calc(100vh - 172px);
+	}
+}
+
+.input-spinner {
+    label {
+        margin-bottom: 0.5rem;
+    }
+    .btn.btn-outline-secondary {
+        padding: 0;
+        margin: 0;
+        color: $black;
+        font-size: 16px;
+        line-height: 8px;
+        border-color: $light-green;
+        box-shadow: none;
+    }
+    .form-control {
+        background-image: none;
+        padding: 0;
+        border-top: 1px solid $light-green;
+        border-bottom: 1px solid $light-green;
+    }
+}
+
+.formularioDetalle {
+    h3 {
+        font-size: 12px;
+        color: $orange;
+    }
+    .js-upload-finished {
+        .alert {
+            display: none;
+            h5 {
+                color: $white;
+                margin-bottom: 0px;
+                text-align: center;
+            }
+            &#error-alert {
+                background-color: $pink;
+            }
+            &#success-alert {
+                background-color: $green;
+            }
+        }
+    }
+    #dummyFileList {
+        list-style-type: none;
+        padding-left: 0px;
+        width: 100%;
+        li {
+            display: inline-block;
+            margin-right: 18px;
+        }
+        .isDisabled {
+            color: currentColor;
+            cursor: not-allowed;
+            opacity: 0.5;
+            text-decoration: none;
+        }
+        .deleteFile {
+            float: left;
+            font-size: 21px;
+            font-weight: 700;
+            line-height: 1;
+            color: $orange;
+            margin-right: 5px;
+            opacity: 1;
+            margin-top: 2px;
+        }
+    }
+    .bmd-form-group.disabled.dark .form-control {
+        color: $black;
+    }
+	.form-check{
+		.bmd-label-floating{
+			color: $black;
+			line-height: 14px;
+		}
+	}
+}
+
+.evaluacion-mapas {
+    .formularioDetalle {
+        .jumbotron {
+            margin-left: 0;
+        }
+    }
+	.buscadorRelativoContent .note-toolbar .btn i {
+		font-size: inherit;
+	}
+}
+.version_posterior {
+	float: right;
+	margin-right: 10px;
+	color: $primary-color;
+	font-size: 18px;
+}
+.version_capitulo{
+	margin-right: 20px;
+	font-size: 13px;
+	color:$white;
+	display: inline;
+	vertical-align: middle;
+
+	&.version_vigente{
+		color:$success;
+		padding-bottom: 6px;
+	}
+	&.version_borrador{
+		color: $primary-color;
+	}
+	&.version_no_vigente{
+		color:$danger;
+	}
+	span{
+		vertical-align: middle;
+	}
+	.fas{
+		font-size: 16px;
+		margin-right: 5px;
+	}
+}
+.text_version_modificado {
+	color:$primary-color;
+}
+.accordion {
+    .bootstrap-select {
+        .dropdown-menu {
+            top: 32px !important;
+            max-height: calc(100vh - 600px) !important;
+            min-height: 200px !important;
+        }
+    }
+}
+.modal-body {
+    .correcto {
+        i,span {
+            color: $green;
+            font-size: 40px;
+        }
+    }
+}
+.tableFixHead {
+	thead {
+		position: relative;
+		z-index: 2;}
+	tbody{
+		position: relative;
+		z-index: 1;
+	}
+}
+
+/*MODAL AÑADIR MEDIDAS*/
+.modal-dialog.listadoModal.modalMedidas {
+	.modal-content {
+		.modal-header {
+			.modal-title {
+				font-size: 17px;
+				border-bottom: 1px solid #E7E7E7;
+				padding-bottom: 8px;
+			}
+		}
+        .modal-body {
+          padding-top: 24px;
+        }
+
+	}
+}
+/*--ANCHO DE LOS DROPDOWN--*/
+.open > .dropdown-menu, .dropdown-menu.show {
+	max-width:500px!important;
+	 li a span.text {
+		display: block
+		}
+}
+.dropdown-item {
+    display: block;
+    white-space: normal!important;
+}
+ .dropdown-menu li > a {
+	padding: 5px 10px!important;
+}
+/*-- --*/
+.logo-segurplan {
+	 &::before{
+		content: url(../img/logo-p-segur.png);
+	 }
+	 span {
+		visibility: hidden;
+	 }
+}

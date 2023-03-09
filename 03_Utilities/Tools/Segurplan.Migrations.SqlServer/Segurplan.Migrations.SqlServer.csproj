@@ -1,0 +1,232 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Migrations\20191126161659_IdentityEntities.cs" />
+    <Compile Remove="Migrations\20191126161659_IdentityEntities.Designer.cs" />
+    <Compile Remove="Migrations\20191126161853_IdentityEntities.cs" />
+    <Compile Remove="Migrations\20191126161853_IdentityEntities.Designer.cs" />
+    <Compile Remove="Migrations\20191203102022_Identity.cs" />
+    <Compile Remove="Migrations\20191203102022_Identity.Designer.cs" />
+    <Compile Remove="Migrations\20191203103402_AddModelsDatabaseFirst.cs" />
+    <Compile Remove="Migrations\20191203103402_AddModelsDatabaseFirst.Designer.cs" />
+    <Compile Remove="Migrations\20191210110250_AddModelsScaffoldDatabase.cs" />
+    <Compile Remove="Migrations\20191210110250_AddModelsScaffoldDatabase.Designer.cs" />
+    <Compile Remove="Migrations\20191212135910_InicializarDatosSqlBackup.cs" />
+    <Compile Remove="Migrations\20191212135910_InicializarDatosSqlBackup.Designer.cs" />
+    <Compile Remove="Migrations\20200120121657_FileStudyPlan.cs" />
+    <Compile Remove="Migrations\20200120121657_FileStudyPlan.Designer.cs" />
+    <Compile Remove="Migrations\20200120121736_BackUpSQL_Data.cs" />
+    <Compile Remove="Migrations\20200120121736_BackUpSQL_Data.Designer.cs" />
+    <Compile Remove="Migrations\20200120152157_CrearEstructuraBBDD_MedianteScaffolding.cs" />
+    <Compile Remove="Migrations\20200120152157_CrearEstructuraBBDD_MedianteScaffolding.Designer.cs" />
+    <Compile Remove="Migrations\20200120152226_InsertIntoDataToTables.cs" />
+    <Compile Remove="Migrations\20200120152226_InsertIntoDataToTables.Designer.cs" />
+    <Compile Remove="Migrations\20200121154539_AddTablesForActivities.cs" />
+    <Compile Remove="Migrations\20200121154539_AddTablesForActivities.Designer.cs" />
+    <Compile Remove="Migrations\20200121154617_InsertIntoDataToTables.cs" />
+    <Compile Remove="Migrations\20200121154617_InsertIntoDataToTables.Designer.cs" />
+    <Compile Remove="Migrations\20200124123932_AffiliatedCompanies.cs" />
+    <Compile Remove="Migrations\20200124123932_AffiliatedCompanies.Designer.cs" />
+    <Compile Remove="Migrations\20200124124326_AffiliatedCompanies.cs" />
+    <Compile Remove="Migrations\20200124124326_AffiliatedCompanies.Designer.cs" />
+    <Compile Remove="Migrations\20200124125444_AffiliatedCompanies.cs" />
+    <Compile Remove="Migrations\20200124125444_AffiliatedCompanies.Designer.cs" />
+    <Compile Remove="Migrations\20200214103933_SafetyStudyPlanUpdate.cs" />
+    <Compile Remove="Migrations\20200214103933_SafetyStudyPlanUpdate.Designer.cs" />
+    <Compile Remove="Migrations\20200214114010_Center-AffiliatedCompanies.cs" />
+    <Compile Remove="Migrations\20200214114010_Center-AffiliatedCompanies.Designer.cs" />
+    <Compile Remove="Migrations\20200217114142_BusinessAddress.cs" />
+    <Compile Remove="Migrations\20200217114142_BusinessAddress.Designer.cs" />
+    <Compile Remove="Migrations\20200217115025_BusinessAddressPlan.cs" />
+    <Compile Remove="Migrations\20200217115025_BusinessAddressPlan.Designer.cs" />
+    <Compile Remove="Migrations\20200217120325_PlanDelegation.cs" />
+    <Compile Remove="Migrations\20200217120325_PlanDelegation.Designer.cs" />
+    <Compile Remove="Migrations\20200217121824_InitialDatabase.cs" />
+    <Compile Remove="Migrations\20200217121824_InitialDatabase.Designer.cs" />
+    <Compile Remove="Migrations\20200217133149_InitialDatabase.cs" />
+    <Compile Remove="Migrations\20200217133149_InitialDatabase.Designer.cs" />
+    <Compile Remove="Migrations\20200217140153_InitialDatabase.cs" />
+    <Compile Remove="Migrations\20200217140153_InitialDatabase.Designer.cs" />
+    <Compile Remove="Migrations\20200217150657_InitialDatabase.cs" />
+    <Compile Remove="Migrations\20200217150657_InitialDatabase.Designer.cs" />
+    <Compile Remove="Migrations\20200217222848_InsertInitialData.cs" />
+    <Compile Remove="Migrations\20200217222848_InsertInitialData.Designer.cs" />
+    <Compile Remove="Migrations\20200218232046_initialDatabase.cs" />
+    <Compile Remove="Migrations\20200218232046_initialDatabase.Designer.cs" />
+    <Compile Remove="Migrations\20200219112307_Planv2.cs" />
+    <Compile Remove="Migrations\20200219112307_Planv2.Designer.cs" />
+    <Compile Remove="Migrations\20200219113859_Planv3.cs" />
+    <Compile Remove="Migrations\20200219113859_Planv3.Designer.cs" />
+    <Compile Remove="Migrations\20200219114512_Planv4.cs" />
+    <Compile Remove="Migrations\20200219114512_Planv4.Designer.cs" />
+    <Compile Remove="Migrations\20200219143849_initDatabase.cs" />
+    <Compile Remove="Migrations\20200219143849_initDatabase.Designer.cs" />
+    <Compile Remove="Migrations\20200220084122_InsertDevelopmentData.cs" />
+    <Compile Remove="Migrations\20200220084122_InsertDevelopmentData.Designer.cs" />
+    <Compile Remove="Migrations\20200220111512_SegurplanDDBB_v1.cs" />
+    <Compile Remove="Migrations\20200220111512_SegurplanDDBB_v1.Designer.cs" />
+    <Compile Remove="Migrations\20200303135407_Profile.cs" />
+    <Compile Remove="Migrations\20200303135407_Profile.Designer.cs" />
+    <Compile Remove="Migrations\20200303163327_PlanUsers.cs" />
+    <Compile Remove="Migrations\20200303163327_PlanUsers.Designer.cs" />
+    <Compile Remove="Migrations\20200304084325_PlanApprover.cs" />
+    <Compile Remove="Migrations\20200304084325_PlanApprover.Designer.cs" />
+    <Compile Remove="Migrations\20200305120132_PreventiveMeasure.cs" />
+    <Compile Remove="Migrations\20200305120132_PreventiveMeasure.Designer.cs" />
+    <Compile Remove="Migrations\20200305121122_PreventiveMeasure.cs" />
+    <Compile Remove="Migrations\20200305121122_PreventiveMeasure.Designer.cs" />
+    <Compile Remove="Migrations\20200324102245_planFileTypeç.cs" />
+    <Compile Remove="Migrations\20200324102245_planFileTypeç.Designer.cs" />
+    <Compile Remove="Migrations\20200324102310_planFileType.cs" />
+    <Compile Remove="Migrations\20200324102310_planFileType.Designer.cs" />
+    <Compile Remove="Migrations\20200324110244_InitialDatabase.cs" />
+    <Compile Remove="Migrations\20200324110244_InitialDatabase.Designer.cs" />
+    <Compile Remove="Migrations\20200326152427_Plan_CreatorName.cs" />
+    <Compile Remove="Migrations\20200326152427_Plan_CreatorName.Designer.cs" />
+    <Compile Remove="Migrations\20200330083343_affiliatedCompanies.cs" />
+    <Compile Remove="Migrations\20200330083343_affiliatedCompanies.Designer.cs" />
+    <Compile Remove="Migrations\20200330083705_affiliatedCompaniesRemoveType.cs" />
+    <Compile Remove="Migrations\20200330083705_affiliatedCompaniesRemoveType.Designer.cs" />
+    <Compile Remove="Migrations\20200330092948_affiliatedCompaniesPlan.cs" />
+    <Compile Remove="Migrations\20200330092948_affiliatedCompaniesPlan.Designer.cs" />
+    <Compile Remove="Migrations\20200330093620_affiliatedCompaniesPlanNullable.cs" />
+    <Compile Remove="Migrations\20200330093620_affiliatedCompaniesPlanNullable.Designer.cs" />
+    <Compile Remove="Migrations\20200330103346_initialDatabase.cs" />
+    <Compile Remove="Migrations\20200330103346_initialDatabase.Designer.cs" />
+    <Compile Remove="Migrations\20200414144952_chapters.cs" />
+    <Compile Remove="Migrations\20200414144952_chapters.Designer.cs" />
+    <Compile Remove="Migrations\20200414145720_subchapters.cs" />
+    <Compile Remove="Migrations\20200414145720_subchapters.Designer.cs" />
+    <Compile Remove="Migrations\20200414150936_INITDB.cs" />
+    <Compile Remove="Migrations\20200414150936_INITDB.Designer.cs" />
+    <Compile Remove="Migrations\20200414151752_ChapterCurrentVersion.cs" />
+    <Compile Remove="Migrations\20200414151752_ChapterCurrentVersion.Designer.cs" />
+    <Compile Remove="Migrations\20200415101742_InitDatabase.cs" />
+    <Compile Remove="Migrations\20200415101742_InitDatabase.Designer.cs" />
+    <Compile Remove="Migrations\20200415111353_InitDatabase.cs" />
+    <Compile Remove="Migrations\20200415111353_InitDatabase.Designer.cs" />
+    <Compile Remove="Migrations\20200415121246_InitDatabase.cs" />
+    <Compile Remove="Migrations\20200415121246_InitDatabase.Designer.cs" />
+    <Compile Remove="Migrations\20200415122112_InitDatabase.cs" />
+    <Compile Remove="Migrations\20200415122112_InitDatabase.Designer.cs" />
+    <Compile Remove="Migrations\20200415135321_VersionDates.cs" />
+    <Compile Remove="Migrations\20200415135321_VersionDates.Designer.cs" />
+    <Compile Remove="Migrations\20200415140103_VersionApprovements.cs" />
+    <Compile Remove="Migrations\20200415140103_VersionApprovements.Designer.cs" />
+    <Compile Remove="Migrations\20200415141526_InitDDBB.cs" />
+    <Compile Remove="Migrations\20200415141526_InitDDBB.Designer.cs" />
+    <Compile Remove="Migrations\20200415143447_InitDDBB.cs" />
+    <Compile Remove="Migrations\20200415143447_InitDDBB.Designer.cs" />
+    <Compile Remove="Migrations\20200416091022_InitDDBB.cs" />
+    <Compile Remove="Migrations\20200416091022_InitDDBB.Designer.cs" />
+    <Compile Remove="Migrations\20200416094217_InitDDBB.cs" />
+    <Compile Remove="Migrations\20200416094217_InitDDBB.Designer.cs" />
+    <Compile Remove="Migrations\20200416104242_InitDDBB.cs" />
+    <Compile Remove="Migrations\20200416104242_InitDDBB.Designer.cs" />
+    <Compile Remove="Migrations\20200416105015_InitDDBB.cs" />
+    <Compile Remove="Migrations\20200416105015_InitDDBB.Designer.cs" />
+    <Compile Remove="Migrations\20200416123322_InitDDBB.cs" />
+    <Compile Remove="Migrations\20200416123322_InitDDBB.Designer.cs" />
+    <Compile Remove="Migrations\20200421105327_PlanActivity.cs" />
+    <Compile Remove="Migrations\20200421105327_PlanActivity.Designer.cs" />
+    <Compile Remove="Migrations\20200507130453_activityPosition.cs" />
+    <Compile Remove="Migrations\20200507130453_activityPosition.Designer.cs" />
+    <Compile Remove="Migrations\20200518134521_WordDescription.cs" />
+    <Compile Remove="Migrations\20200518134521_WordDescription.Designer.cs" />
+    <Compile Remove="Migrations\20200525131555_planDetails.cs" />
+    <Compile Remove="Migrations\20200525131555_planDetails.Designer.cs" />
+    <Compile Remove="Migrations\20200525131939_planDetails.cs" />
+    <Compile Remove="Migrations\20200525131939_planDetails.Designer.cs" />
+    <Compile Remove="Migrations\20200601125713_chapter_SubchapterPosition.cs" />
+    <Compile Remove="Migrations\20200601125713_chapter_SubchapterPosition.Designer.cs" />
+    <Compile Remove="Migrations\20200601150505_plane.cs" />
+    <Compile Remove="Migrations\20200601150505_plane.Designer.cs" />
+    <Compile Remove="Migrations\20200601153019_plane.cs" />
+    <Compile Remove="Migrations\20200601153019_plane.Designer.cs" />
+    <Compile Remove="Migrations\20200601154053_plane.cs" />
+    <Compile Remove="Migrations\20200601154053_plane.Designer.cs" />
+    <Compile Remove="Migrations\20200616143841_test.cs" />
+    <Compile Remove="Migrations\20200616143841_test.Designer.cs" />
+    <Compile Remove="Migrations\20200702090631_defaultSelectedChapter.cs" />
+    <Compile Remove="Migrations\20200702090631_defaultSelectedChapter.Designer.cs" />
+    <Compile Remove="Migrations\20200703075629_RiskAndPreventiveMeasures.cs" />
+    <Compile Remove="Migrations\20200703075629_RiskAndPreventiveMeasures.Designer.cs" />
+    <Compile Remove="Migrations\20200709120710_RiskAndPreventiveMeasuresAudit.cs" />
+    <Compile Remove="Migrations\20200709120710_RiskAndPreventiveMeasuresAudit.Designer.cs" />
+    <Compile Remove="Migrations\20200709121056_RiskAndPreventiveMeasuresAudit.cs" />
+    <Compile Remove="Migrations\20200709121056_RiskAndPreventiveMeasuresAudit.Designer.cs" />
+    <Compile Remove="Migrations\20200709122635_RiskAndPreventiveMeasuresAudit.cs" />
+    <Compile Remove="Migrations\20200709122635_RiskAndPreventiveMeasuresAudit.Designer.cs" />
+    <Compile Remove="Migrations\20200709124515_RiskAndPreventiveMeasuresAudit.cs" />
+    <Compile Remove="Migrations\20200709124515_RiskAndPreventiveMeasuresAudit.Designer.cs" />
+    <Compile Remove="Migrations\20200710114949_ManyPreventiveMeasures.cs" />
+    <Compile Remove="Migrations\20200710114949_ManyPreventiveMeasures.Designer.cs" />
+    <Compile Remove="Migrations\20200710121719_ManyPreventiveMeasures.cs" />
+    <Compile Remove="Migrations\20200710121719_ManyPreventiveMeasures.Designer.cs" />
+    <Compile Remove="Migrations\20200710122758_ManyPreventiveMeasures.cs" />
+    <Compile Remove="Migrations\20200710122758_ManyPreventiveMeasures.Designer.cs" />
+    <Compile Remove="Migrations\20200713074433_RiskCode.cs" />
+    <Compile Remove="Migrations\20200713074433_RiskCode.Designer.cs" />
+    <Compile Remove="Migrations\20200713075115_fixRiskCodeType.cs" />
+    <Compile Remove="Migrations\20200713075115_fixRiskCodeType.Designer.cs" />
+    <Compile Remove="Migrations\20200713075243_fixRiskCodeType.cs" />
+    <Compile Remove="Migrations\20200713075243_fixRiskCodeType.Designer.cs" />
+    <Compile Remove="Migrations\20200715102735_fixPreventiveMeasureAccess.cs" />
+    <Compile Remove="Migrations\20200715102735_fixPreventiveMeasureAccess.Designer.cs" />
+    <Compile Remove="Migrations\20200715102906_fixPreventiveMeasureAccess.cs" />
+    <Compile Remove="Migrations\20200715102906_fixPreventiveMeasureAccess.Designer.cs" />
+    <Compile Remove="Migrations\20200715110239_FixPreventiveMeasureAccessToRisksAndPrev.cs" />
+    <Compile Remove="Migrations\20200715110239_FixPreventiveMeasureAccessToRisksAndPrev.Designer.cs" />
+    <Compile Remove="Migrations\20200903080241_empty.cs" />
+    <Compile Remove="Migrations\20200903080241_empty.Designer.cs" />
+    <Compile Remove="Migrations\20200903082609_newDependantDelegations.cs" />
+    <Compile Remove="Migrations\20200903082609_newDependantDelegations.Designer.cs" />
+    <Compile Remove="Migrations\20200904080116_defaultSafetyStudyPlanFile.cs" />
+    <Compile Remove="Migrations\20200904080116_defaultSafetyStudyPlanFile.Designer.cs" />
+    <Compile Remove="Migrations\20200903152313_CustomChapterSubChapterActivityForPlan.cs" />
+    <Compile Remove="Migrations\20200903152313_CustomChapterSubChapterActivityForPlan.Designer.cs" />
+    <Compile Remove="Migrations\20200914125740_fileSize.cs" />
+    <Compile Remove="Migrations\20200914125740_fileSize.Designer.cs" />
+    <Compile Remove="Migrations\20200914141422_fileSize.cs" />
+    <Compile Remove="Migrations\20200914141422_fileSize.Designer.cs" />
+    <Compile Remove="Migrations\20201015125701_MakeCustomSubChapterAndCustomChapterNullable.cs" />
+    <Compile Remove="Migrations\20201015125701_MakeCustomSubChapterAndCustomChapterNullable.Designer.cs" />
+    <Compile Remove="Seeds\IdentitySeed.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="2.1.14" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="2.1.1" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="2.1.1" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="2.1.1" />
+    <PackageReference Include="Scrutor" Version="2.1.2" />
+    <PackageReference Include="System.DirectoryServices" Version="4.6.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\02_Backend\Segurplan.Core\Segurplan.Core.csproj" />
+    <ProjectReference Include="..\..\Infraestructure\Segurplan.Infraestructure.SqlServer\Segurplan.Infraestructure.SqlServer.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="appsettings.Development.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="appsettings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Seeds\InsertCoreTestData.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Helpers\DefaultSafetyStudyPlanFileData\" />
+  </ItemGroup>
+
+</Project>

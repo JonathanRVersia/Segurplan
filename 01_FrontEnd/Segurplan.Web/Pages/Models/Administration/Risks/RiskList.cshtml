@@ -1,0 +1,297 @@
+﻿@page "/RiskList"
+@inject SharedLocalizer L
+@model Segurplan.Web.RiskListModel
+@{
+    ViewData["Title"] = L["SideBar.Risks"];
+
+}
+<form id="riskList" method="post" enctype="multipart/form-data">
+    @Html.AntiForgeryToken()
+
+    <div class="content listado no-tabs">
+        <div class="container-fluid p-0">
+            <!-- Buscador -->
+            <div class="row buscadorRelativoContent ml-2" id="filterZone">
+                <div class="row">
+                    <div class="col-11">
+                        <div class="row">
+                            <div class="form-group bmd-form-group col-12">
+                                <div class="input-group">
+                                    <label for="Name" class="bmd-label-floating">@L["Administration.Risk.Name"]</label>
+                                    <input type="text" asp-for="@Model.NameFilter" class="form-control" value="@Model.NameFilter">
+                                </div>
+                            </div>
+                            <div class="form-group bmd-form-group col-12">
+                                <div class="input-group">
+                                    <label for="Code" class="bmd-label-floating">@L["Administration.Risk.Code"]</label>
+                                    <input type="text" asp-for="@Model.CodeFilter" class="form-control" value="@Model.CodeFilter">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class=""></div>
+                    <div class="col-1 acciones_buscador">
+
+                        <button class="btn btn-just-icon btn-white">
+                            <i class="material-icons cerrarBuscador" id="searchClose" style="display:block">close</i>
+                            <div class="ripple-container"></div>
+                        </button>
+
+                        <button type="submit" asp-page-handler="DeleteFilter" class="btn btn-white buscar" id="SearchButton">
+                            @L["Planes.Filtros.Search"]
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row tags">
+                <div class="col-12 px-0">
+                    <ul>
+                        @{                        
+                        if (!string.IsNullOrWhiteSpace(Model.NameFilter))
+                        {
+                        <li>
+                            @L[$"Administration.Risk.Name"]
+                            <span><label asp-for="@Model.NameFilter">@Model.NameFilter</label></span>
+                            <button asp-page-handler="DeleteFilter" asp-route-filterIndex="@RiskListModel.FilterIndex.Name" type="submit" class="btn btn-just-icon btn-white">
+                                <i class="material-icons">close</i>
+                            </button>
+                        </li>
+                        }
+                            if (!string.IsNullOrWhiteSpace(Model.CodeFilter))
+                        {
+                        <li>
+                            @L[$"Administration.Risk.Code"]
+                            <span><label asp-for="@Model.CodeFilter">@Model.CodeFilter</label></span>
+                            <button asp-page-handler="DeleteFilter" asp-route-filterIndex="@RiskListModel.FilterIndex.Code" type="submit" class="btn btn-just-icon btn-white">
+                                <i class="material-icons">close</i>
+                            </button>
+                        </li>
+                        }
+                        }
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="content planes" id="tableContainer">
+            <div class="">
+                @{
+                if (Model.DeleteErrors)
+                {
+                @await Component.InvokeAsync("Warning", Model.WarningDTO);
+                }
+                }
+                <table class="table table-bordered table-striped table-shortable table-hover tableFixHead" id="PlanTable">
+                    <thead>
+                        <tr>                            
+                            <th width="81%">
+                                @{
+                                var nameSortClass = !string.IsNullOrWhiteSpace(Model.NameSort)
+                                ? Model.NameSort.Contains("Asc")
+                                ? "order_asc"
+                                : Model.NameSort.Contains("Desc")
+                                ? "order_desc"
+                                : "order_default"
+                                : "order_default";
+                                }
+                                <a asp-page-handler="ApplySort"
+                                   asp-route-id="@Model.IdFilter"
+                                   asp-route-name="@Model.NameFilter"
+                                   asp-route-code="@Model.CodeFilter"
+                                   asp-route-rows="@Model.TableState.PageRows"
+                                   asp-route-sortOrder="@Model.NameSort">@L["Administration.Risk.Name"]<span class="@nameSortClass"></span></a>
+
+                            </th>
+                            <th width="11%">
+                                @{
+                                var codeSortClass = !string.IsNullOrWhiteSpace(Model.CodeSort)
+                                ? Model.IdSort.Contains("Asc")
+                                ? "order_asc"
+                                : Model.IdSort.Contains("Desc")
+                                ? "order_desc"
+                                : "order_default"
+                                : "order_default";
+                                }
+                                <a asp-page-handler="ApplySort"
+                                   asp-route-id="@Model.IdFilter"
+                                   asp-route-name="@Model.NameFilter"
+                                   asp-route-code="@Model.CodeFilter"
+                                   asp-route-rows="@Model.TableState.PageRows"
+                                   asp-route-sortOrder="@Model.CodeSort">@L["Administration.Risk.Code"]<span class="@codeSortClass"></span></a>
+
+                            </th>
+                            <th width="7%">@L["Planes.TablePlan.Acciones"] </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{
+                        if (Model.RiskList != null)
+                        {
+                        string rowName = string.Empty;
+                        string dupliId = string.Empty;
+                        string dpDown = string.Empty;
+                        foreach (var risk in Model.RiskList)
+                        {
+                        rowName = "row" + risk.Id;
+                        dpDown = "dp" + risk.Id;
+                        dupliId = "dup" + risk.Id;
+                        <tr id="@rowName">
+                            <td title="@L[" General.Table.Visualize"]" onclick="viewRisk('@risk.Id');"><p>@Html.Raw(risk.Name)</p></td>
+                            <td title="@L[" General.Table.Visualize"]" onclick="viewRisk('@risk.Id');"><p>@Html.Raw(risk.Code)</p></td>
+
+                            <td class="text-center">
+                                <div class="btn-group">
+                                    <a class="nav-link" href="#" id="@dpDown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        <i class="fas fa-ellipsis-v"></i>
+                                        <p class="d-lg-none d-md-block"> Account </p>
+                                    </a>
+                                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownUserRole">
+                                        <a class="dropdown-item" asp-page="RiskManagement" asp-page-handler="ManageRisk"
+                                           asp-route-riskId="@risk.Id"
+                                           asp-route-managementAction="@Segurplan.Web.Pages.Models.Administration.Risks.ManagementAction.View">@L["General.Table.Visualize"]</a>
+                                        <a class="dropdown-item" asp-page="RiskManagement" asp-page-handler="ManageRisk"
+                                           asp-route-riskId="@risk.Id"
+                                           asp-route-managementAction="@Segurplan.Web.Pages.Models.Administration.Risks.ManagementAction.Edit">@L["Planes.OpcionTable.Editar"]</a>
+                                        <div class="dropdown-divider"></div>
+                                        <a class="dropdown-item" href="#" onclick="deleteRisk('@risk.Id','@risk.Code')" >@L["Planes.OpcionTable.Eliminar"]</a>
+
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        }
+                        }
+                        }
+                    </tbody>
+                </table>
+
+                <button type="submit" class="nuevo btn btn-fab btn-round" asp-page-handler="NewRisk"> <i class="fas fa-plus"></i> </button>
+
+                <div class="footer-table ">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-2 ml-auto text-left">
+                                <div class="row">
+                                    <label class="col-8 col-form-label">@L["Planes.Table.Registros"]</label>
+                                    <div class="col-4">
+                                        <div class="dropdown bootstrap-select show-tick">
+                                            <select asp-for="PageRows" class="selectpicker"
+                                                    data-style="select-with-transition" id="rowsChanger"
+                                                    data-size="4" tabindex="-98" onchange="$('#SearchButton').trigger('click');">
+                                                @{
+                                                foreach (int rowNum in Model.TableState.PageRowList)
+                                                {
+                                                if (rowNum == Model.TableState.PageRows)
+                                                {
+                                                <option value="@rowNum" selected>@rowNum </option>
+                                                }
+                                                else
+                                                {
+                                                <option value="@rowNum">@rowNum </option>
+                                                }
+                                                }
+                                                }
+
+                                            </select>
+
+                                            <button type="button" class="btn dropdown-toggle" data-toggle="dropdown" role="button" title="Registros">
+                                                <div class="filter-option">
+                                                    <div class="filter-option-inner">
+                                                        <div class="filter-option-inner-inner">Registros</div>
+                                                    </div>
+                                                </div>
+                                                <div class="ripple-container"></div>
+                                            </button>
+
+                                            <div class="dropdown-menu " role="combobox">
+                                                <div class="inner show" role="listbox" aria-expanded="false" tabindex="-1">
+                                                    <ul class="dropdown-menu inner show">
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-4 ">
+                                <div class="row">
+                                    <div class="col-4 paginacion text-right">
+                                        @{
+                                        var startRecord = Model.TableState.PageRows > 0
+                                        ? ((Model.TableState.IndexPage * Model.TableState.PageRows) + 1)
+                                        : 0;
+
+                                        var results = ((Model.TableState.IndexPage * Model.TableState.PageRows) + Model.TableState.PageRows);
+                                        }
+                                        <span id="startRecord">@startRecord - </span><span id="nResults">@results</span> de <span id="total">@Model.TotalRows</span>
+                                    </div>
+                                    <div class="col-8 text-right">
+                                        @{
+                                        var backEnabled = Model.TableState.IndexPage > 0 ? "" : "disabled";
+                                        var nextEnabled = Model.TableState.IndexPage < Model.TotalPages ? "" : "disabled";
+                                        }
+                                        @Html.HiddenFor(m => m.TableState.IndexPage)
+                                        @Html.HiddenFor(m => m.TableState.OrderBy)
+                                        @Html.HiddenFor(m => m.TableState.OrderModeDesc)
+                                        @Html.HiddenFor(m => m.TableState.PageRows)
+                                        @Html.HiddenFor(m => m.CurrentOrder)
+                                        <button class="btn @backEnabled" type="submit" asp-page-handler="PreviousPage" asp-route-index="@Model.TableState.IndexPage"> <i class="fas fa-chevron-left"></i> </button>
+                                        <button class="btn @nextEnabled" type="submit" asp-page-handler="NextPage" asp-route-index="@Model.TableState.IndexPage"> <i class="fas fa-chevron-right"></i> </button>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+<!-- /Modal DELETE Risk -->
+<div class="modal notificacion fade" id="deleteRisk" tabindex="-1" role="dialog" aria-labelledby="delete record" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title error" id="exampleModalLabel">@L["Administration.Risk.DeleteTitle"]</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar"> <span aria-hidden="true">&times;</span> </button>
+            </div>
+            <div class="modal-body">
+                <p class="text-center">@L["Administration.Risk.DeleteMsg1"]<span id="deleteRiskMsg" style="color:red;margin-left:5px;margin-right:5px;"></span>@L["Administration.Risk.DeleteMsg2"]</p>
+                <form id="deleteRisk" method="post" action="/RiskManagement?handler=DeleteRisk">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" id="deleteRiskId" name="deleteRiskId" value="-1" />
+
+                    <div class="row mt-4">
+                        <div class="col-6"><button class="btn btn-default btn-lg col-12" data-dismiss="modal">@L["General.Radio.No"]<div class="ripple-container"></div></button></div>
+                        <div class="col-6"><button type="submit" id="btnDelete" onclick="this.classList.add('disabled');" class="btn btn-primary btn-lg col-12">@L["General.Radio.Si"]<div class="ripple - container"></div></button></div>
+                    </div>
+
+                </form>
+
+            </div>
+        </div>
+    </div>
+    <!-- /Modal DELETE Risk -->
+
+
+</div>
+
+<script>
+    //expand menu
+    document.getElementById("adminCaret").setAttribute("aria-expanded", "true");
+    document.getElementById("pagesAdmin").classList.add("show");
+
+    function deleteRisk(riskId, code) {
+
+        elementSet('deleteRiskId', riskId);
+        elementInner('deleteRiskMsg', code)
+        $('#deleteRisk').modal('show').fadeIn("slow");
+    }
+
+    function viewRisk(id) {
+        location.href = "/RiskManagement?handler=ManageRisk&RiskId=" + id +"&managementAction=View";
+    }
+</script>

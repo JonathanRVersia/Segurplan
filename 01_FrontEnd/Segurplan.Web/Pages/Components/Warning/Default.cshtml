@@ -1,0 +1,11 @@
+﻿@model WarningDTO
+@inject SharedLocalizer L
+
+
+<div class="alert alert-warning alert-dismissible fade show alert-with-icon" role="alert">
+    <span class="material-icons" data-notify="icon">error_outline</span>
+    @L[Model.Msg]
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>

@@ -1,0 +1,16 @@
+﻿@model ChapterActivitiesDeleteCheckModalModel
+@inject SharedLocalizer L
+
+
+    <script src="~/assets/js/plugins/sweetalert2.js"></script>
+    <script >
+    window.onloadend=function () {
+        Swal.fire({
+            title: '@L["DeleteCheckModal.Title"]',
+            type: 'error',
+            html: '@Model.Message',
+            confirmButtonText: 'Aceptar',
+            confirmButtonAriaLabel: 'Aceptar'
+        });
+    }();
+    </script>

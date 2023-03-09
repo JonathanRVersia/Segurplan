@@ -1,0 +1,194 @@
+﻿@model PlanActivityCustomRowModel
+
+@inject SharedLocalizer L
+
+@using Segurplan.Web.Pages.Components.PlanActivityCustomModals
+
+<li class="accordion-firstlevel" id="sel_parent_chapter_customChapter@(Model.RowIndex)" onclick="changeSummernoteTarget(this,event)" style="display: block;">
+    <input id="chap_Descrp_customChapter@(Model.RowIndex)" type="hidden" name="SelectedActivities[@Model.RowIndex].WordDescription" value="@Model.CustomChapter.WordDescription"/>
+    <div id="chap_customChapter@(Model.RowIndex)" class="accordion-container">
+        <div class="activities-actions align-left">
+            @*<div class="form-check">
+                <label>
+                    <input onclick="setAllCheckboxes('sel_chapter_customChapter@(Model.RowIndex)', this)" class="form-check-input" type="checkbox" value="">
+                    <span class="form-check-sign"><span class="check"></span></span>
+                </label>
+            </div>*@
+        </div>
+        @{
+            if (Model.CustomChapter.SubChapter.Count > 0)
+            {
+                <a id="anchor_chapter_customChapter@(Model.RowIndex)" data-toggle="collapse" href="#sel_chapter_customChapter@(Model.RowIndex)" aria-expanded="false" aria-controls="sel_chapter_customChapter@(Model.RowIndex)" class="accordion-toggle">
+                    <input type="hidden" name="SelectedActivities[@Model.RowIndex].Id" value="@Model.CustomChapter.Id" />
+                    <input name="SelectedActivities[@Model.RowIndex].Position" type="hidden" id="Position_element_customChapter@(Model.RowIndex)" value="@(Model.RowIndex+1)" />
+                    <input name="SelectedActivities[@Model.RowIndex].Title" type="hidden" value="@Model.CustomChapter.Title" />
+                    <input type="hidden" name="SelectedActivities[@Model.RowIndex].IsCustomChapter" value="true" />
+
+                    <label id="lbl_chapter_customChapter@(Model.RowIndex)">
+                        @(Model.RowIndex + 1) @Model.CustomChapter.Title
+                    </label>
+                    <small hidden>Custom Chapter</small> @*(<small>@chapters.Id</small>)*@
+                </a>
+            }
+            else
+            {
+                <span class="accordion-toggle">
+                    <input type="hidden" name="SelectedActivities[@Model.RowIndex].Id" value="@Model.CustomChapter.Id" />
+                    <input name="SelectedActivities[@Model.RowIndex].Position" type="hidden" id="Position_element_customChapter@(Model.RowIndex)" value="@(Model.RowIndex+1)" />
+                    <input name="SelectedActivities[@Model.RowIndex].Title" type="hidden" value="@Model.CustomChapter.Title" />
+                    <input type="hidden" name="SelectedActivities[@Model.RowIndex].IsCustomChapter" value="true" />
+
+                    <label id="lbl_chapter_customChapter@(Model.RowIndex)">
+                        @(Model.RowIndex + 1) @Model.CustomChapter.Title 
+                    </label>
+                    <small hidden>Custom Chapter</small> @*(<small>@chapters.Id</small>)*@
+                </span>
+            }
+
+        }
+
+        @if (Model.IsEditEnabled)
+        {
+            <div class="activities-actions align-right mr-2">
+                <button class="dropdown-toggle btn btn-just-icon btn-link btn-round btn-sm pl-2" type="button" id="dropdownMenuButton3" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <span class="fas fa-ellipsis-v"></span> </button>
+                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton3" x-placement="bottom-start">
+                    <a class="dropdown-item" onclick="CreateCustomSubchapter('@nameof(ActivityModalDestinationEnum.SubchaptersModal)','Position_element_customChapter@(Model.RowIndex)','@(Model.RowIndex+1)')">Añadir nuevo Subcapítulo</a>
+                    @*<a class="dropdown-item" href="#">Quitar</a>*@
+                </div>
+                <i class="fas fa-arrow-circle-up fa-2x ml-3"
+                   onclick="moveChapter('customChapter@(Model.RowIndex)',
+                                                'SelectedActivities_' + @Model.RowIndex +'__Position',
+                                                -1)"></i>
+                <i class="fas fa-arrow-circle-down fa-2x ml-3"
+                   onclick="moveChapter('customChapter@(Model.RowIndex)',
+                                                 'SelectedActivities_' + @Model.RowIndex +'__Position',
+                                                 1)"></i>
+
+            </div>
+        }
+    </div>
+
+    @if (Model.CustomChapter.SubChapter.Count > 0)
+    {
+        <ul id="sel_chapter_customChapter@(Model.RowIndex)" data-parent="#sel_parent_chapter_customChapter@(Model.RowIndex)" class="collapse">
+            @for (int sIndex = 0; sIndex < Model.CustomChapter.SubChapter.Count; sIndex++)
+            {
+                var subChapter = Model.CustomChapter.SubChapter[sIndex];
+
+                <!-- 2level accordion -->
+                <li class="accordion-secondlevel" id="sel_parent_subChapter_@($"{@Model.RowIndex}{@sIndex}")" onclick="changeSummernoteTarget(this,event)">
+                    <input type="hidden" name="SelectedActivities[@Model.RowIndex].SubChapter[@sIndex].WordDescription" value="@subChapter.WordDescription"/>
+                    <div class="accordion-container">
+                        <div class="activities-actions align-left">
+                            @*<div class="form-check">
+                <label>
+                    <input onclick="setAllCheckboxes('sel_subChap_@sIndex@Model.RowIndex', this)" class="form-check-input" type="checkbox" value="">
+                    <span class="form-check-sign"><span class="check"></span></span>
+                </label>
+            </div>*@
+                        </div>
+                        @{
+                            if (subChapter.Activities.Count > 0)
+                            {
+                                <a data-toggle="collapse" href="#sel_subChap_@sIndex@Model.RowIndex" aria-expanded="false" aria-controls="sel_subChap_@sIndex@Model.RowIndex" class="accordion-toggle">
+                                    <input type="hidden" name="SelectedActivities[@Model.RowIndex].SubChapter[@sIndex].Id" value="@subChapter.Id" />
+                                    <input type="hidden" name="SelectedActivities[@Model.RowIndex].SubChapter[@sIndex].Position" value="@(sIndex+1)" />
+                                    <input type="hidden" name="SelectedActivities[@Model.RowIndex].SubChapter[@sIndex].Title" value="@subChapter.Title" />
+                                    <input type="hidden" name="SelectedActivities[@Model.RowIndex].SubChapter[@sIndex].IsCustomSubChapter" value="true" />
+
+                                    .@(sIndex + 1) @subChapter.Title <small hidden>Custom Subchapter</small> @*(<small>@chapters.Id @subChapter.Id</small>)*@
+                                </a>
+                            }
+                            else
+                            {
+                                <span class="accordion-toggle">
+                                    <input type="hidden" name="SelectedActivities[@Model.RowIndex].SubChapter[@sIndex].Id" value="@subChapter.Id" />
+                                    <input type="hidden" name="SelectedActivities[@Model.RowIndex].SubChapter[@sIndex].Position" value="@(sIndex+1)" />
+                                    <input type="hidden" name="SelectedActivities[@Model.RowIndex].SubChapter[@sIndex].Title" value="@subChapter.Title" />
+                                    <input type="hidden" name="SelectedActivities[@Model.RowIndex].SubChapter[@sIndex].IsCustomSubChapter" value="true" />
+
+                                    .@(sIndex + 1) @subChapter.Title <small hidden>Custom Subchapter</small> @*(<small>@chapters.Id @subChapter.Id</small>)*@
+                                </span>
+                            }
+                        }
+                        @if (Model.IsEditEnabled)
+                        {
+                            <div class="activities-actions align-right mr-2">
+                                <button class="dropdown-toggle btn btn-just-icon btn-link btn-round btn-sm pl-2" type="button" id="dropdownMenuButton4" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <span class="fas fa-ellipsis-v"></span> </button>
+                                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton4" x-placement="bottom-start">
+                                    <a class="dropdown-item" onclick="CreateCustomActivity('@nameof(ActivityModalDestinationEnum.ActivitiesModal)','Position_element_customChapter@(Model.RowIndex)','SelectedActivities[@Model.RowIndex].SubChapter[@sIndex].Position','@(Model.RowIndex+1)','@(sIndex+1)')">Añadir nueva Actividad</a>
+                                    @*<a class="dropdown-item" href="#">Quitar</a>*@
+                                </div>
+                                <i class="fas fa-arrow-circle-up fa-2x ml-3"
+                                   onclick="moveItem('sel_parent_subChapter_@($"{@Model.RowIndex}{@sIndex}")' ,
+                                                                 'SelectedActivities_' + @Model.RowIndex + '__SubChapter_' + @sIndex +'__Position',
+                                                                 -1)"></i>
+                                <i class="fas fa-arrow-circle-down fa-2x ml-3"
+                                   onclick="moveItem('sel_parent_subChapter_@($"{@Model.RowIndex}{@sIndex}")',
+                                                                 'SelectedActivities_' + @Model.RowIndex + '__SubChapter_' + @sIndex +'__Position',
+                                                                 1)"></i>
+                            </div>
+                        }
+                    </div>
+                    @{
+                        if (subChapter.Activities.Count > 0)
+                        {
+                            <ul id="sel_subChap_@sIndex@Model.RowIndex" data-parent="sel_parent_subChapter_@($"{@Model.RowIndex}{@sIndex}")" class="collapse" style="">
+
+                                @for (int aIndex = 0; aIndex < subChapter.Activities.Count; aIndex++)
+                                {
+                                    var activity = subChapter.Activities[aIndex];
+
+                                    <li id="act_@($"{@Model.RowIndex}{sIndex}{aIndex}")" class="accordion-secondlevel" onclick="changeSummernoteTarget(this,event)">
+                                        @*<input type="hidden" name="SelectedActivities[@Model.RowIndex].SubChapter[@sIndex].Activities[@aIndex].Title" value="@activity.Title" />*@
+                                        <input type="hidden" name="SelectedActivities[@Model.RowIndex].SubChapter[@sIndex].Activities[@aIndex].WordDescription" value="@activity.WordDescription"/>
+                                        <input type="hidden" name="SelectedActivities[@Model.RowIndex].SubChapter[@sIndex].Activities[@aIndex].Description" value="@activity.Description" />
+                                        <input type="hidden" name="SelectedActivities[@Model.RowIndex].SubChapter[@sIndex].Activities[@aIndex].IsCustomActivity" value="true" />
+                                        <input type="hidden" name="SelectedActivities[@Model.RowIndex].SubChapter[@sIndex].Activities[@aIndex].SubChapterId" value="@subChapter.Id" />
+                                        <div class="accordion-container">
+                                            @*<div class="activities-actions align-left">
+                                                 <div class="form-check">
+                                                        <label>
+                                                            <input class="form-check-input" type="checkbox" name="activityRight" value="@activities.Id">
+                                                            <span class="form-check-sign"><span class="check"></span></span>
+                                                         </label>
+                                                </div>
+                                            </div>*@
+                                            <span class="accordion-toggle">
+                                                <input type="hidden" name="SelectedActivities[@Model.RowIndex].SubChapter[@sIndex].Activities[@aIndex].Position" value="@(aIndex+1)" />
+                                                <input type="hidden" name="SelectedActivities[@Model.RowIndex].SubChapter[@sIndex].Activities[@aIndex].Id" value="@activity.Id" />
+                                                ..@(aIndex + 1) @activity.Description<small hidden>(Custom Activity )</small>@*<small>(@chapters.Id @subChapter.Id @activities.Id)</small>*@
+                                            </span>
+
+                                            @if (Model.IsEditEnabled)
+                                            {
+                                                <div class="activities-actions align-right mr-2">
+                                                    @*<button class="dropdown-toggle btn btn-just-icon btn-link btn-round btn-sm pl-2" type="button" id="dropdownMenuButton5" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <span class="fas fa-ellipsis-v"></span> </button>
+                                                         <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton5" x-placement="bottom-start">
+                                                            <a class="dropdown-item" href="#">Editar</a>
+                                                             <a class="dropdown-item" href="#">Quitar</a>
+                                                         </div>*@
+                                                    <i class="fas fa-arrow-circle-up fa-2x ml-3"
+                                                       onclick="moveItem('act_@($"{@Model.RowIndex}{sIndex}{aIndex}")',
+                                                                                     'SelectedActivities_' + @Model.RowIndex + '__SubChapter_' + @sIndex + '__Activities_' + @aIndex + '__Position',
+                                                                                     -1)"></i>
+                                                    <i class="fas fa-arrow-circle-down fa-2x ml-3"
+                                                       onclick="moveItem('act_@($"{@Model.RowIndex}{sIndex}{aIndex}")',
+                                                                                     'SelectedActivities_' + @Model.RowIndex + '__SubChapter_' + @sIndex + '__Activities_' + @aIndex + '__Position',
+                                                                                     1)"></i>
+                                                </div>
+                                            }
+
+
+                                        </div>
+                                    </li>
+                                }
+                            </ul>
+                        }
+                    }
+                </li>
+            }
+        </ul>
+    }
+
+</li>

@@ -1,0 +1,30 @@
+﻿@page
+@model Segurplan.Web.Pages.Models.Administration.ChaptersAndActivities.SubChapterDetails.IndexModel
+@inject SharedLocalizer L
+
+@{
+    if (Model.SubChapterVersion.Id != 0)
+    {
+        ViewData["Title"] = L["SubChapterDetails.View.Title", Model.SubChapterVersion.IdSubChapterNavigation.Number];
+    }
+    else
+    {
+        ViewData["Title"] = L["SubChapterDetails.New"];
+    }
+}
+
+<script asp-append-version="true" async>
+    var chapterVersionId = "@Html.Raw(Model.ChapterVersionId)";
+    if (window.performance && window.performance.navigation.type === window.performance.navigation.TYPE_BACK_FORWARD && chapterVersionId != 0) {
+            document.body.innerHTML = "";
+            location.href = `/Models/Administration/ChaptersAndActivities/ChapterDetails?chapterVersionId=${chapterVersionId}&isEditMode=true`;
+        }
+</script>
+
+@await Component.InvokeAsync(typeof(Pages.Components.SubChapterDetails.SubChapterDetailsViewComponent))
+
+@*Modal alert when Chapter/SubChapter/Activity cannot be removed*@
+@if (Model.DeleteCheck != null)
+{
+    @await Component.InvokeAsync(typeof(Pages.Components.ChapterActivitiesDeleteCheckModal.ChapterActivitiesDeleteCheckModalViewComponent), Model.DeleteCheck);
+}

@@ -1,0 +1,41 @@
+﻿@inject IOptions<RequestLocalizationOptions> localizationOptions
+
+@{
+    var requestCulture = ViewContext.HttpContext.Features.Get<IRequestCultureFeature>();
+    var returnUrl = string.IsNullOrEmpty(ViewContext.HttpContext.Request.Path) ? "~/" : $"~{ViewContext.HttpContext.Request.Path.Value}";
+}
+
+<div class="idiomas_dropdown dropdown text-right">
+    <button class="dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        @requestCulture.RequestCulture.UICulture.TwoLetterISOLanguageName.ToUpperInvariant()
+        <div class="ripple-container"></div>
+    </button>
+    <div id="cultureSelector" class="dropdown-menu" aria-labelledby="dropdownMenuButton" x-placement="bottom-start">
+        @foreach (var culture in localizationOptions.Value.SupportedUICultures)
+        {
+            <a data-cookie-culture="@CookieRequestCultureProvider.MakeCookieValue(new RequestCulture(culture.Name))" class="dropdown-item" href="#">
+                @culture.TwoLetterISOLanguageName.ToUpperInvariant()
+            </a>
+        }
+    </div>
+</div>
+
+<script type="text/javascript">
+    (function () {
+        var daysToExpire = 365;
+
+        const cultureLinks = document.querySelectorAll('#cultureSelector a[data-cookie-culture]');
+
+        for (let i = 0; i < cultureLinks.length; i++) {
+            cultureLinks[i].addEventListener('click', function (el) {
+                var date = new Date();
+                date.setTime(date.getTime() + (daysToExpire * 24 * 60 * 60 * 1000));
+
+                document.cookie = '@CookieRequestCultureProvider.DefaultCookieName=' + el.target.dataset.cookieCulture + '; expires=' + date.toGMTString() + '; path=/';
+
+                window.location.href = window.location.href;
+                //window.location.reload();
+            });
+        }
+    })();
+</script>

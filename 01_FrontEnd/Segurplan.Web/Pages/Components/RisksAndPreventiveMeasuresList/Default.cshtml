@@ -1,0 +1,133 @@
+﻿@model RisksAndPreventiveMeasuresListModel
+@inject SharedLocalizer L
+
+
+@*<table class="table table-bordered table-striped sortable table-hover">*@
+<table class="table table-bordered table-striped table-hover table-shortable">
+    <thead>
+        <tr>
+            <th style="width:68px">
+                <abbr title="Capítulo">@L["RisksAndPreventiveMeasures.table.Cap."]</abbr>
+                <a asp-page="@Model.IndexRoute"
+                   asp-route-order="@(Model.ShortOrder== "ByChapterNumber_asc" ? "ByChapterNumber_desc":"ByChapterNumber_asc" )"asp-route-search="@Model.SearchValues">
+                    <span class="@(Model.ShortOrder== "ByChapterNumber_asc" ? "order_asc" : Model.ShortOrder == "ByChapterNumber_desc" ? "order_desc" :"order_default")"></span>
+                </a>
+            </th>
+            <th style="width:77px">
+                <abbr title="Subcapítulo">@L["RisksAndPreventiveMeasures.table.Subcap."]</abbr>
+                <a asp-page="@Model.IndexRoute"
+                   asp-route-order="@(Model.ShortOrder== "BySubChapterNumber_asc" ? "BySubChapterNumber_desc":"BySubChapterNumber_asc" )"asp-route-search="@Model.SearchValues">
+                    <span class="@(Model.ShortOrder== "BySubChapterNumber_asc" ? "order_asc" : Model.ShortOrder == "BySubChapterNumber_desc" ? "order_desc" :"order_default")"></span>
+                </a>
+            </th>
+            <th style="width:68px">
+                <abbr title="Actividad">@L["RisksAndPreventiveMeasures.table.Act."]</abbr>
+                <a asp-page="@Model.IndexRoute"
+                   asp-route-order="@(Model.ShortOrder== "ByActivityNumber_asc" ? "ByActivityNumber_desc":"ByActivityNumber_asc" )"asp-route-search="@Model.SearchValues">
+                    <span class="@(Model.ShortOrder== "ByActivityNumber_asc" ? "order_asc" : Model.ShortOrder == "ByActivityNumber_desc" ? "order_desc" :"order_default")"></span>
+                </a>
+            </th>
+            <th>
+                @L["RisksAndPreventiveMeasures.table.Description"]
+                <a asp-page="@Model.IndexRoute"
+                   asp-route-order="@(Model.ShortOrder== "ByActivityDescription_asc" ? "ByActivityDescription_desc":"ByActivityDescription_asc" )"asp-route-search="@Model.SearchValues">
+                    <span class="@(Model.ShortOrder== "ByActivityDescription_asc" ? "order_asc" : Model.ShortOrder == "ByActivityDescription_desc" ? "order_desc" :"order_default")"></span>
+                </a>
+            </th>
+            <th>
+                @L["RisksAndPreventiveMeasures.table.Risk"]
+                <a asp-page="@Model.IndexRoute"
+                   asp-route-order="@(Model.ShortOrder== "ByRisks_asc" ? "ByRisks_desc":"ByRisks_asc" )"asp-route-search="@Model.SearchValues">
+                    <span class="@(Model.ShortOrder== "ByRisks_asc" ? "order_asc" : Model.ShortOrder == "ByRisks_desc" ? "order_desc" :"order_default")"></span>
+                </a>
+            </th>
+            <th>
+                @L["RisksAndPreventiveMeasures.table.Measure"]
+                @*<a asp-page="@Model.IndexRoute"
+               asp-route-order="@(Model.ShortOrder== "ByPreventiveMeasureDescription_asc" ? "ByPreventiveMeasureDescription_desc":"ByPreventiveMeasureDescription_asc" )">
+                <i class="@(Model.ShortOrder== "ByPreventiveMeasureDescription_asc" ? "sign arrow up" : Model.ShortOrder == "ByPreventiveMeasureDescription_desc" ? "sign arrow" :"icon sort")"></i>
+            </a>*@
+            </th>
+            <th style="width:101px">
+                @L["RisksAndPreventiveMeasures.table.Probability"]
+                <a asp-page="@Model.IndexRoute"
+                   asp-route-order="@(Model.ShortOrder== "ByProbability_asc" ? "ByProbability_desc":"ByProbability_asc" )"asp-route-search="@Model.SearchValues">
+                    <span class="@(Model.ShortOrder== "ByProbability_asc" ? "order_asc" : Model.ShortOrder == "ByProbability_desc" ? "order_desc" :"order_default")"></span>
+                </a>
+            </th>
+            <th style="width:87px">
+                @L["RisksAndPreventiveMeasures.table.Seriousness"]
+                <a asp-page="@Model.IndexRoute"
+                   asp-route-order="@(Model.ShortOrder== "BySeriousness_asc" ? "BySeriousness_desc": "BySeriousness_asc" )"asp-route-search="@Model.SearchValues">
+                    <span class="@(Model.ShortOrder== "BySeriousness_asc" ? "order_asc" : Model.ShortOrder == "BySeriousness_desc" ? "order_desc" :"order_default")"></span>
+                </a>
+            </th>
+            <th style="width:111px">
+                @L["RisksAndPreventiveMeasures.table.LevelOfRisk"]
+                <a asp-page="@Model.IndexRoute"
+                   asp-route-order="@(Model.ShortOrder== "ByRiskLevel_asc" ? "ByRiskLevel_desc": "ByRiskLevel_asc" )"asp-route-search="@Model.SearchValues">
+                    <span class="@(Model.ShortOrder== "ByRiskLevel_asc" ? "order_asc" : Model.ShortOrder == "ByRiskLevel_desc" ? "order_desc" :"order_default")"></span>
+                </a>
+            </th>
+            <th class="text-center">@L["Planes.TablePlan.Acciones"]</th>
+        </tr>
+    </thead>
+    <tbody>
+
+        @{
+            foreach (var row in Model.TableValues)
+            {
+                <tr class="table-row" data-href="segurplan_riesgosymedidas_riesgo.html">
+                    <td>@row.ChapterNumber</td>
+                    <td>@row.SubChapterNumber</td>
+                    <td>@row.ActivityNumber</td>
+                    <td>@row.ActivityDescription</td>
+                    <td>@row.RiskName</td>
+                    <td>
+                        @{
+                            <ul>
+                                @foreach (var prevMeasure in row.PreventiveMeasure)
+                                {
+                                <li>@Html.Raw(prevMeasure.Description)</li>
+                                }
+                            </ul>
+                        }
+                    </td>
+                    <td>@row.ProbabilityValue</td>
+                    <td>@row.SeriousnessValue</td>
+                    <td>@row.RiskLevel</td>
+                    @*<td class="text-center">
+                        <a href="#" data-toggle="tooltip" data-placement="left" title="" class="ico-info" data-original-title="@row.RiskLevel">
+                            <span class="badge parent @row.TrafficLightsColour"><span class="sr-only"></span></span>
+                        </a>
+                    </td>*@
+                    <td class="text-center">
+                        <a class="nav-link" href="#" id="navbarDropdownProfile2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <span class="fas fa-ellipsis-v"></span>
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownProfile2">
+
+                            <a class="dropdown-item" asp-page="@Model.DetailsRoute" asp-route-id="@row.Id" asp-route-isEdit="false" asp-route-indexPage="@Model.IndexPage" asp-route-SearchValues="@Model.SearchValues">@L["General.Table.Visualize"]</a>
+                            <a class="dropdown-item" asp-page="@Model.DetailsRoute" asp-route-id="@row.Id" asp-route-isEdit="true" asp-route-indexPage="@Model.IndexPage" asp-route-SearchValues="@Model.SearchValues">@L["General.Table.Edit"]</a>
+
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item" asp-page="@Model.IndexRoute" asp-page-handler="Delete" asp-route-id="@row.Id" asp-route-indexPage="@Model.IndexPage" asp-route-SearchValues="@Model.SearchValues">@L["General.Table.Remove"]</a>
+
+                        </div>
+                    </td>
+                </tr>
+
+            }
+
+        }
+
+    </tbody>
+</table>
+
+<script>
+    
+    document.getElementById("adminCaret").setAttribute("aria-expanded", "true");
+    document.getElementById("pagesAdmin").classList.add("show");
+    
+</script>
+

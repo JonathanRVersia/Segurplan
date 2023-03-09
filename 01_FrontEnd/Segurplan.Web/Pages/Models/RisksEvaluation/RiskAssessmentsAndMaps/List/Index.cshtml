@@ -1,0 +1,204 @@
+﻿@page "/RiskAssessmentsAndMaps"
+@model Segurplan.Web.Pages.Models.RisksEvaluation.RiskAssessmentsAndMaps.List.IndexModel
+@inject SharedLocalizer L
+@{
+    ViewData["Title"] = @L["SideBar.RiskAssessmentsAndMaps"];
+    ViewData["IsSearchLessPage"] = true;
+}
+
+    <div class="content tabs elec-content-layout">
+        <div class="container-fluid evaluacion-mapas">
+            @*BUSCADOR*@
+            @*ml-2*@
+
+            <div id="loading" class="spinner-eval-riesgos"></div>
+            <div class="row buscadorRelativoContent-block pb-0 ">
+                <form id="search" asp-page-handler="RunFilters" method="post">
+                    <div class="row">
+                        @await Component.InvokeAsync("Activities", Model.activitiesModel)
+                        <table class="fiteredField" hidden></table>
+                        @*<div class="col-1 acciones_buscador">
+                                <button onclick="RunFilter()" class="btn btn-white buscar">@L["Common.Search"]</button>
+                            </div>*@
+                    </div>
+                </form>
+            </div>
+            @*BUSCADOR*@
+            <div class="card card-nav-tabs">
+                <div class="card-body bg-white pt-1">
+                    <div class="formularioDetalle">
+                        <form id="create-document-form" asp-page-handler="CreateDocument" method="post">
+                            @*CARACTERISTICAS DE DOCUMENTO ESPECIFICO*@
+                            <input id="targetTamplateField" type="hidden" asp-for="TargetTemplate" />
+                            <table class="fiteredField" hidden></table>
+
+                            <div class="jumbotron jumbotron-em">
+                                <fieldset>
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <div class="textos_ayuda_form">
+                                                <span class="material-icons" data-notify="icon">info_outline</span>
+                                                <dl>
+                                                    @*<dt>
+                                                            @L["ActivityDetails.Title"]:
+                                                        </dt>*@
+                                                    <dd>
+                                                        @L["SideBar.RiskAssessmentsAndMaps.TitleHelp"]
+                                                    </dd>
+                                                </dl>
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="form-group bmd-form-group mt-0 mb-0">
+                                                <div class="input-group is-filled">
+                                                    <label for="titulo" class="bmd-label-floating infoTooltip">
+                                                        @L["ActivityDetails.Title"]
+                                                        <!--<a href="#" data-toggle="tooltip" data-placement="top" title="@L["SideBar.RiskAssessmentsAndMaps.TitleHelp"]" class="ico-info">
+                                                            <span aria-label="información" class="fas fa-info-circle"></span>
+                                                        </a>-->
+                                                    </label>
+                                                    <input type="text" asp-for="Title" class="form-control" id="titulo" placeholder="@L["SideBar.RiskAssessmentsAndMaps.TitlePlaceholder"]" />
+                                                </div>
+                                            </div>
+
+                                            @*temporalmente comentado para un pr*@
+                                            <!--<div class="form-group bmd-form-group">
+                                                <div class="input-group ">
+                                                    <label class="bmd-label-floating infoTooltip">
+                                                        @L["DetallePlan.DatGen.DocSeguridad.Anagrama"]
+                                                        <a href="#" data-toggle="tooltip" data-placement="top" title="@L["SideBar.RiskAssessmentsAndMaps.AnagramTiltle"]" class="ico-info">
+                                                            <span aria-label="información" class="fas fa-info-circle"></span>
+                                                        </a>
+                                                    </label>
+                                                </div>
+                                            </div>-->
+                                            <!-- Upload Finished -->
+                                            <!--<div class="js-upload-finished">
+                                                <ul class="filenames" id="filenames">
+                                                </ul>
+                                            </div>
+                                            <div class="card documentacion">
+                                                <div class="card-body" onClick="document.getElementById('inputFile').click()">
+                                                    <div class="upload-drop-zone" id="drop-zone">
+                                                        <i class="fas fa-cloud-upload-alt"></i>
+                                                        @L["DetallePlan.DatGen.DocSeguridad.Anagrama.Texto"]
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="form-group file">
+                                                <label class="sr-only" for="inputFile">@L["DetallePlan.DatGen.DocSeguridad.Anagrama.Adjuntar"]</label>
+                                                <input type="file" id="inputFile" accept="*" data-title="@L["DetallePlan.DatGen.DocSeguridad.Anagrama.Texto"]">
+                                            </div>-->
+
+                                        </div>
+                                    </div>
+
+                                    @*temporalmente comentado para un pr*@
+                                    @*<div class="col-6">
+                                            <div class="form-group bmd-form-group">
+                                                <div class="input-group is-filled">
+                                                    <label for="mapa" class="bmd-label-floating infoTooltip">
+                                                        @L["DetallePlan.DatGen.DocSeguridad.Tipo.Radio.T2"] @L["Common.De"]
+                                                        <a href="#" data-toggle="tooltip" data-placement="top" title="@L["SideBar.RiskAssessmentsAndMaps.MapOfRisksOfTitle"]" class="ico-info">
+                                                            <span aria-label="información" class="fas fa-info-circle"></span>
+                                                        </a>
+                                                    </label>
+                                                    <input type="text" class="form-control" id="mapa" placeholder="@L["SideBar.RiskAssessmentsAndMaps.MapOfRisksOfTitlePlaceholder"]" />
+                                                </div>
+                                            </div>
+                                        </div>*@
+                                </fieldset>
+                            </div>
+                            @*CARACTERISTICAS DE DOCUMENTO ESPECIFICO*@
+                            @*TABLA*@
+                            @*<div class="row">
+                                    <div class="col-12">
+                                        <label class="bmd-label-floating infoTooltip">@L["RisksAndPreventiveMeasures.table.Label"]</label>
+                                        @await Component.InvokeAsync("RisksAndPreventiveMeasuresList", new { Model.RisksAndPreventiveMeasuresListModel })
+                                    </div>
+                                </div>*@
+                            @*TABLA*@
+                        </form>
+                        @*<form id="pagination" asp-page-handler="ChangePage" method="post">
+                            <table class="fiteredField" hidden></table>
+                            <input id="Pagination-page-number" type="hidden" asp-for="PageNumber" value="@Model.PageNumber" />
+                            <input id="TotalCount" type="hidden" value="@Model.RisksAndPreventiveMeasuresListModel.TotalCount" />
+                            <input type="hidden" asp-for="LastPageSize" value="@Model.PageSize" />
+                        *@
+
+                        @*FOOTER*@
+                        @*
+                                <div class="row paginacion-table">
+                                    <div class="col-2 ml-auto text-left">
+                                        <div class="row">
+                                            <label class="col-8 col-form-label">@L["Planes.Table.Registros"]</label>
+                                            <div class="col-4">
+                                                <div class="dropdown bootstrap-select show-tick">
+                                                    <select id="Rows-per-page" class="selectpicker" asp-for="PageSize" onchange="document.getElementById('pagination').submit()" data-style="select-with-transition" title="Registros" data-size="4" tabindex="-98">
+                                                        <option value="15">15 </option>
+                                                        <option value="25">25</option>
+                                                        <option value="50">50</option>
+                                                        <option value="100">100</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-4 mr-auto">
+                                        <div class="row">
+                                            <div class="col-4 paginacion text-right">
+                                                @Model.RisksAndPreventiveMeasuresListModel.PageNumber - @Model.RisksAndPreventiveMeasuresListModel.PageSize @L["Common.De"] @Model.RisksAndPreventiveMeasuresListModel.TotalCount
+                                            </div>
+
+                                            <div class="col-8 text-right">
+                                                <button class="btn " onclick="ChangePage('previous',event)"> <i class="fas fa-chevron-left"></i> </button>
+                                                <button class="btn " onclick="ChangePage('next',event)"> <i class="fas fa-chevron-right"></i> </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>*@
+
+                    </div>
+
+                    @*<a href="#back-top" class="elec-btn-scrollup btn btn-fab btn-round"><span class="fas fa-angle-up"></span></a>*@
+
+                </div>
+                <div class="row mx-0">
+                    <div class="col"></div>
+                    <div class="col-auto">
+                        <ul class="list-inline">
+                            <li class="list-inline-item  "><button type="button" onclick="if (document.getElementById('titulo').value == '') { SubmitCreateDocument('ER nuevo formato tabla 2 SOLO CAP') } else { SubmitCreateDocument('Evaluacion de riesgos')}" class="btn btn-link btn-dark p-2 disabled" id="GenerateDoc"> <span class="fas fa-file-word"></span>@L["SideBar.RiskAssessmentsAndMaps.RiskEvaluation"]</button></li>
+                            @*<li class="list-inline-item"><button onclick="SubmitCreateDocument('MAPA 1')" class="btn btn-link btn-dark p-2"> <span class="fas fa-file-word"></span>@L["DetallePlan.DatGen.DocSeguridad.Tipo.Radio.T2"]</button></li>*@
+                            @*<li class="list-inline-item"><button onclick="SubmitCreateDocument('RiskByActivity')" class="btn btn-link btn-dark p-2"> <span class="fas fa-file-word"></span>@L["SideBar.RiskAssessmentsAndMaps.RiskPerActivity"]</button></li>*@
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+<script>
+
+    $(document).ready(function () {
+        document.querySelector('.wrapper').style.cssText = "height: calc(100vh - 55px);";
+    });
+
+    function GetLastFilterData() {
+
+     return [
+               @{
+                   foreach (var item in Model.FilterData)
+                   {
+                     @:{chapterId: @(item.ChapterId), subChapterId: @(item.SubChapterId), activityId: @(item.ActivityId),},
+                   }
+                }
+            ];
+    }
+
+    function MoveHiddenValue() {
+        return false;
+    }
+</script>
+
+<script src="~/assets/js/RiskAndPreventiveMeasureSearch.js" asp-append-version="true"></script>
+<script src="~/assets/js/RiskEvaluationCommon.js" asp-append-version="true"></script>
