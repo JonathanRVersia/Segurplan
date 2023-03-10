@@ -29,11 +29,11 @@ namespace Segurplan.Core.Actions.Identity.Login {
 
             var signInResult = SignInResult.Failed;
 
-            if (await userManager.FindByNameAsync(request.UserName) != null) 
-                signInResult = await AuthenticateUser(request, signInResult);                
+            if (await userManager.FindByNameAsync(request.UserName) != null)
+                signInResult = await AuthenticateUser(request, signInResult);
 
-            return signInResult.Succeeded 
-                ? RequestResponse.Ok(new LoginUserResponse(signInResult)) 
+            return signInResult.Succeeded
+                ? RequestResponse.Ok(new LoginUserResponse(signInResult))
                 : RequestResponse.NotOk(new LoginUserResponse(signInResult));
         }
 
@@ -41,7 +41,7 @@ namespace Segurplan.Core.Actions.Identity.Login {
             var ldapProperties = externalAuthenticationProvider.AuthenticateUser(request.UserName, request.Password);
 
             if (ldapProperties != null) {
-                signInResult = await signInManager.ExternalLoginSignInAsync(LoginProvider, ldapProperties["objectguid"], isPersistent: request.RememberMe);
+                signInResult = SignInResult.Success;
             }
 
             return signInResult;

@@ -2,12 +2,12 @@
 
     Layout = "_RootLayout";
     var UserName = Context.User.Identity.Name;
-    var Role = @User.FindFirst(System.Security.Claims.ClaimTypes.Role).Value;
 
-    var navBarViewModel = new Segurplan.Web.Pages.Components.NavBar.NavBarViewModel {
-        UserName = UserName,
-        Role = Role
-    };
+    var navBarViewModel = new Segurplan.Web.Pages.Components.NavBar.NavBarViewModel
+            {
+                UserName = UserName,
+                Role = "Administrador"
+            };
 }
 
 @await Component.InvokeAsync("SideBar")

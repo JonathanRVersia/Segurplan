@@ -10,8 +10,6 @@ using Segurplan.Core.Actions.Plans.PlanManagement.Generate.Plan;
 using Segurplan.DataAccessLayer.Database.Identity;
 
 namespace Segurplan.Web.Pages.Models.SafetyPlans {
-    [Authorize(Roles = "Administrador, Usuario")]
-    [ValidateAntiForgeryToken]
     public class MyPlans : PlansBase {
         public MyPlans(IMediator mediator, ILogger<MyPlans> logger, UserManager<User> userManager)
             : base(mediator, logger, userManager) {

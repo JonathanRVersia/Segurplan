@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using AutoMapper;
 using MediatR;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
@@ -7,14 +8,20 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
+using Segurplan.Core.Actions.Administration;
+using Segurplan.Core.Actions.Administration.Users.CreateUserFromAD;
+using Segurplan.Core.Actions.Administration.Users.Details;
 using Segurplan.Core.Actions.Identity.Login;
+using Segurplan.DataAccessLayer.DataAccessManagers;
 using Segurplan.FrameworkExtensions.MediatR;
+using Segurplan.Web.Pages.Components.UserDetails;
 
 namespace Segurplan.Web.Pages.Models.Account {
     [AllowAnonymous]
     public class LoginModel : PageModel {
         private readonly IMediator mediator;
         private readonly ILogger<LoginModel> logger;
+        private readonly IMapper mapper;
 
         public string ReturnUrl { get; set; }
 
@@ -24,9 +31,10 @@ namespace Segurplan.Web.Pages.Models.Account {
         [TempData]
         public string ErrorMessage { get; set; }
 
-        public LoginModel(IMediator mediator, ILogger<LoginModel> logger) {
+        public LoginModel(IMediator mediator, ILogger<LoginModel> logger, IMapper mapper) {
             this.mediator = mediator;
             this.logger = logger;
+            this.mapper = mapper;
         }
 
         public async Task OnGetAsync(string returnUrl = null) {
@@ -42,6 +50,7 @@ namespace Segurplan.Web.Pages.Models.Account {
 
         public async Task<IActionResult> OnPostLoginAsync(string returnUrl = null) {
             returnUrl = returnUrl ?? Url.Content("~/");
+
             if (ModelState.IsValid && DatosLogin != null) {
 
                 var respuestaLogin = await mediator.Send(new LoginUserRequest() {
