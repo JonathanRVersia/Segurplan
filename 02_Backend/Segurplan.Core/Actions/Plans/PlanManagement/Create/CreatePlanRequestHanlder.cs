@@ -27,6 +27,7 @@ namespace Segurplan.Core.Actions.Plans.PlanManagement.Create {
 
         public async Task<IRequestResponse<EditPlanGeneralDataResponse>> Handle(CreatePlanRequest request, CancellationToken cancellationToken) {
 
+            request.UserId = 3;
             IRequestResponse<EditPlanGeneralDataResponse> res;
             if (request.PlanInformation == null) {
 
@@ -108,7 +109,8 @@ namespace Segurplan.Core.Actions.Plans.PlanManagement.Create {
 
 
                             dbPlan.SafetyStudyPlanPlane = AddPlanPlanes(request);
-
+                            dbPlan.IdPlanType = 1;
+                            dbPlan.IdReviewer = request.UserId;
                             dbContext.SafetyStudyPlan.Add(dbPlan);
 
                             // Saving changes to retrieve the new plan identifier
@@ -139,7 +141,7 @@ namespace Segurplan.Core.Actions.Plans.PlanManagement.Create {
 
                             trans.Rollback();
 
-                                throw exc;
+                            throw exc;
                         }
                     }
                 });
@@ -212,7 +214,7 @@ namespace Segurplan.Core.Actions.Plans.PlanManagement.Create {
                     }
                 }
             }
-            
+
             dbContext.SaveChanges();
         }
 

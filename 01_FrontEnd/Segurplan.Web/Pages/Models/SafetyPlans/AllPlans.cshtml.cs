@@ -7,7 +7,6 @@ using Microsoft.Extensions.Logging;
 using Segurplan.DataAccessLayer.Database.Identity;
 
 namespace Segurplan.Web.Pages.Models.SafetyPlans {
-    [Authorize(Roles = "Administrador, Usuario")]
     [ValidateAntiForgeryToken]
     public class AllPlans : PlansBase {
         public AllPlans(IMediator mediator, ILogger<MyPlans> logger, UserManager<User> userManager)

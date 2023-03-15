@@ -77,7 +77,7 @@ namespace Segurplan.Core.Domain.Documents {
 
             //Simplificamos tags
             html = Regex.Replace(html, "((<br)(.*?)(>))", "<{Reserved}br>");
-            html = Regex.Replace(html, "((<b)(.*?)(>))", "<b>");
+            //html = Regex.Replace(html, "((<b)(.*?)(>))", "<b>");
 
             //Simplificamos las <p>
             html = Regex.Replace(html, "((<p)(.*?)(>))", "<p>");

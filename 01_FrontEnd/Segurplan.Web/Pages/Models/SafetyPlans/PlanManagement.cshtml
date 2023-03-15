@@ -48,7 +48,8 @@
                                     <h3>Plan @Model.Plan.Id : @Model.Plan.GeneralData.PlanTitle</h3>
                                 </div>
                                 <div class="col-auto">
-                                    <button id="generateTemplateBtn" type="button" form="FormCreateDocument" onclick="DownloadFile()" class="btn btn-link btn-dark p-2 disabled"> <i class="fas fa-file-word"></i> @L["Planes.TablePlan.GeneratePlan"] </button>
+
+                                    <button id="generateTemplateBtn" type="button" form="FormCreateDocument" onclick="DownloadFile()" class="btn btn-link btn-dark p-2"> <i class="fas fa-file-word"></i> @L["Planes.TablePlan.GeneratePlan"] </button>
                                     @*<button id="GenerateBudget" class="btn btn-link btn-dark p-2"> <i class="fas fa-file-excel"></i> @L["Planes.TablePlan.GenerateBudget"] </button>*@
                                 </div>
                             </div>
@@ -507,6 +508,7 @@
                                                 </a>
                                             </div>
                                             <div id="documentacion" class="collapse" role="tabpanel" aria-labelledby="headingOne" data-parent="#accordion">
+                                                
                                                 <div class="card-body">
                                                     <div class="row">
                                                         <fieldset class="col-5 @fieldState">
@@ -1817,15 +1819,15 @@
 
         Dictionary<string, string> planDetailsDefaultData = new Dictionary<string, string>();
 
-        foreach (var item in Model.PlanDetailsDefaultData)
-        {
-            planDetailsDefaultData.Add(item.PropName,item.Content);
-        }
+        //foreach (var item in Model.PlanDetailsDefaultData)
+        //{
+        //    planDetailsDefaultData.Add(item.PropName,item.Content);
+        //}
 
 }
 
 
-        var planDetailsDefaultData =@Html.Raw(Json.Serialize(planDetailsDefaultData));
+        //var planDetailsDefaultData =@Html.Raw(Json.Serialize(planDetailsDefaultData));
         var locations =@Html.Raw(Json.Serialize(locations));
         var editEnabled = @(Model.editEnabled ? "true": "false");
 

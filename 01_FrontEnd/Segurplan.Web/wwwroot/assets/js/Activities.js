@@ -94,7 +94,7 @@ function DesactivateSaveAndGenerateBtn() {
 
     }
     if (document.getElementById('generateTemplateBtn') != null) {
-        document.getElementById('generateTemplateBtn').setAttribute('disabled', 'true');
+        document.getElementById('generateTemplateBtn').setAttribute('disabled', 'false');
         document.getElementById('generateTemplateBtn').style.cursor = "default";
     }
 

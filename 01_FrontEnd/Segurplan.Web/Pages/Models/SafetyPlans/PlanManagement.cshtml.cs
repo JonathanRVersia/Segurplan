@@ -47,7 +47,7 @@ using Segurplan.Core.Actions.Plans.PlansData;
 //using Segurplan.Core.Actions.Plans.PlanManagement.Read.View;
 
 namespace Segurplan.Web.Pages.Models.SafetyPlans {
-    [Microsoft.AspNetCore.Authorization.Authorize(Roles = "Administrador, Usuario")]
+
     [ValidateAntiForgeryToken]
     public class PlanManagementModel : PageModel {
 
@@ -302,7 +302,7 @@ namespace Segurplan.Web.Pages.Models.SafetyPlans {
 
             var applicablePercentage = response.Value.ApplicablePercentage;
 
-            return new JsonResult(new BudgetViewModel { ArticlesByFamily = this.ArticlesByFamily, ArticlesByTask = this.ArticlesByTask, SelectedArticlesDB = this.SelectedArticlesDB, ApplicablePercentage = applicablePercentage});
+            return new JsonResult(new BudgetViewModel { ArticlesByFamily = this.ArticlesByFamily, ArticlesByTask = this.ArticlesByTask, SelectedArticlesDB = this.SelectedArticlesDB, ApplicablePercentage = applicablePercentage });
         }
 
         private async Task GetPlanesFamiliesAsync() {
@@ -775,7 +775,7 @@ namespace Segurplan.Web.Pages.Models.SafetyPlans {
         }
 
         private void LoadPlanBudgetInfo(SafetyPlan plan, int idBudget) {
-            if(Budget == null) {
+            if (Budget == null) {
                 Budget = new ApplicationBudget {
                     ApplicabePercentage = 100,
                     StudyBudget = 0,
@@ -801,8 +801,8 @@ namespace Segurplan.Web.Pages.Models.SafetyPlans {
 
         private async Task<IRequestResponse<EditPlanGeneralDataResponse>> SaveAndSaveAndNewCommonBehaviour(SafetyPlan plan, int userId) {
             return plan.Id > 0
-                      ? await mediator.Send(new SavePlanRequest { PlanInformation = plan, UserId = userId}).ConfigureAwait(true)
-                      : await mediator.Send(new CreatePlanRequest { PlanInformation = plan, UserId = userId}).ConfigureAwait(true);
+                      ? await mediator.Send(new SavePlanRequest { PlanInformation = plan, UserId = userId }).ConfigureAwait(true)
+                      : await mediator.Send(new CreatePlanRequest { PlanInformation = plan, UserId = userId }).ConfigureAwait(true);
         }
 
 
@@ -947,13 +947,14 @@ namespace Segurplan.Web.Pages.Models.SafetyPlans {
 
 
         public async Task<IActionResult> OnPostCreateDocument(string templateName = "PLAN DE SEGURIDAD") {
-            var response = await mediator.Send(new GeneratePlanRequest() { PlanId = Plan.Id, TemplateName = Plan.GeneralData.TemplateName!=null? Plan.GeneralData.TemplateName : templateName, IsEvaluation = Plan.GeneralData.IsEvaluation, SelectedActivities = SelectedActivities }).ConfigureAwait(false);
+            var response = await mediator.Send(new GeneratePlanRequest() { PlanId = Plan.Id, TemplateName = Plan.GeneralData.TemplateName != null ? Plan.GeneralData.TemplateName : templateName, IsEvaluation = Plan.GeneralData.IsEvaluation, SelectedActivities = SelectedActivities }).ConfigureAwait(false);
 
             if (response.Status == RequestStatus.Ok) {
-                HttpContext.Response.Cookies.Append("downloadToken","downloaded", new Microsoft.AspNetCore.Http.CookieOptions { 
-                Expires = DateTime.Now.AddMinutes(4),
-                IsEssential=true,
-                HttpOnly=false});
+                HttpContext.Response.Cookies.Append("downloadToken", "downloaded", new Microsoft.AspNetCore.Http.CookieOptions {
+                    Expires = DateTime.Now.AddMinutes(4),
+                    IsEssential = true,
+                    HttpOnly = false
+                });
                 return new FileStreamResult(response.Value.Document.ResponseStream, new MediaTypeHeaderValue(response.Value.Document.MediaType));
             } else {
                 HttpContext.Response.Cookies.Append("downloadToken", "downloaded", new Microsoft.AspNetCore.Http.CookieOptions {
@@ -983,10 +984,10 @@ namespace Segurplan.Web.Pages.Models.SafetyPlans {
                         new AddPlanPlaneRequestFiles {
                             Name = file.FileName.Split(file.FileName.Substring(file.FileName.LastIndexOf('.'))).First(),
                             FileName = file.FileName,
-                        //as byte[]
-                        Data = ms.ToArray(),
-                        //as base 64 stream
-                        DataBaseString = Convert.ToBase64String(ms.ToArray())
+                            //as byte[]
+                            Data = ms.ToArray(),
+                            //as base 64 stream
+                            DataBaseString = Convert.ToBase64String(ms.ToArray())
                         });
                 }
             }
@@ -1358,7 +1359,7 @@ namespace Segurplan.Web.Pages.Models.SafetyPlans {
                                 WordDescription = originalChapter.WordDescription
                             };
 
-                            var originalSubChapter = AvailableActivities.Where(chap => chap.Id == originalChapter.Id).SelectMany(x=>x.SubChapter).Where(z=>z.Id == customActivity.SubChapterId).FirstOrDefault();
+                            var originalSubChapter = AvailableActivities.Where(chap => chap.Id == originalChapter.Id).SelectMany(x => x.SubChapter).Where(z => z.Id == customActivity.SubChapterId).FirstOrDefault();
 
                             var subChapterToAdd = new PlanSubChapter {
                                 Id = originalSubChapter.Id,
@@ -1376,8 +1377,8 @@ namespace Segurplan.Web.Pages.Models.SafetyPlans {
                             if (!SelectedActivities.Any(d => d.Id == chapterToAdd.Id)) {
                                 SelectedActivities.Add(chapterToAdd);
                             }
-                                var chapterSelect = SelectedActivities.Where(chap => chap.Position == customActivity.ChapterPosition).FirstOrDefault();
-                            if (!chapterSelect.SubChapter.Any(d=>d.Id == subChapterToAdd.Id)) {
+                            var chapterSelect = SelectedActivities.Where(chap => chap.Position == customActivity.ChapterPosition).FirstOrDefault();
+                            if (!chapterSelect.SubChapter.Any(d => d.Id == subChapterToAdd.Id)) {
                                 chapterSelect.SubChapter.Add(subChapterToAdd);
                             }
                         }

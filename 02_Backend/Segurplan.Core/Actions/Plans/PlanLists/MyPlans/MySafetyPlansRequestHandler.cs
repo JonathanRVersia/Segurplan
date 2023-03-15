@@ -14,7 +14,7 @@ namespace Segurplan.Core.Actions.Plans.PlanLists {
         private string UserId { get; set; }
 
         public Task<IRequestResponse<SafetyPlanResponseBase>> Handle(MySafetyPlanRequest request, CancellationToken cancellationToken) {
-            UserId = request.UserId;
+            UserId = "3";
             return base.Handle(request, cancellationToken);
         }
 

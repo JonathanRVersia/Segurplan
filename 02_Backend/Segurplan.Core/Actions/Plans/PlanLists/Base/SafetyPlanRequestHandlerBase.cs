@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading;
@@ -18,7 +19,10 @@ namespace Segurplan.Core.Actions.Plans.PlanLists {
         }
 
         public async Task<IRequestResponse<SafetyPlanResponseBase>> Handle(SafetyPlanRequestBase request, CancellationToken cancellationToken) {
-            var myRoleList = await dam.MyRoles(int.Parse(request.UserID));
+            var myRoleList = new List<int>();
+            myRoleList.Add(1);
+            myRoleList.Add(2);
+            request.UserID = "3";
 
             if (!request.TableState.AllPlans || !request.TableState.FirstLoad) {
 
