@@ -96,7 +96,7 @@ namespace OldDBDataMigrator.DataMigration.Actions {
             //solo ejecutarlo cuando estemos en Desarrollo
             try {
                 //Para desarrollo
-                await AddOesiaUser();
+                await AddVersiaUser();
 
                 //AÑADIR USUARIO DE PRE OESIA EL PRIMERO
 
@@ -128,7 +128,7 @@ namespace OldDBDataMigrator.DataMigration.Actions {
         }
 
         //Para Elecnor
-        //private async Task AddOesiaUser() {
+        //private async Task AddVersiaUser() {
 
         //    var oesiaElecnorUser = users.Where(x => x.UserName == "oesia").FirstOrDefault();
         //    users.Remove(oesiaElecnorUser);
@@ -153,7 +153,7 @@ namespace OldDBDataMigrator.DataMigration.Actions {
         //}
 
         //Para entorno desarrollo
-        private async Task AddOesiaUser() {
+        private async Task AddVersiaUser() {
             //User
             if (!await segurplanContext.User.AnyAsync(x => x.NormalizedUserName == oesiaUser.UserName.ToUpper())) {
 
