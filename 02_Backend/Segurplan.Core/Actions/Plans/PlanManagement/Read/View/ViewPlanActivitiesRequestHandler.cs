@@ -62,41 +62,46 @@ namespace Segurplan.Core.Actions.Plans.PlanManagement.Read.View {
         }
 
         private async Task<List<PlanChapter>> GetAvailableActivities() {
+            try {
+                //List<PlanChapter> planChapters = (List<PlanChapter>)await activitiesCacheServices.Get();
+                List<PlanChapter> planChapters = await dbContext.ChapterVersion.Where(x => x.ApprovementDate < DateTime.Now && x.EndDate == null || x.EndDate > DateTime.Now)
+                   .ProjectTo<PlanChapter>(mapper.ConfigurationProvider)
+                  .ToListAsync();
 
-            //List<PlanChapter> planChapters = (List<PlanChapter>)await activitiesCacheServices.Get();
-            List<PlanChapter> planChapters = await dbContext.ChapterVersion.Where(x => x.ApprovementDate < DateTime.Now && x.EndDate == null || x.EndDate > DateTime.Now)
-               .ProjectTo<PlanChapter>(mapper.ConfigurationProvider)
-              .ToListAsync();
-
-            if (planChapters.Any()) {
-                planChapters = planChapters.OrderBy(x => x.Number).ToList();
+                if (planChapters.Any()) {
+                    planChapters = planChapters.OrderBy(x => x.Number).ToList();
 
 
-                // Ensuring all available activities are returns as NOT SELECTED
-                planChapters.Select(chap => {
-                    chap.IsSelected = false;
-                    chap.SubChapter.Select(sub => {
-                        sub.IsSelected = false;
-                        sub.Activities.Select(act => {
-                            act.IsSelected = false;
-                            return act;
+                    // Ensuring all available activities are returns as NOT SELECTED
+                    planChapters.Select(chap => {
+                        chap.IsSelected = false;
+                        chap.SubChapter.Select(sub => {
+                            sub.IsSelected = false;
+                            sub.Activities.Select(act => {
+                                act.IsSelected = false;
+                                return act;
+                            }).ToList();
+                            return sub;
                         }).ToList();
-                        return sub;
+                        return chap;
                     }).ToList();
-                    return chap;
-                }).ToList();
 
 
-                //var selectedChapts = planChapters.Where(c => c.SubChapter.Any(s => s.Activities.Any(a => a.IsSelected == true)));
+                    //var selectedChapts = planChapters.Where(c => c.SubChapter.Any(s => s.Activities.Any(a => a.IsSelected == true)));
 
-                //foreach (var sub in from chap in selectedChapts
-                //                    from sub in chap.SubChapter
-                //                    select sub) {
-                //    sub.Activities.Select(act => { act.IsSelected = false; return act; }).ToList();
-                //}
+                    //foreach (var sub in from chap in selectedChapts
+                    //                    from sub in chap.SubChapter
+                    //                    select sub) {
+                    //    sub.Activities.Select(act => { act.IsSelected = false; return act; }).ToList();
+                    //}
+                }
+
+                return planChapters;
+            } catch (Exception ex) {
+
+                throw;
             }
-
-            return planChapters;
+          
         }
 
         private async Task<List<SelectedPlanActivity>> GetPlanActivities(int planId) {

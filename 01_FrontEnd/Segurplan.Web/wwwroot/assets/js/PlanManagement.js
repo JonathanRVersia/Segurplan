@@ -20,7 +20,7 @@ function DownloadFile() {
     var IsEvaluation = document.getElementById("Plan_GeneralData_IsEvaluation").value;
     document.getElementById("PlanIsEvaluation").value = IsEvaluation;
 
-    var TemplateForCreateDocument = 'Evaluacion de riesgos';
+    var TemplateForCreateDocument = 'ER nuevo formato tabla 2 SOLO CAP';
     document.getElementById("PlanTemplateName").value = TemplateForCreateDocument;
     document.getElementById("loading").style.visibility = "visible";
     checkCookieDownload()
